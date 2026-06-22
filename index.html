@@ -977,6 +977,26 @@ const FOOD_DB = [
   {name:'Feta',unit:'g',kcal100:264,p100:14,g100:4,l100:21},
   {name:'Cébette / oignon nouveau',unit:'g',kcal100:32,p100:1.8,g100:7,l100:0.2},
   {name:'Huile de sésame',unit:'ml',kcal100:884,p100:0,g100:0,l100:100},
+  {name:'Skyr nature',unit:'g',kcal100:63,p100:11,g100:4,l100:0.2},
+  {name:'Skyr framboise',unit:'g',kcal100:75,p100:9,g100:9,l100:0.2},
+  {name:'Ricotta',unit:'g',kcal100:150,p100:11,g100:3,l100:10},
+  {name:'Parmesan',unit:'g',kcal100:392,p100:36,g100:0,l100:27},
+  {name:'Thon au naturel (égoutté)',unit:'g',kcal100:116,p100:26,g100:0,l100:1},
+  {name:'Sardines à l\'huile (égouttées)',unit:'g',kcal100:208,p100:25,g100:0,l100:11},
+  {name:'Chorizo',unit:'g',kcal100:455,p100:24,g100:2,l100:38},
+  {name:'Jambon de poulet',unit:'g',kcal100:110,p100:20,g100:1,l100:3},
+  {name:'Rumsteak',unit:'g',kcal100:130,p100:22,g100:0,l100:5},
+  {name:'Pois chiches (égouttés)',unit:'g',kcal100:139,p100:9,g100:20,l100:3},
+  {name:'Pâtes cuites',unit:'g',kcal100:158,p100:6,g100:31,l100:1},
+  {name:'Nouilles cuites',unit:'g',kcal100:138,p100:5,g100:25,l100:2},
+  {name:'Couscous cuit',unit:'g',kcal100:112,p100:4,g100:23,l100:0.2},
+  {name:'Wrap / tortilla',unit:'g',kcal100:300,p100:8,g100:50,l100:7},
+  {name:'Muesli avoine-chocolat',unit:'g',kcal100:430,p100:9,g100:62,l100:14},
+  {name:'Crème de soja',unit:'ml',kcal100:180,p100:3,g100:3,l100:17},
+  {name:'Crème de coco',unit:'ml',kcal100:230,p100:2,g100:6,l100:22},
+  {name:'Petits pois',unit:'g',kcal100:81,p100:5,g100:14,l100:0.4},
+  {name:'Épinards',unit:'g',kcal100:23,p100:2.9,g100:3.6,l100:0.4},
+  {name:'Nectarine',unit:'g',kcal100:44,p100:1,g100:11,l100:0.3},
 ];
 
 const PLAN_PRESETS = {
@@ -1137,18 +1157,114 @@ const RECIPES = [
    ing:['250 g crevettes','3 gousses ail','1 cc gingembre','1 cs sauce soja','1 cc miel','1 cc huile de sésame','Citron','Riz','Brocoli'],
    steps:['Revenir ail + gingembre.','Crevettes 2 min.','Soja + miel + sésame, glace 1 min.','Citron, sert sur riz + brocoli.'],
    tip:'12 min chrono. Ne surcuis pas les crevettes.'},
+  {id:'pates-thon',cat:'plat',emoji:'🐟',name:'Pâtes thon-tomate express',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:560,p:42,g:72,l:12},
+   ing:['100 g pâtes','1 boîte thon','200 g pulpe de tomate','1 oignon','2 gousses ail','Persil','Parmesan','Huile d\'olive','Piment'],
+   steps:['Cuis les pâtes.','Revenir oignon + ail, ajoute la pulpe de tomate et le piment, mijote 8 min.','Ajoute le thon égoutté en fin de cuisson.','Mélange aux pâtes, parmesan + persil dessus.'],
+   tip:'Une boîte de thon = ~25 g de protéines pour rien. Garde l\'huile des sardines/thon pour la saveur.'},
+  {id:'salade-thon-pc',cat:'plat',emoji:'🥗',name:'Salade thon, pois chiches & tomates',tag:'R',meal:'Déjeuner',time:'10 min',macros:{kcal:480,p:38,g:46,l:16},
+   ing:['1 boîte thon','1 boîte pois chiches','Tomates','1 oignon','Persil','Huile d\'olive','Vinaigre de riz','Moutarde'],
+   steps:['Égoutte thon et pois chiches.','Coupe tomates + oignon.','Vinaigrette : moutarde + vinaigre + huile.','Mélange, persil dessus.'],
+   tip:'Parfait jour R : rassasiant, riche en fibres et protéines, zéro cuisson.'},
+  {id:'wrap-poulet',cat:'plat',emoji:'🌯',name:'Wrap poulet-skyr',tag:'E',meal:'Déjeuner',time:'10 min',macros:{kcal:520,p:46,g:48,l:14},
+   ing:['2 wraps','150 g poulet','3 cs skyr','Moutarde','Carottes','Persil','Piment'],
+   steps:['Râpe les carottes.','Sauce : skyr + moutarde + piment.','Garnis les wraps de poulet + carottes + sauce.','Roule serré.'],
+   tip:'Le skyr remplace la mayo : même crémeux, +20 g de protéines, beaucoup moins de gras.'},
+  {id:'wrap-thon',cat:'plat',emoji:'🌯',name:'Wrap thon-crudités',tag:'R',meal:'Déjeuner',time:'8 min',macros:{kcal:440,p:34,g:46,l:12},
+   ing:['2 wraps','1 boîte thon','3 cs skyr','Tomates','1 oignon','Persil'],
+   steps:['Mélange thon + skyr + persil.','Garnis les wraps + tomates + oignon.','Roule et coupe en deux.'],
+   tip:'Dépannage protéiné en 8 min avec des boîtes du placard.'},
+  {id:'pates-chorizo',cat:'plat',emoji:'🌶️',name:'Pâtes chorizo-crème',tag:'E',meal:'Dîner',time:'20 min',macros:{kcal:680,p:40,g:74,l:24},
+   ing:['100 g pâtes','60 g chorizo','100 ml crème','1 oignon','2 gousses ail','200 g pulpe de tomate','Parmesan'],
+   steps:['Revenir chorizo (il rend son gras), puis oignon + ail.','Ajoute pulpe de tomate, mijote 8 min.','Crème en fin de cuisson.','Mélange aux pâtes + parmesan.'],
+   tip:'Le chorizo assaisonne tout seul — pas besoin de sel.'},
+  {id:'pates-ricotta',cat:'plat',emoji:'🧀',name:'Pâtes ricotta-épinards',tag:'R',meal:'Dîner',time:'18 min',macros:{kcal:560,p:30,g:70,l:18},
+   ing:['100 g pâtes','100 g ricotta','Épinards','2 gousses ail','Parmesan','Huile d\'olive','Citron'],
+   steps:['Cuis les pâtes, garde un peu d\'eau de cuisson.','Fais tomber les épinards avec l\'ail.','Hors du feu : ricotta + eau de cuisson + citron pour une crème.','Mélange, parmesan dessus.'],
+   tip:'Sans viande mais 30 g de protéines grâce à ricotta + parmesan.'},
+  {id:'pates-saumon',cat:'plat',emoji:'🍝',name:'Pâtes crémeuses au saumon',tag:'E',meal:'Dîner',time:'18 min',macros:{kcal:640,p:44,g:66,l:22},
+   ing:['100 g pâtes longues','1 pavé saumon','100 ml crème','Épinards','2 gousses ail','Parmesan','Citron'],
+   steps:['Cuis les pâtes.','Saisis le saumon, émiette-le.','Ail + épinards + crème, réchauffe.','Mélange pâtes + saumon, citron + parmesan.'],
+   tip:'La crème de soja marche aussi pour alléger.'},
+  {id:'rumsteak-moutarde',cat:'plat',emoji:'🥩',name:'Rumsteak, sauce moutarde',tag:'E',meal:'Dîner',time:'15 min',macros:{kcal:600,p:48,g:46,l:24},
+   ing:['1 rumsteak','1 cc moutarde','100 ml crème','Riz','Petits pois','Beurre'],
+   steps:['Saisis le rumsteak 2 min par face, réserve.','Déglace avec un peu d\'eau, moutarde + crème.','Sert avec riz + petits pois.'],
+   tip:'Laisse reposer la viande 3 min avant de couper : elle reste tendre.'},
+  {id:'bol-riz-rumsteak',cat:'plat',cuisine:'asia',emoji:'🍚',name:'Bol riz, rumsteak & gochujang',tag:'E',meal:'Déjeuner',time:'20 min',macros:{kcal:640,p:46,g:70,l:18},
+   ing:['1 rumsteak','Riz','1 cs gochujang','1 cs sauce soja','1 cc sirop d\'agave','Carottes','1 œuf'],
+   steps:['Cuis le riz.','Saisis le rumsteak tranché.','Sauce : gochujang + soja + agave, glace la viande 1 min.','Dresse sur riz + carottes + œuf au plat.'],
+   tip:'Le gochujang + agave = la base sucrée-piquante coréenne.'},
+  {id:'shakshuka',cat:'plat',emoji:'🍳',name:'Shakshuka œufs-tomate',tag:'R',meal:'Petit-déjeuner',time:'20 min',macros:{kcal:480,p:30,g:42,l:22},
+   ing:['4 œufs','200 g pulpe de tomate','1 oignon','2 gousses ail','Paprika','Piment','Persil','Pain'],
+   steps:['Revenir oignon + ail + paprika.','Pulpe de tomate + piment, mijote 8 min.','Casse les œufs dans la sauce, couvre 5-6 min.','Persil, sert avec du pain.'],
+   tip:'Brunch protéiné. Ajoute du chorizo si tu veux taper plus fort.'},
+  {id:'omelette-chevre',cat:'plat',emoji:'🧀',name:'Omelette chèvre-épinards',tag:'R',meal:'Petit-déjeuner',time:'10 min',macros:{kcal:420,p:32,g:8,l:30},
+   ing:['3 œufs','Lait de chèvre','Épinards','Parmesan','Huile d\'olive'],
+   steps:['Bats les œufs avec un trait de lait de chèvre.','Fais tomber les épinards.','Verse les œufs, parmesan, plie.'],
+   tip:'Jour R faible en glucides, riche en protéines.'},
+  {id:'nouilles-poulet',cat:'plat',cuisine:'asia',emoji:'🍜',name:'Nouilles sautées poulet-gochujang',tag:'E',meal:'Dîner',time:'18 min',macros:{kcal:620,p:44,g:72,l:14},
+   ing:['150 g nouilles','150 g poulet','1 cs gochujang','1 cs sauce huître','1 cs sauce soja','Carottes','1 oignon','1 œuf'],
+   steps:['Cuis les nouilles.','Saisis le poulet, ajoute oignon + carottes.','Sauce : gochujang + huître + soja.','Ajoute nouilles + œuf brouillé, fais sauter 2 min.'],
+   tip:'La sauce huître apporte l\'umami profond du wok.'},
+  {id:'nouilles-boeuf',cat:'plat',cuisine:'asia',emoji:'🍜',name:'Nouilles sautées bœuf, sauce huître',tag:'E',meal:'Dîner',time:'18 min',macros:{kcal:640,p:42,g:70,l:18},
+   ing:['150 g nouilles','1 rumsteak','1 cs sauce huître','1 cs sauce soja','1 cc vinaigre de riz','Petits pois','1 oignon','2 gousses ail'],
+   steps:['Cuis les nouilles.','Saisis le bœuf tranché à feu vif.','Ail + oignon + petits pois.','Sauce huître + soja + vinaigre, ajoute les nouilles.'],
+   tip:'Feu très vif et ingrédients prêts d\'avance : c\'est le secret du wok.'},
+  {id:'couscous-poulet',cat:'plat',emoji:'🍲',name:'Couscous poulet-citron',tag:'E',meal:'Déjeuner',time:'22 min',macros:{kcal:600,p:46,g:72,l:12},
+   ing:['150 g poulet','Couscous','Carottes','1 boîte pois chiches','1 oignon','Bouillon de volaille','Persil','Paprika'],
+   steps:['Revenir poulet + oignon + paprika.','Carottes + pois chiches + bouillon, mijote 12 min.','Verse sur le couscous gonflé.','Persil + citron.'],
+   tip:'Tu as déjà le couscous libanais prêt — réchauffe-le juste.'},
+  {id:'taboule-thon',cat:'plat',emoji:'🥗',name:'Taboulé couscous-thon',tag:'R',meal:'Déjeuner',time:'10 min',macros:{kcal:470,p:30,g:58,l:12},
+   ing:['Couscous','1 boîte thon','Tomates','1 oignon','Persil','Citron','Huile d\'olive'],
+   steps:['Mélange couscous + thon égoutté.','Tomates + oignon + beaucoup de persil.','Citron + huile, laisse reposer au frais.'],
+   tip:'Meilleur après 1 h au frigo. Idéal à emporter.'},
+  {id:'curry-pois-chiches',cat:'plat',emoji:'🍛',name:'Curry de pois chiches au coco',tag:'R',meal:'Dîner',time:'20 min',macros:{kcal:560,p:24,g:64,l:22},
+   ing:['2 boîtes pois chiches','Crème de coco','200 g pulpe de tomate','1 oignon','2 gousses ail','Paprika','Piment','Épinards','Riz'],
+   steps:['Revenir oignon + ail + paprika + piment.','Pulpe de tomate + pois chiches, mijote 10 min.','Crème de coco + épinards, 5 min.','Sert sur riz.'],
+   tip:'Végé mais nourrissant. Ajoute du poulet ou un œuf pour booster les protéines.'},
+  {id:'tartines-sardines',cat:'snack',emoji:'🐟',name:'Tartines sardines-ricotta',tag:'R',meal:'Collation',time:'8 min',macros:{kcal:380,p:26,g:30,l:18},
+   ing:['Pain','1 boîte sardines','Ricotta','Citron','Persil','Piment'],
+   steps:['Toaste le pain.','Étale la ricotta.','Écrase les sardines dessus, citron + persil + piment.'],
+   tip:'Sardines = oméga-3 + 25 g de protéines la boîte. Sous-coté.'},
+  {id:'risotto-petits-pois',cat:'plat',emoji:'🍚',name:'Risotto petits pois-parmesan',tag:'R',meal:'Dîner',time:'25 min',macros:{kcal:560,p:24,g:74,l:16},
+   ing:['100 g riz','Petits pois','1 oignon','Bouillon de volaille','Parmesan','Vin blanc','Crème'],
+   steps:['Nacre le riz avec l\'oignon, déglace au vin blanc.','Ajoute le bouillon louche par louche.','Petits pois à mi-cuisson.','Parmesan + crème hors du feu.'],
+   tip:'Le riz basmati fait un risotto correct si tu n\'as pas d\'arborio.'},
+  {id:'poulet-creme-epinards',cat:'plat',emoji:'🍗',name:'Poulet crémeux aux épinards',tag:'E',meal:'Dîner',time:'18 min',macros:{kcal:580,p:50,g:48,l:18},
+   ing:['200 g poulet','100 ml crème','Épinards','2 gousses ail','Parmesan','Riz'],
+   steps:['Saisis le poulet en morceaux.','Ail + épinards.','Crème + parmesan, mijote 5 min.','Sert sur riz.'],
+   tip:'La crème de soja allège sans perdre le crémeux.'},
+  {id:'chorizo-oeufs-riz',cat:'plat',emoji:'🍳',name:'Riz sauté chorizo-œufs',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:600,p:34,g:66,l:22},
+   ing:['Riz','50 g chorizo','2 œufs','Petits pois','1 oignon','1 cs sauce soja'],
+   steps:['Revenir chorizo + oignon.','Ajoute le riz (idéal froid de la veille) + petits pois.','Pousse sur le côté, brouille les œufs.','Soja, mélange tout.'],
+   tip:'Le meilleur moyen de recycler un reste de riz.'},
+  {id:'skyr-muesli',cat:'snack',emoji:'🥣',name:'Bol skyr-muesli-banane',tag:'R',meal:'Petit-déjeuner',time:'5 min',macros:{kcal:420,p:30,g:58,l:8},
+   ing:['200 g skyr','Muesli','1 banane','1 cc sirop d\'agave'],
+   steps:['Verse le skyr dans un bol.','Muesli + banane tranchée.','Filet d\'agave.'],
+   tip:'30 g de protéines au petit-déj en 2 min. Le skyr bat le yaourt grec sur le ratio protéines/kcal.'},
+  {id:'skyr-nectarine',cat:'snack',emoji:'🍑',name:'Skyr framboise & nectarines',tag:'R',meal:'Collation',time:'3 min',macros:{kcal:240,p:18,g:34,l:4},
+   ing:['Skyr framboise','Nectarines','1 cc sirop d\'agave'],
+   steps:['Coupe les nectarines.','Mélange au skyr framboise.','Agave si besoin.'],
+   tip:'Snack canicule frais et protéiné, prêt instantanément.'},
+  {id:'smoothie-banane',cat:'snack',emoji:'🥤',name:'Smoothie banane-skyr',tag:'E',meal:'Collation',time:'5 min',macros:{kcal:360,p:26,g:54,l:6},
+   ing:['1 banane','200 g skyr','Lait de chèvre','1 cc sirop d\'agave','Muesli'],
+   steps:['Mixe banane + skyr + lait de chèvre + agave.','Verse, muesli dessus.'],
+   tip:'Parfait en collation post-séance : protéines + glucides rapides.'},
+  {id:'sauce-skyr',cat:'sauce',emoji:'🥄',name:'Sauce skyr-moutarde',tag:'R',meal:'Déjeuner',time:'3 min',macros:{kcal:120,p:14,g:6,l:4},
+   ing:['150 g skyr','1 cc moutarde','Citron','1 gousse ail','Persil'],
+   steps:['Mélange skyr + moutarde + ail écrasé.','Citron + persil + sel.'],
+   tip:'À mettre partout : wraps, poulet, crudités. Remplace la crème/mayo.'},
 ];
 
 // ===== FRIDGE / SHOPPING =====
 const PANTRY = ['Harissa','Concentré de tomate','Sauce soja','Pâte de curry rouge','Chili oil crispy','Ail confit','Beurre de cacahuète','Crème entière','Bouillon cube','Paprika','Cumin','Chipotle','Huile d\'olive','Miel','Sel','Graines de sésame'];
 
 const SHOP_BASE = {
-  'Protéines': ['Filets de poulet','Bœuf haché 5%','Saumon','Crevettes','Œufs','Whey protéine','Cottage cheese'],
-  'Féculents': ['Riz basmati','Pâtes courtes','Flocons d\'avoine','Naan','Pommes de terre','Patate douce'],
-  'Laitages': ['Yaourt grec Isigny','Lait'],
-  'Légumes & fruits': ['Carottes','Concombre','Brocoli','Courgette','Haricots verts','Oignon','Cébette','Ail','Gingembre','Basilic frais','Citron','Citron vert','Banane','Fruits rouges surgelés'],
-  'Épicerie': ['Lait de coco','Haricots rouges','Amandes','Granola'],
-  'Tendance ⭐': ['Gochujang','Sauce poisson (nuoc-mâm)','Vinaigre de riz','Flocons de piment / gochugaru','Chocolat noir','Huile de sésame'],
+  'Protéines': ['Filets de poulet','Jambon de poulet','Rumsteak','Bœuf haché 5%','Saumon','Crevettes','Thon en boîte','Sardines en boîte','Chorizo','Œufs','Pois chiches','Whey protéine','Cottage cheese'],
+  'Féculents': ['Riz basmati','Pâtes','Nouilles','Couscous','Wraps','Flocons d\'avoine','Muesli','Naan','Pommes de terre','Patate douce','Pain'],
+  'Laitages': ['Skyr','Yaourt grec','Ricotta','Parmesan','Crème','Lait'],
+  'Légumes & fruits': ['Carottes','Tomates','Épinards','Petits pois','Concombre','Brocoli','Courgette','Oignon','Cébette','Ail','Gingembre','Persil','Basilic frais','Citron','Citron vert','Banane','Nectarines','Fruits rouges surgelés'],
+  'Épicerie': ['Pulpe de tomate','Lait de coco','Crème de coco','Haricots rouges','Bouillon de volaille','Amandes'],
+  'Tendance ⭐': ['Gochujang','Sauce huître','Sauce poisson (nuoc-mâm)','Vinaigre de riz','Flocons de piment / gochugaru','Chocolat noir','Huile de sésame'],
 };
 
 const MEAL_NAMES = ['Petit-déjeuner','Déjeuner','Collation','Dîner'];
@@ -1747,27 +1863,53 @@ function deleteEditFood(){
 }
 
 // ========== RECIPES ==========
-const ASSUMED=['sel','poivre','huile','eau','sucre','sesame','citron','epice','herbe','glacon','beurre'];
-const KW_STOP=['sauce','pate','huile','jus','poudre','frais','fraiche','grec','rouge','noir','entiere','cube','crispy','confit','seche','fumee','isigny','option','grosse'];
-function ownedKeywords(){
+// --- Matching frigo ↔ recettes (tokens + synonymes) ---
+const ING_STOP=new Set('de des du la le les un une et ou en pour avec sans dans sur autour ton ta tes son sa au aux env environ mini maxi ideal quelque quelques splash trait noix pincee poignee tranche morceau filet feuille gousse botte pot boite pave dose cs cc cl ml kg sel poivre eau glacon sucre frais fraiche fraiches sec seche chaud froid bien gros grosse petit petite grand grande moyen jeune nouveau facultatif option optionnel optionnelle assaisonnement assaisonner gout selon coupe emince hache rape rapee tranche cuit cru nature'.split(' '));
+const PANTRY_CANON=new Set(['huile','sel','poivre','eau','sucre','epice','paprika','cumin','piment','sesame','vinaigre','soja','moutarde','bouillon','laurier','farine','levure','beurre','miel','curry']);
+function singular(w){return w.length>3?w.replace(/[sx]$/,''):w;}
+const SYN_GROUPS=[
+  ['boeuf','rumsteak','steak','bavette'],['poulet','volaille','escalope'],['saumon'],['crevette','gamba'],
+  ['thon'],['sardine'],['chorizo'],['jambon'],['oeuf'],['yaourt','skyr'],['ricotta'],['parmesan'],['feta'],
+  ['cottage'],['mozzarella'],['creme'],['coco'],['lait'],['chevre'],['oignon'],['echalote'],['ail'],['carotte'],
+  ['tomate','pulpe','coulis','concasse','passata'],['courgette'],['brocoli'],['epinard'],['concombre'],['poivron'],
+  ['banane'],['nectarine','peche'],['citron','lime'],['persil'],['basilic'],['coriandre'],['cebette','ciboule','ciboulette'],
+  ['gingembre'],['riz'],['nouille','udon','ramen','vermicelle'],['spaghetti','linguine','tagliatelle','pate','penne','rigatoni','fusilli'],
+  ['couscous','semoule','boulgour'],['wrap','tortilla','galette'],['pain'],['naan'],['avoine','flocon','muesli'],
+  ['patate','pommedeterre'],['haricot'],['gochujang'],['harissa'],['huitre'],['agave','sirop'],['cebette'],['vin'],['amande'],
+];
+const CANON={};
+SYN_GROUPS.forEach(g=>g.forEach(t=>CANON[singular(t)]=g[0]));
+function toCanon(t){t=singular(t);return CANON[t]||t;}
+function ingTokens(s){
+  const n=norm(s).replace(/œ/g,'oe').replace(/æ/g,'ae').replace(/\([^)]*\)/g,' ');
+  const extra=[];
+  if(/pois\s*chiche/.test(n)) extra.push('poischiche');
+  else if(/petit[s]?\s*pois/.test(n)) extra.push('petitpois');
+  if(/pomme[s]?\s*de\s*terre/.test(n)) extra.push('patate');
+  const toks=n.replace(/[0-9]+([.,][0-9]+)?/g,' ').split(/[^a-z\u00e0-\u00ff]+/)
+    .map(singular).filter(w=>w.length>=3 && !ING_STOP.has(w) && w!=='poi' && w!=='chiche');
+  return [...new Set([...toks,...extra])];
+}
+function ownedCanon(){
   const loc=APP.fridge.loc;
-  const names=[...(APP.fridge[loc]||[]),...PANTRY];
-  const kw=new Set();
-  names.forEach(n=>norm(n).split(/[ /(),]+/).forEach(w=>{if(w.length>=3&&!KW_STOP.includes(w))kw.add(w);}));
-  return [...kw];
+  const s=new Set();
+  (APP.fridge[loc]||[]).forEach(n=>ingTokens(n).forEach(t=>s.add(toCanon(t))));
+  return s;
+}
+function cleanIngLabel(ing){
+  return ing.replace(/\(.*?\)/g,'').replace(/^[~≈\s]+/,'').replace(/^\s*[\d.,/-]+\s*(?:(?:g|kg|ml|l|cl|cs|cc|bo\u00eetes?|doses?|pav\u00e9s?|gousses?|pinc\u00e9es?|poign\u00e9es?|tranches?)(?=\s|$))?\s*(?:de\s+|d'|du\s+)?/i,'').trim();
 }
 function recipeMatch(r){
-  const owned=ownedKeywords();
+  const owned=ownedCanon();
   const missing=[];let have=0,total=0;
   r.ing.forEach(ing=>{
-    const ni=norm(ing);total++;
-    const isAssumed=ASSUMED.some(a=>ni.includes(a));
-    const covered=owned.some(k=>ni.includes(k));
-    if(covered||isAssumed){have++;}
-    else{
-      let label=ing.replace(/\(.*?\)/g,'').replace(/^[~≈\s]+/,'').replace(/^\s*[\d.,/-]+\s*(g|kg|ml|l|cl|cs|cc|bo\u00eetes?|doses?|pav\u00e9s?|gousses?|pinc\u00e9es?|poign\u00e9es?)?\s*(de\s+|d'|du\s+)?/i,'').trim();
-      missing.push(label||ing);
-    }
+    total++;
+    let toks=ingTokens(ing).map(toCanon);
+    if(toks.includes('curry')) toks=toks.filter(t=>t!=='spaghetti'); // « pâte de curry » ≠ pâtes
+    const assumed=toks.length===0 || toks.every(t=>PANTRY_CANON.has(t));
+    const covered=assumed || toks.some(t=>owned.has(t));
+    if(covered){have++;}
+    else missing.push(cleanIngLabel(ing)||ing);
   });
   return {have,total,missing};
 }
@@ -1890,11 +2032,10 @@ function renderFridge(){
 
 // ========== SHOPPING ==========
 function isOwned(name){
-  const loc=APP.fridge.loc;
-  const fr=(APP.fridge[loc]||[]).map(norm);
-  const key=norm(name).split(/[ (]/)[0];
-  if(key.length<3) return fr.includes(norm(name));
-  return fr.some(f=>f.includes(key)||key.includes(f));
+  const owned=ownedCanon();
+  const toks=ingTokens(name).map(toCanon);
+  if(!toks.length) return false;
+  return toks.some(t=>owned.has(t));
 }
 
 function renderShopping(){
