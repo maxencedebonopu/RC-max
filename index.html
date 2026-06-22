@@ -386,6 +386,27 @@ input,textarea,select{font-family:inherit}
 .str-name{flex:1;font-size:13.5px;font-weight:500;color:var(--text);min-width:0}
 .str-max{font-size:14px;font-weight:700;color:var(--text)}
 .str-delta{font-size:12px;font-weight:700;min-width:64px;text-align:right}
+/* Workout library */
+.lib-cat{margin-bottom:16px}
+.lib-cat-head{font-size:15px;font-weight:700;color:var(--text)}
+.lib-cat-note{font-size:12px;color:var(--text3);line-height:1.4;margin:2px 0 8px}
+.lib-tpl{border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;overflow:hidden;background:var(--surface)}
+.lib-tpl-head{display:flex;align-items:center;justify-content:space-between;padding:11px 12px;cursor:pointer}
+.lib-tpl-head i{color:var(--text3);font-size:18px}
+.lib-tpl-name{font-size:14px;font-weight:600;color:var(--text)}
+.lib-tpl-meta{font-size:11.5px;color:var(--text3);margin-top:2px}
+.lib-tpl-body{padding:0 12px 12px;border-top:1px solid var(--border)}
+.lib-ex{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.lib-ex:last-of-type{border-bottom:none}
+.lib-ex-sr{color:var(--text2);font-weight:600;font-variant-numeric:tabular-nums}
+.lib-load-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin:10px 0 6px}
+.lib-load-row{display:flex;flex-wrap:wrap;gap:6px}
+.lib-load-btn{padding:7px 12px;border-radius:8px;border:1.5px solid var(--orange);background:var(--orange-light);color:var(--orange);font-size:12.5px;font-weight:600}
+.lib-swap{padding:10px 0;border-bottom:1px solid var(--border)}
+.lib-swap:last-child{border-bottom:none}
+.lib-swap-grp{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:5px}
+.lib-swap-row{font-size:12.5px;color:var(--text2);line-height:1.5;margin-bottom:3px}
+.lib-swap-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px;background:var(--orange-light);color:var(--orange);margin-right:4px}
 
 /* TOAST */
 #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;padding:11px 20px;border-radius:24px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:400;max-width:88%;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.2)}
@@ -712,9 +733,12 @@ input,textarea,select{font-family:inherit}
 
     <!-- ===== TRAINING ===== -->
     <div class="panel" id="panel-training">
-      <div style="padding:14px 16px 0;display:flex;align-items:center;justify-content:space-between">
+      <div style="padding:14px 16px 0;display:flex;align-items:center;justify-content:space-between;gap:8px">
         <div style="font-size:20px;font-weight:700">Entraînement</div>
-        <button class="card-action" onclick="openProgramEditor()"><i class="ti ti-edit" style="font-size:16px;vertical-align:-2px"></i> Programme</button>
+        <div style="display:flex;gap:6px">
+          <button class="card-action" onclick="openLibrary()"><i class="ti ti-books" style="font-size:16px;vertical-align:-2px"></i> Séances</button>
+          <button class="card-action" onclick="openProgramEditor()"><i class="ti ti-edit" style="font-size:16px;vertical-align:-2px"></i> Programme</button>
+        </div>
       </div>
       <div class="week-strip" id="week-strip"></div>
       <div class="day-strip" id="day-strip"></div>
@@ -933,6 +957,22 @@ input,textarea,select{font-family:inherit}
       <button class="btn-primary" onclick="saveProgram()">Enregistrer le programme</button>
       <button class="btn-secondary" onclick="resetProgSession()" style="color:var(--red);border-color:var(--red-light)"><i class="ti ti-rotate" style="vertical-align:-2px"></i> Réinitialiser cette séance</button>
       <button class="btn-secondary" onclick="closeModal('program-modal')">Fermer sans enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- WORKOUT LIBRARY MODAL -->
+<div class="modal-overlay" id="library-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Bibliothèque de séances</div>
+    <div class="modal-body">
+      <div class="prog-tabs" id="lib-tabs">
+        <button class="prog-tab active" onclick="switchLibTab('seances')">Séances</button>
+        <button class="prog-tab" onclick="switchLibTab('variantes')">Variantes d'exercices</button>
+      </div>
+      <div id="lib-content"></div>
+      <button class="btn-secondary" onclick="closeModal('library-modal')">Fermer</button>
     </div>
   </div>
 </div>
@@ -1254,6 +1294,158 @@ const RECIPES = [
    ing:['150 g skyr','1 cc moutarde','Citron','1 gousse ail','Persil'],
    steps:['Mélange skyr + moutarde + ail écrasé.','Citron + persil + sel.'],
    tip:'À mettre partout : wraps, poulet, crudités. Remplace la crème/mayo.'},
+  {id:'pancakes-skyr',cat:'snack',emoji:'🥞',name:'Pancakes skyr-banane',tag:'E',meal:'Petit-déjeuner',time:'12 min',macros:{kcal:440,p:32,g:54,l:10},
+   ing:['1 banane','2 œufs','150 g skyr','40 g flocons d\'avoine','1 cc levure','1 cc sirop d\'agave'],
+   steps:['Mixe banane + œufs + skyr + avoine + levure.','Cuis de petites louches à la poêle, 2 min par face.','Sirop d\'agave dessus.'],
+   tip:'Pâte mixée = pancakes moelleux sans farine, ~30 g de protéines.'},
+  {id:'oeufs-brouilles',cat:'plat',emoji:'🍳',name:'Œufs brouillés crémeux',tag:'R',meal:'Petit-déjeuner',time:'8 min',macros:{kcal:360,p:26,g:24,l:18},
+   ing:['3 œufs','1 cs crème','Parmesan','Pain','Persil','Beurre'],
+   steps:['Bats les œufs avec la crème.','Cuisson douce en remuant sans arrêt, retire encore baveux.','Parmesan + persil, sert sur pain toasté.'],
+   tip:'Feu doux + retrait précoce = la texture crémeuse. La chaleur résiduelle finit la cuisson.'},
+  {id:'omelette-jambon',cat:'plat',emoji:'🧀',name:'Omelette jambon-parmesan',tag:'E',meal:'Petit-déjeuner',time:'10 min',macros:{kcal:420,p:38,g:6,l:26},
+   ing:['3 œufs','80 g jambon de poulet','Parmesan','Persil','Huile d\'olive'],
+   steps:['Bats les œufs.','Verse dans la poêle chaude, ajoute jambon + parmesan.','Plie quand le dessus est encore légèrement coulant.'],
+   tip:'Riche en protéines, quasi zéro glucides — parfait jour R.'},
+  {id:'porridge-choco',cat:'snack',emoji:'🍫',name:'Porridge avoine-chocolat',tag:'E',meal:'Petit-déjeuner',time:'8 min',macros:{kcal:460,p:24,g:64,l:12},
+   ing:['60 g flocons d\'avoine','Lait de chèvre','1 banane','Muesli','1 cs beurre de cacahuète','1 dose whey (option)'],
+   steps:['Chauffe avoine + lait 5 min en remuant.','Hors du feu : whey + banane écrasée.','Muesli + beurre de cacahuète dessus.'],
+   tip:'Ajoute la whey hors du feu pour ne pas la cuire.'},
+  {id:'pain-perdu',cat:'snack',emoji:'🍞',name:'Pain perdu protéiné',tag:'E',meal:'Petit-déjeuner',time:'12 min',macros:{kcal:430,p:24,g:52,l:14},
+   ing:['Pain','2 œufs','Lait de chèvre','1 cc sirop d\'agave','Skyr','Nectarines'],
+   steps:['Trempe le pain dans œufs + lait.','Dore à la poêle 2 min par face.','Sers avec skyr + nectarines + agave.'],
+   tip:'Recycle le pain congelé. Le skyr remplace la chantilly.'},
+  {id:'smoothie-bowl',cat:'snack',emoji:'🍓',name:'Smoothie bowl skyr-fruits',tag:'R',meal:'Petit-déjeuner',time:'6 min',macros:{kcal:380,p:28,g:52,l:6},
+   ing:['250 g skyr','1 banane','Skyr framboise','Muesli','Amandes'],
+   steps:['Mixe skyr + banane + skyr framboise pour une texture épaisse.','Verse dans un bol.','Muesli + amandes concassées dessus.'],
+   tip:'Mixe peu de liquide pour que ça reste à la cuillère.'},
+  {id:'pates-aglio',cat:'plat',emoji:'🍝',name:'Pâtes aglio e olio piquantes',tag:'E',meal:'Dîner',time:'15 min',macros:{kcal:520,p:16,g:80,l:14},
+   ing:['100 g pâtes longues','4 gousses ail','Huile d\'olive','Piment','Persil','Parmesan'],
+   steps:['Cuis les pâtes, garde l\'eau de cuisson.','Fais blondir l\'ail émincé + piment dans l\'huile.','Mélange pâtes + un peu d\'eau de cuisson, persil + parmesan.'],
+   tip:'Classique italien à 4 ingrédients. Ajoute une boîte de thon pour des protéines.'},
+  {id:'pates-pesto-persil',cat:'plat',emoji:'🌿',name:'Pâtes persil-parmesan & poulet',tag:'E',meal:'Déjeuner',time:'18 min',macros:{kcal:620,p:48,g:66,l:18},
+   ing:['100 g pâtes','150 g poulet','Persil','Parmesan','2 gousses ail','Huile d\'olive','Amandes'],
+   steps:['Mixe persil + parmesan + ail + amandes + huile = pesto express.','Cuis les pâtes, saisis le poulet.','Mélange le tout avec le pesto.'],
+   tip:'Un pesto sans basilic, juste avec ton persil. Frais et protéiné.'},
+  {id:'onepot-tomate',cat:'plat',emoji:'🍅',name:'One-pot pâtes tomate-poulet',tag:'E',meal:'Dîner',time:'22 min',macros:{kcal:600,p:44,g:74,l:12},
+   ing:['100 g pâtes','150 g poulet','200 g pulpe de tomate','1 oignon','2 gousses ail','Bouillon de volaille','Parmesan'],
+   steps:['Revenir poulet + oignon + ail.','Ajoute pâtes crues + pulpe de tomate + bouillon à hauteur.','Mijote 12-14 min en remuant, parmesan à la fin.'],
+   tip:'Un seul plat, zéro vaisselle. Les pâtes cuisent dans la sauce.'},
+  {id:'carbonara-leg',cat:'plat',emoji:'🥓',name:'Carbonara légère',tag:'E',meal:'Dîner',time:'18 min',macros:{kcal:600,p:38,g:72,l:18},
+   ing:['100 g pâtes','60 g chorizo','2 œufs','Parmesan','2 gousses ail','Persil'],
+   steps:['Cuis les pâtes.','Fais croustiller le chorizo + ail.','Hors du feu : œufs battus + parmesan + un peu d\'eau de cuisson, mélange vite (pas d\'œufs brouillés).'],
+   tip:'Hors du feu pour la sauce : la chaleur des pâtes cuit l\'œuf sans le coaguler.'},
+  {id:'pates-sardines',cat:'plat',emoji:'🐟',name:'Pâtes sardines-citron',tag:'E',meal:'Dîner',time:'15 min',macros:{kcal:560,p:30,g:72,l:16},
+   ing:['100 g pâtes','1 boîte sardines','2 gousses ail','Persil','Citron','Piment','Huile d\'olive'],
+   steps:['Cuis les pâtes.','Ail + piment dans l\'huile, ajoute les sardines écrasées.','Mélange pâtes + citron + persil.'],
+   tip:'Inspiration sicilienne. Oméga-3 + protéines pour pas cher.'},
+  {id:'pates-lasagne',cat:'plat',emoji:'🧀',name:'Pâtes façon lasagne',tag:'E',meal:'Dîner',time:'25 min',macros:{kcal:660,p:46,g:70,l:22},
+   ing:['100 g pâtes','1 rumsteak','200 g pulpe de tomate','1 oignon','2 gousses ail','Ricotta','Parmesan'],
+   steps:['Sauce bolo : bœuf haché grossier + oignon + ail + pulpe de tomate, 15 min.','Cuis les pâtes.','Mélange pâtes + sauce, ricotta + parmesan dessus, gratine 5 min.'],
+   tip:'Toutes les saveurs des lasagnes en 25 min, sans le montage.'},
+  {id:'riz-cantonais',cat:'plat',cuisine:'asia',emoji:'🍚',name:'Riz cantonais maison',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:560,p:30,g:72,l:14},
+   ing:['Riz','80 g jambon de poulet','2 œufs','Petits pois','1 oignon','1 cs sauce soja','Huile de sésame'],
+   steps:['Brouille les œufs, réserve.','Revenir oignon + jambon + petits pois.','Ajoute le riz (froid idéal) + œufs + soja + sésame.'],
+   tip:'Le riz de la veille = grains détachés, le secret du riz sauté.'},
+  {id:'poulet-saute-legumes',cat:'plat',cuisine:'asia',emoji:'🥢',name:'Poulet sauté aux légumes',tag:'E',meal:'Dîner',time:'18 min',macros:{kcal:540,p:48,g:50,l:14},
+   ing:['200 g poulet','Carottes','1 oignon','2 gousses ail','1 cs sauce soja','1 cs sauce huître','1 cc gingembre','Riz'],
+   steps:['Saisis le poulet à feu vif.','Ajoute légumes + ail + gingembre.','Soja + huître, glace 2 min, sers sur riz.'],
+   tip:'Coupe tout fin pour une cuisson rapide et homogène.'},
+  {id:'boeuf-huitre',cat:'plat',cuisine:'asia',emoji:'🥩',name:'Bœuf sauté sauce huître',tag:'E',meal:'Dîner',time:'15 min',macros:{kcal:580,p:44,g:48,l:22},
+   ing:['1 rumsteak','1 oignon','2 gousses ail','1 cs sauce huître','1 cs sauce soja','1 cc sirop d\'agave','Riz','Petits pois'],
+   steps:['Tranche le bœuf fin, saisis à feu très vif 1-2 min.','Oignon + ail.','Huître + soja + agave, glace, sers sur riz + petits pois.'],
+   tip:'Ne surcuis pas : 2 min suffisent pour un bœuf tendre.'},
+  {id:'nouilles-froides',cat:'plat',cuisine:'asia',emoji:'🥡',name:'Nouilles sésame froides',tag:'R',meal:'Déjeuner',time:'12 min',macros:{kcal:520,p:28,g:66,l:16},
+   ing:['150 g nouilles','150 g poulet','1 cs sauce soja','1 cc vinaigre de riz','Huile de sésame','Carottes','Persil','Piment'],
+   steps:['Cuis les nouilles, refroidis sous l\'eau.','Sauce : soja + vinaigre + sésame + piment.','Mélange nouilles + poulet émincé + carottes + persil.'],
+   tip:'Plat froid idéal en canicule. Se mange en meal-prep.'},
+  {id:'omurice',cat:'plat',cuisine:'asia',emoji:'🍳',name:'Omurice (riz-poulet-omelette)',tag:'E',meal:'Dîner',time:'20 min',macros:{kcal:620,p:40,g:70,l:18},
+   ing:['Riz','150 g poulet','3 œufs','1 oignon','200 g pulpe de tomate','1 cs sauce soja'],
+   steps:['Riz sauté : poulet + oignon + pulpe de tomate + soja.','Fais une omelette fine.','Pose le riz dedans, plie l\'omelette dessus.'],
+   tip:'Classique japonais réconfortant. La pulpe de tomate fait la sauce ketchup-maison.'},
+  {id:'soupe-nouilles',cat:'plat',cuisine:'asia',emoji:'🍲',name:'Soupe de nouilles poulet-gingembre',tag:'R',meal:'Dîner',time:'18 min',macros:{kcal:440,p:38,g:54,l:8},
+   ing:['Nouilles','150 g poulet','Bouillon de volaille','1 cc gingembre','2 gousses ail','1 cs sauce soja','Épinards','1 œuf'],
+   steps:['Bouillon + gingembre + ail, 8 min.','Poche le poulet émincé.','Nouilles + épinards + œuf mollet, soja.'],
+   tip:'Réconfortant et léger. Parfait jour R ou petit appétit.'},
+  {id:'bowl-pois-chiches',cat:'plat',emoji:'🥗',name:'Buddha bowl pois chiches',tag:'R',meal:'Déjeuner',time:'15 min',macros:{kcal:540,p:26,g:64,l:18},
+   ing:['1 boîte pois chiches','Riz','Carottes','Tomates','Épinards','Skyr','Citron','Paprika'],
+   steps:['Rôtis les pois chiches au paprika 10 min.','Dresse riz + crudités + épinards.','Sauce skyr-citron dessus.'],
+   tip:'Bol complet végé : fibres, protéines, couleurs. Ajoute un œuf pour booster.'},
+  {id:'salade-medit',cat:'plat',emoji:'🥗',name:'Salade tomate-thon méditerranéenne',tag:'R',meal:'Déjeuner',time:'10 min',macros:{kcal:420,p:32,g:30,l:18},
+   ing:['1 boîte thon','Tomates','1 oignon','Pois chiches','Persil','Huile d\'olive','Citron'],
+   steps:['Coupe tomates + oignon.','Ajoute thon + pois chiches.','Huile + citron + persil.'],
+   tip:'Fraîche, salée, protéinée. Zéro cuisson.'},
+  {id:'houmous',cat:'sauce',emoji:'🥣',name:'Houmous de pois chiches express',tag:'R',meal:'Collation',time:'8 min',macros:{kcal:220,p:9,g:22,l:11},
+   ing:['1 boîte pois chiches','2 gousses ail','Citron','Huile d\'olive','Paprika','Piment'],
+   steps:['Mixe pois chiches + ail + citron + huile + un peu d\'eau.','Assaisonne, paprika dessus.'],
+   tip:'À tartiner sur pain/wrap. Garde l\'eau des pois chiches pour la texture.'},
+  {id:'couscous-legumes',cat:'plat',emoji:'🍲',name:'Couscous express aux légumes',tag:'R',meal:'Déjeuner',time:'18 min',macros:{kcal:480,p:18,g:78,l:10},
+   ing:['Couscous','Carottes','1 oignon','Pois chiches','Bouillon de volaille','Pulpe de tomate','Paprika','Cumin'],
+   steps:['Mijote carottes + oignon + pois chiches + pulpe de tomate + épices.','Gonfle le couscous au bouillon.','Sers les légumes dessus.'],
+   tip:'Tu as déjà le couscous préparé : réchauffe-le juste avec les légumes.'},
+  {id:'wrap-mezze',cat:'plat',emoji:'🌯',name:'Wrap pois chiches-skyr',tag:'R',meal:'Déjeuner',time:'10 min',macros:{kcal:460,p:22,g:58,l:14},
+   ing:['2 wraps','1 boîte pois chiches','Skyr','Tomates','Persil','Citron','Paprika'],
+   steps:['Écrase grossièrement les pois chiches au paprika.','Garnis les wraps + tomates + persil.','Sauce skyr-citron.'],
+   tip:'Version végé du wrap, riche en fibres et rassasiante.'},
+  {id:'poulet-roti-citron',cat:'plat',emoji:'🍗',name:'Poulet rôti citron-ail',tag:'E',meal:'Dîner',time:'30 min',macros:{kcal:560,p:52,g:46,l:16},
+   ing:['400 g poulet','4 gousses ail','Citron','Huile d\'olive','Paprika','Riz','Carottes'],
+   steps:['Marinade : huile + ail + citron + paprika.','Four 200 °C, 22-25 min avec les carottes.','Sers avec riz.'],
+   tip:'Batch du dimanche : double les quantités pour 2-3 repas.'},
+  {id:'saute-boeuf-oignons',cat:'plat',emoji:'🥩',name:'Sauté de bœuf aux oignons',tag:'E',meal:'Dîner',time:'18 min',macros:{kcal:560,p:46,g:44,l:22},
+   ing:['1 rumsteak','2 oignons','2 gousses ail','1 cs moutarde','1 cs sauce soja','Riz','Persil'],
+   steps:['Saisis le bœuf tranché, réserve.','Fais fondre les oignons.','Moutarde + soja + un peu d\'eau, remets le bœuf, persil, sers sur riz.'],
+   tip:'Les oignons fondus apportent du sucré naturel à la sauce.'},
+  {id:'gratin-pates-thon',cat:'plat',emoji:'🧀',name:'Gratin de pâtes thon-tomate',tag:'E',meal:'Dîner',time:'25 min',macros:{kcal:620,p:38,g:74,l:18},
+   ing:['100 g pâtes','1 boîte thon','200 g pulpe de tomate','1 oignon','Parmesan','Crème','Persil'],
+   steps:['Cuis les pâtes, mélange thon + pulpe de tomate + oignon + crème.','Verse dans un plat, parmesan dessus.','Four 200 °C, 12-15 min.'],
+   tip:'Plat familial, se réchauffe parfaitement le lendemain.'},
+  {id:'soupe-tomate',cat:'plat',emoji:'🍅',name:'Soupe tomate & vermicelles',tag:'R',meal:'Dîner',time:'18 min',macros:{kcal:360,p:14,g:58,l:8},
+   ing:['400 g pulpe de tomate','1 oignon','2 gousses ail','Bouillon de volaille','Nouilles','Crème','Basilic'],
+   steps:['Revenir oignon + ail, ajoute pulpe + bouillon.','Mixe pour une soupe lisse.','Ajoute nouilles cassées 5 min, filet de crème.'],
+   tip:'Léger et réconfortant. Ajoute un œuf poché pour des protéines.'},
+  {id:'fajita-poulet',cat:'plat',emoji:'🌮',name:'Wrap fajita poulet',tag:'E',meal:'Dîner',time:'18 min',macros:{kcal:580,p:46,g:58,l:16},
+   ing:['2 wraps','200 g poulet','1 oignon','Carottes','Paprika','Cumin','Piment','Skyr'],
+   steps:['Saisis poulet + légumes avec paprika + cumin + piment.','Garnis les wraps.','Sauce skyr dessus, roule.'],
+   tip:'Le mélange paprika-cumin-piment = l\'épice fajita maison.'},
+  {id:'bowl-burrito',cat:'plat',emoji:'🌯',name:'Bowl burrito riz-bœuf',tag:'E',meal:'Déjeuner',time:'20 min',macros:{kcal:640,p:44,g:72,l:18},
+   ing:['1 rumsteak','Riz','Pois chiches','Tomates','1 oignon','Cumin','Piment','Skyr'],
+   steps:['Saisis le bœuf haché grossier + cumin + piment.','Dresse riz + pois chiches + tomates + oignon.','Bœuf dessus, sauce skyr.'],
+   tip:'Version bowl du burrito, plus légère que la tortilla.'},
+  {id:'legumes-rotis',cat:'side',emoji:'🥕',name:'Légumes rôtis au four',tag:'R',meal:'Dîner',time:'25 min',macros:{kcal:180,p:4,g:24,l:8},
+   ing:['Carottes','1 oignon','Tomates','Huile d\'olive','Paprika','Ail','Persil'],
+   steps:['Coupe les légumes, huile + paprika + ail.','Four 200 °C, 20-25 min.','Persil frais à la sortie.'],
+   tip:'Accompagnement passe-partout. Fais-en un grand plat pour la semaine.'},
+  {id:'carottes-cumin',cat:'side',emoji:'🥕',name:'Carottes rôties au cumin',tag:'R',meal:'Déjeuner',time:'22 min',macros:{kcal:150,p:3,g:22,l:6},
+   ing:['Carottes','Cumin','Huile d\'olive','Sirop d\'agave','Persil'],
+   steps:['Coupe les carottes en bâtonnets, huile + cumin + agave.','Four 200 °C, 20 min.','Persil dessus.'],
+   tip:'Le cumin + l\'agave caramélisent les carottes. Side qui change.'},
+  {id:'riz-pilaf',cat:'side',emoji:'🍚',name:'Riz pilaf parfumé',tag:'E',meal:'Dîner',time:'18 min',macros:{kcal:260,p:6,g:54,l:3},
+   ing:['Riz','1 oignon','Bouillon de volaille','Laurier','Huile d\'olive'],
+   steps:['Nacre le riz avec l\'oignon.','Mouille au bouillon + laurier.','Couvre 12 min, laisse reposer 5 min.'],
+   tip:'Bien plus parfumé que le riz à l\'eau. Base de tous tes bols.'},
+  {id:'sauce-tomate',cat:'sauce',emoji:'🍅',name:'Sauce tomate maison (batch)',tag:'R',meal:'Dîner',time:'25 min',macros:{kcal:90,p:3,g:12,l:4},
+   ing:['400 g pulpe de tomate','1 oignon','3 gousses ail','Laurier','Huile d\'olive','Basilic'],
+   steps:['Fais suer oignon + ail.','Pulpe + laurier, mijote 20 min.','Basilic à la fin.'],
+   tip:'Fais-en un grand pot : base pour pâtes, pizza, shakshuka toute la semaine.'},
+  {id:'chimichurri',cat:'sauce',emoji:'🌿',name:'Chimichurri persil',tag:'E',meal:'Dîner',time:'5 min',macros:{kcal:120,p:1,g:3,l:12},
+   ing:['Persil','2 gousses ail','Huile d\'olive','Vinaigre de riz','Piment'],
+   steps:['Hache finement persil + ail.','Mélange avec huile + vinaigre + piment.'],
+   tip:'La sauce parfaite pour le rumsteak ou le poulet grillé. Se garde 1 semaine.'},
+  {id:'vinaigrette-asia',cat:'sauce',emoji:'🥄',name:'Vinaigrette soja-sésame',tag:'R',meal:'Déjeuner',time:'3 min',macros:{kcal:90,p:1,g:4,l:7},
+   ing:['1 cs sauce soja','1 cs vinaigre de riz','1 cc huile de sésame','1 cc sirop d\'agave','1 gousse ail'],
+   steps:['Mélange tout au fouet.'],
+   tip:'Transforme n\'importe quelle salade ou bol de nouilles. À garder au frigo.'},
+  {id:'energy-balls',cat:'snack',emoji:'⚡',name:'Energy balls avoine-banane',tag:'E',meal:'Collation',time:'10 min',macros:{kcal:200,p:6,g:28,l:8},
+   ing:['Flocons d\'avoine','1 banane','Beurre de cacahuète','Muesli','Sirop d\'agave'],
+   steps:['Écrase la banane, mélange avoine + beurre de cacahuète + agave.','Forme des boules, roule dans le muesli concassé.','Frigo 30 min.'],
+   tip:'Snack pré-séance qui se garde plusieurs jours.'},
+  {id:'ricotta-miel',cat:'snack',emoji:'🍯',name:'Ricotta agave & nectarines',tag:'R',meal:'Collation',time:'4 min',macros:{kcal:260,p:14,g:24,l:12},
+   ing:['Ricotta','Nectarines','Sirop d\'agave','Amandes'],
+   steps:['Mets la ricotta dans un bol.','Nectarines coupées + agave + amandes.'],
+   tip:'Dessert frais et protéiné, façon trattoria.'},
+  {id:'mugcake',cat:'snack',emoji:'🍫',name:'Mug cake protéiné chocolat',tag:'E',meal:'Collation',time:'5 min',macros:{kcal:320,p:28,g:30,l:9},
+   ing:['1 dose whey','1 œuf','1 banane','1 cs flocons d\'avoine','1 cc levure','Lait de chèvre'],
+   steps:['Mélange tout dans un mug.','Micro-ondes 60-90 s.','Laisse tiédir 1 min.'],
+   tip:'Dessert minute, ~28 g de protéines. Surveille la cuisson pour rester moelleux.'},
 ];
 
 // ===== FRIDGE / SHOPPING =====
@@ -1317,6 +1509,90 @@ const WEEK_INFO = [
   {label:'S2 — Progression',rir:'RIR 2 — +2,5 kg ou +reps',badge:'+Charge',extraSets:false},
   {label:'S3 — Surcharge',rir:'RIR 1-2 — +1 série mains',badge:'Volume ↑',extraSets:true},
   {label:'S4 — Intensification',rir:'RIR 0-1 — Proche échec',badge:'Intensité max',extraSets:true},
+];
+
+
+// ===== BIBLIOTHÈQUE DE SÉANCES =====
+const WORKOUT_LIB = [
+  {cat:'Full-body (3x/sem)',icon:'🔄',note:'Idéal si tu t\'entraînes 3 jours/sem ou en reprise. Chaque séance touche tout le corps.',templates:[
+    {name:'Full-body A',focus:'Force générale',equip:'Salle',time:'55 min',ex:[
+      {n:'Squat barre',s:4,r:'6-8'},{n:'Développé couché',s:4,r:'6-8'},{n:'Rowing barre',s:4,r:'8-10'},
+      {n:'Développé militaire',s:3,r:'8-10'},{n:'Curl haltères',s:3,r:'10-12'},{n:'Gainage',s:3,r:'45s'}]},
+    {name:'Full-body B',focus:'Postérieur + tirage',equip:'Salle',time:'55 min',ex:[
+      {n:'Soulevé de terre roumain',s:4,r:'6-8'},{n:'Tractions',s:4,r:'6-10'},{n:'Développé incliné haltères',s:3,r:'8-10'},
+      {n:'Fentes marchées',s:3,r:'10/jambe'},{n:'Élévations latérales',s:3,r:'12-15'},{n:'Relevés de jambes',s:3,r:'12-15'}]},
+    {name:'Full-body C',focus:'Volume + isolation',equip:'Salle',time:'55 min',ex:[
+      {n:'Presse à cuisses',s:4,r:'10-12'},{n:'Tirage poitrine poulie',s:4,r:'10-12'},{n:'Développé haltères',s:3,r:'10-12'},
+      {n:'Leg curl',s:3,r:'12-15'},{n:'Face pull',s:3,r:'15'},{n:'Extension triceps poulie',s:3,r:'12-15'}]},
+  ]},
+  {cat:'Push / Pull / Legs',icon:'⛓️',note:'6 jours/sem (PPL x2) ou 3 jours en rotation. Le split classique pour la prise de muscle.',templates:[
+    {name:'Push (pecs/épaules/triceps)',focus:'Poussée',equip:'Salle',time:'50 min',ex:[
+      {n:'Développé couché barre',s:4,r:'6-8'},{n:'Développé militaire',s:4,r:'8-10'},{n:'Développé incliné haltères',s:3,r:'10-12'},
+      {n:'Élévations latérales',s:4,r:'12-15'},{n:'Dips',s:3,r:'8-12'},{n:'Extension triceps poulie',s:3,r:'12-15'}]},
+    {name:'Pull (dos/biceps)',focus:'Tirage',equip:'Salle',time:'50 min',ex:[
+      {n:'Tractions lestées',s:4,r:'6-10'},{n:'Rowing barre',s:4,r:'8-10'},{n:'Tirage vertical poulie',s:3,r:'10-12'},
+      {n:'Rowing haltère unilatéral',s:3,r:'10-12'},{n:'Face pull',s:3,r:'15'},{n:'Curl barre',s:3,r:'10-12'}]},
+    {name:'Legs (jambes)',focus:'Bas du corps',equip:'Salle',time:'55 min',ex:[
+      {n:'Squat barre',s:4,r:'6-8'},{n:'Soulevé de terre roumain',s:4,r:'8-10'},{n:'Presse à cuisses',s:3,r:'10-12'},
+      {n:'Leg curl',s:3,r:'12-15'},{n:'Mollets debout',s:4,r:'12-15'},{n:'Gainage',s:3,r:'45s'}]},
+  ]},
+  {cat:'Haut / Bas (alternative)',icon:'🔀',note:'Une autre version de ton split actuel, pour varier les exercices.',templates:[
+    {name:'Haut — variante',focus:'Haut du corps',equip:'Salle',time:'50 min',ex:[
+      {n:'Développé incliné barre',s:4,r:'6-8'},{n:'Tractions pronation',s:4,r:'6-10'},{n:'Développé haltères assis',s:3,r:'10-12'},
+      {n:'Tirage horizontal poulie',s:3,r:'10-12'},{n:'Élévations latérales',s:3,r:'12-15'},{n:'Curl marteau',s:3,r:'10-12'},{n:'Extension triceps haltère',s:3,r:'10-12'}]},
+    {name:'Bas — variante',focus:'Bas du corps',equip:'Salle',time:'50 min',ex:[
+      {n:'Hack squat ou goblet squat',s:4,r:'8-10'},{n:'Hip thrust',s:4,r:'8-10'},{n:'Fentes bulgares',s:3,r:'10/jambe'},
+      {n:'Leg extension',s:3,r:'12-15'},{n:'Leg curl assis',s:3,r:'12-15'},{n:'Mollets assis',s:4,r:'15-20'}]},
+  ]},
+  {cat:'Maison / peu de matériel',icon:'🏠',note:'Pour « chez papa » ou quand tu n\'as pas de salle : poids du corps + haltères/élastiques.',templates:[
+    {name:'Haut maison',focus:'Haut du corps',equip:'Haltères/élastique',time:'35 min',ex:[
+      {n:'Pompes (lestées si possible)',s:4,r:'10-20'},{n:'Rowing haltère ou élastique',s:4,r:'10-12'},{n:'Développé haltères',s:3,r:'10-12'},
+      {n:'Élévations latérales haltères',s:3,r:'12-15'},{n:'Curl haltères',s:3,r:'10-12'},{n:'Dips sur chaise',s:3,r:'10-15'}]},
+    {name:'Bas maison',focus:'Bas du corps',equip:'Haltères/poids du corps',time:'35 min',ex:[
+      {n:'Squat gobelet (haltère)',s:4,r:'12-15'},{n:'Fentes marchées',s:3,r:'12/jambe'},{n:'Hip thrust au sol',s:3,r:'15-20'},
+      {n:'Soulevé roumain haltères',s:3,r:'12-15'},{n:'Mollets debout',s:4,r:'15-20'},{n:'Chaise au mur',s:3,r:'45s'}]},
+    {name:'Full-body maison',focus:'Corps entier',equip:'Poids du corps',time:'30 min',ex:[
+      {n:'Squat sauté ou squat',s:4,r:'15'},{n:'Pompes',s:4,r:'12-20'},{n:'Fentes alternées',s:3,r:'12/jambe'},
+      {n:'Superman (lombaires)',s:3,r:'15'},{n:'Gainage',s:3,r:'45s'},{n:'Mountain climbers',s:3,r:'30s'}]},
+  ]},
+  {cat:'Cardio & conditioning',icon:'🔥',note:'À ajouter en fin de séance ou les jours R. Bon pour la récup active et le cardio.',templates:[
+    {name:'HIIT vélo (15 min)',focus:'Cardio intense',equip:'Vélo/rameur',time:'15 min',ex:[
+      {n:'Échauffement facile',s:1,r:'3 min'},{n:'Sprint 20s / repos 40s',s:8,r:'20s'},{n:'Retour au calme',s:1,r:'3 min'}]},
+    {name:'Circuit métabolique',focus:'Full-body cardio',equip:'Poids du corps',time:'20 min',ex:[
+      {n:'Burpees',s:4,r:'10'},{n:'Squat sauté',s:4,r:'15'},{n:'Pompes',s:4,r:'12'},{n:'Mountain climbers',s:4,r:'30s'},{n:'Gainage',s:4,r:'40s'}]},
+    {name:'Finisher (5 min)',focus:'Brûle de fin',equip:'Poids du corps',time:'5 min',ex:[
+      {n:'Mountain climbers',s:3,r:'40s'},{n:'Squat sauté',s:3,r:'20s'},{n:'Gainage',s:3,r:'40s'}]},
+  ]},
+  {cat:'Core / abdos',icon:'🎯',note:'2x/sem en plus de tes séances. Le gainage protège le dos sur les gros lifts.',templates:[
+    {name:'Abdos A',focus:'Gainage + obliques',equip:'Tapis',time:'15 min',ex:[
+      {n:'Gainage planche',s:3,r:'45s'},{n:'Gainage latéral',s:3,r:'30s/côté'},{n:'Relevés de jambes',s:3,r:'12-15'},{n:'Russian twists',s:3,r:'20'}]},
+    {name:'Abdos B',focus:'Grand droit + transverse',equip:'Tapis',time:'15 min',ex:[
+      {n:'Crunch lent',s:3,r:'15-20'},{n:'Hollow hold',s:3,r:'30s'},{n:'Mountain climbers lents',s:3,r:'40s'},{n:'Gainage + relevé bras',s:3,r:'40s'}]},
+  ]},
+  {cat:'Mobilité & récupération',icon:'🧘',note:'Jours de repos ou après séance. Garde les articulations saines sur le long terme.',templates:[
+    {name:'Routine mobilité',focus:'Hanches/épaules/dos',equip:'Tapis',time:'15 min',ex:[
+      {n:'Cat-cow (dos)',s:2,r:'10'},{n:'Ouverture de hanche (90/90)',s:2,r:'8/côté'},{n:'Rotation thoracique',s:2,r:'10/côté'},
+      {n:'Étirement ischios',s:2,r:'30s/jambe'},{n:'Étirement épaules/pecs',s:2,r:'30s'}]},
+  ]},
+  {cat:'Voyage / hôtel',icon:'✈️',note:'Aucun matériel, dans 2 m². Pour ne rien lâcher en déplacement.',templates:[
+    {name:'Full-body hôtel',focus:'Corps entier sans matériel',equip:'Aucun',time:'25 min',ex:[
+      {n:'Squat poids du corps',s:4,r:'20'},{n:'Pompes',s:4,r:'12-20'},{n:'Fentes arrière',s:3,r:'12/jambe'},
+      {n:'Pont fessier',s:3,r:'20'},{n:'Gainage',s:3,r:'45s'},{n:'Superman',s:3,r:'15'}]},
+  ]},
+];
+
+// ===== VARIANTES D'EXERCICES (substitutions) =====
+const EX_SWAPS = [
+  {grp:'Pecs (poussée horizontale)',salle:['Développé couché barre','Développé incliné haltères','Développé à la machine','Écarté poulie'],maison:['Pompes','Pompes déclinées','Pompes lestées (sac à dos)','Écarté haltères au sol']},
+  {grp:'Épaules (poussée verticale)',salle:['Développé militaire barre','Développé haltères assis','Développé à la machine'],maison:['Développé haltères debout','Pike push-ups','Élévations latérales élastique']},
+  {grp:'Dos épais (tirage horizontal)',salle:['Rowing barre','Rowing haltère unilatéral','Tirage horizontal poulie','Rowing T-bar'],maison:['Rowing haltère','Rowing élastique','Rowing sur table (poids du corps)']},
+  {grp:'Dos large (tirage vertical)',salle:['Tractions','Tirage vertical poulie','Tractions assistées'],maison:['Tractions à une barre','Tirage élastique haut','Tractions australiennes']},
+  {grp:'Quadriceps (squat)',salle:['Squat barre','Presse à cuisses','Hack squat','Leg extension'],maison:['Squat gobelet','Fentes','Squat bulgare','Chaise au mur']},
+  {grp:'Ischios/Fessiers (charnière)',salle:['Soulevé de terre roumain','Hip thrust','Leg curl','Good morning'],maison:['Soulevé roumain haltères','Pont fessier','Hip thrust au sol','Nordic curl assisté']},
+  {grp:'Mollets',salle:['Mollets debout machine','Mollets assis','Presse-mollets'],maison:['Mollets debout (marche)','Mollets unilatéral avec haltère']},
+  {grp:'Biceps',salle:['Curl barre','Curl incliné haltères','Curl poulie'],maison:['Curl haltères','Curl élastique','Curl marteau']},
+  {grp:'Triceps',salle:['Extension poulie','Dips','Barre au front'],maison:['Dips sur chaise','Pompes serrées','Extension haltère nuque']},
+  {grp:'Abdos/Core',salle:['Relevés de jambes suspendu','Crunch poulie','Roue abdominale'],maison:['Gainage','Relevés de jambes','Hollow hold','Russian twists']},
 ];
 
 // ========== HELPERS ==========
@@ -2331,6 +2607,62 @@ function saveProgram(){
   closeModal('program-modal');
   renderTraining();
   toast('Programme enregistré ✓');
+}
+
+// ========== BIBLIOTHÈQUE DE SÉANCES ==========
+let libTab='seances', libOpenTpl=null;
+function openLibrary(){libTab='seances';libOpenTpl=null;renderLibrary();openModal('library-modal');}
+function switchLibTab(name){
+  libTab=name;
+  document.querySelectorAll('#lib-tabs .prog-tab').forEach((b,i)=>b.classList.toggle('active',['seances','variantes'][i]===name));
+  renderLibrary();
+}
+function toggleLibTpl(key){libOpenTpl=libOpenTpl===key?null:key;renderLibrary();}
+function renderLibrary(){
+  const el=document.getElementById('lib-content');
+  if(libTab==='variantes'){
+    el.innerHTML='<div style="font-size:12px;color:var(--text3);margin:2px 0 12px;line-height:1.5">Remplace n\'importe quel exercice par une alternative selon ton matériel (salle ou maison). Pratique pour « chez papa ».</div>'+
+      EX_SWAPS.map(g=>`<div class="lib-swap">
+        <div class="lib-swap-grp">${g.grp}</div>
+        <div class="lib-swap-row"><span class="lib-swap-tag">Salle</span> ${g.salle.join(' · ')}</div>
+        <div class="lib-swap-row"><span class="lib-swap-tag" style="background:var(--green-light);color:var(--green)">Maison</span> ${g.maison.join(' · ')}</div>
+      </div>`).join('');
+    return;
+  }
+  const slots=realSessionNames();
+  el.innerHTML='<div style="font-size:12px;color:var(--text3);margin:2px 0 12px;line-height:1.5">Parcours les modèles, puis charge-en un dans une séance de ton programme (tu pourras l\'ajuster ensuite dans « Programme »).</div>'+
+    WORKOUT_LIB.map((c,ci)=>`<div class="lib-cat">
+      <div class="lib-cat-head">${c.icon} ${c.cat}</div>
+      <div class="lib-cat-note">${c.note}</div>
+      ${c.templates.map((t,ti)=>{
+        const key=ci+'-'+ti;const open=libOpenTpl===key;
+        return `<div class="lib-tpl">
+          <div class="lib-tpl-head" onclick="toggleLibTpl('${key}')">
+            <div><div class="lib-tpl-name">${t.name}</div><div class="lib-tpl-meta">${t.focus} · ${t.equip} · ${t.time} · ${t.ex.length} exos</div></div>
+            <i class="ti ti-chevron-${open?'up':'down'}"></i>
+          </div>
+          ${open?`<div class="lib-tpl-body">
+            ${t.ex.map(e=>`<div class="lib-ex"><span>${e.n}</span><span class="lib-ex-sr">${e.s}×${e.r}</span></div>`).join('')}
+            <div class="lib-load-label">Charger dans :</div>
+            <div class="lib-load-row">${slots.map(sl=>`<button class="lib-load-btn" onclick="loadWorkout(${ci},${ti},'${sl}')">${sl}</button>`).join('')}</div>
+          </div>`:''}
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+}
+function loadWorkout(ci,ti,slot){
+  const t=WORKOUT_LIB[ci].templates[ti];
+  if(!t) return;
+  if(!confirm(`Remplacer les exercices de « ${slot} » par « ${t.name} » ?\n(Tes charges déjà saisies restent enregistrées.)`)) return;
+  APP.program[slot]=t.ex.map((e,i)=>({
+    name:e.n, sets:e.s, reps:e.r,
+    rest:i<2?150:75,
+    priority:i<2
+  }));
+  saveState();
+  closeModal('library-modal');
+  renderTraining();
+  toast(`« ${t.name} » chargé dans ${slot} ✓`);
 }
 
 // ========== TIMER ==========
