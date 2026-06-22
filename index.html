@@ -272,7 +272,8 @@ input,textarea,select{font-family:inherit}
 .shop-del{border:none;background:none;color:var(--text3);font-size:15px;padding:0}
 
 /* ADD ROW */
-.add-row{display:flex;gap:8px;padding:0 16px;margin-top:10px}
+.add-row{display:flex;gap:8px;padding:0 16px;margin-top:10px;align-items:stretch}
+.add-row>button{align-self:stretch}
 .add-row .form-input{flex:1}
 .add-row button{padding:0 18px;background:var(--orange);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:600;font-size:20px;flex-shrink:0}
 
@@ -636,7 +637,7 @@ input,textarea,select{font-family:inherit}
           <button class="loc-btn" id="loc-papa" onclick="setLoc('papa')"><i class="ti ti-home"></i> Chez papa</button>
         </div>
         <div class="add-row">
-          <input class="form-input" id="fridge-input" placeholder="Poulet, riz, yaourt… (virgules)" onkeydown="if(event.key==='Enter')addFridgeItems()">
+          <textarea class="form-input" id="fridge-input" rows="2" placeholder="Un ingrédient par ligne (ou séparés par des virgules)&#10;Tu peux coller toute ta liste d'un coup." style="resize:vertical;line-height:1.4" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addFridgeItems();}"></textarea>
           <button onclick="addFridgeItems()">+</button>
         </div>
         <div class="card" style="margin-top:10px">
@@ -2002,15 +2003,20 @@ function setLoc(loc){
 
 function addFridgeItems(){
   const inp=document.getElementById('fridge-input');
-  const raw=inp.value.split(',').map(s=>s.trim()).filter(Boolean);
+  // Protège les virgules à l'intérieur des parenthèses, puis découpe sur retours à la ligne / virgules / points-virgules / puces.
+  let txt=inp.value.replace(/\([^)]*\)/g,m=>m.replace(/,/g,'\u0001'));
+  const raw=txt.split(/[\n;,\u2022]+/)
+    .map(s=>s.replace(/\u0001/g,',').replace(/^[\s\-•*]+/,'').trim())
+    .filter(Boolean);
   if(!raw.length) return;
   const loc=APP.fridge.loc;
+  let added=0;
   raw.forEach(item=>{
-    if(!APP.fridge[loc].some(x=>norm(x)===norm(item))) APP.fridge[loc].push(item);
+    if(!APP.fridge[loc].some(x=>norm(x)===norm(item))){APP.fridge[loc].push(item);added++;}
   });
   inp.value='';
   saveState();renderFridge();renderShopping();renderRecipes();
-  toast(raw.length+' ingrédient(s) ajouté(s)');
+  toast(added+' ingrédient(s) ajouté(s)');
 }
 
 function removeFridgeItem(i){
