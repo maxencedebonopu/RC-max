@@ -5,13 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Recomp Coach — Maxence</title>
 <meta name="theme-color" content="#E8620A">
-<meta name="description" content="Coach recomposition offline de Maxence : nutrition, recettes, séances.">
-<link rel="manifest" href="manifest.webmanifest">
+<meta name="description" content="Coach recomposition de Maxence : nutrition, recettes, séances.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="RecompCoach">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="icon" type="image/png" href="icon-192.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <style>
 :root{
@@ -324,6 +321,30 @@ input,textarea,select{font-family:inherit}
 /* subnav fits 5 items */
 .subnav-btn{font-size:12.5px;padding:9px 2px}
 
+/* FEEDBACK / IDÉES */
+.fb-cats{display:flex;flex-wrap:wrap;gap:6px}
+.fb-cat{padding:7px 11px;border-radius:20px;border:1.5px solid var(--border2);font-size:12.5px;font-weight:600;background:transparent;color:var(--text2)}
+.fb-cat.active{background:var(--orange);border-color:var(--orange);color:#fff}
+.fb-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.fb-item:last-child{border-bottom:none}
+.fb-item-main{flex:1;min-width:0}
+.fb-item-top{font-size:11px;color:var(--text3);font-weight:600;margin-bottom:3px}
+.fb-item-cat{color:var(--orange)}
+.fb-item-text{font-size:13.5px;color:var(--text);line-height:1.5}
+
+/* RESSENTI (séance + nutrition) */
+.fb-pill-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin:12px 0 6px}
+.fb-pills{display:flex;gap:6px;flex-wrap:wrap}
+.fb-pill{padding:7px 13px;border-radius:20px;border:1.5px solid var(--border2);background:transparent;font-size:13px;font-weight:600;color:var(--text2)}
+.fb-pill.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.sess-cue{margin:0 16px;margin-top:12px;background:var(--orange-light);border-radius:var(--radius-sm);padding:10px 12px;font-size:12.5px;color:#7A3A00;line-height:1.5;display:flex;gap:8px;align-items:flex-start}
+.sess-cue i{color:var(--orange);flex-shrink:0;margin-top:1px}
+.sess-fb{padding:14px 16px;border-top:2px solid var(--border)}
+.sess-fb-title{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.feel-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)}
+.feel-row:last-child{border-bottom:none}
+.feel-tag{font-weight:700;text-align:right}
+
 /* TOAST */
 #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;padding:11px 20px;border-radius:24px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:400;max-width:88%;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.2)}
 #toast.show{opacity:.96;transform:translateX(-50%) translateY(0)}
@@ -535,6 +556,7 @@ input,textarea,select{font-family:inherit}
           <div class="macro-row" style="margin-top:8px"><div class="macro-top"><span class="macro-name">Glucides</span><span class="macro-val"><span id="f-g">0</span> / <span id="f-gt">270</span>g</span></div><div class="bar"><div class="bar-fill bar-g" id="f-gbar" style="width:0%"></div></div></div>
           <div class="macro-row" style="margin-top:8px"><div class="macro-top"><span class="macro-name">Lipides</span><span class="macro-val"><span id="f-l">0</span> / <span id="f-lt">65</span>g</span></div><div class="bar"><div class="bar-fill bar-l" id="f-lbar" style="width:0%"></div></div></div>
         </div>
+        <div id="day-feedback"></div>
         <div id="meal-sections" style="margin-top:10px"></div>
       </div>
 
@@ -687,6 +709,9 @@ input,textarea,select{font-family:inherit}
       <div class="section-head" style="margin-top:10px"><span class="section-title">Volume par séance (tonnage estimé)</span></div>
       <div class="chart-card" id="tonnage-chart"></div>
 
+      <div class="section-head" style="margin-top:10px"><span class="section-title">Ressentis récents</span></div>
+      <div class="card" style="margin-top:0" id="feel-summary"></div>
+
       <div class="section-head" style="margin-top:10px"><span class="section-title">Programme — 4 semaines</span></div>
       <div class="prog-week-card" id="prog-weeks"></div>
 
@@ -716,6 +741,20 @@ input,textarea,select{font-family:inherit}
         <button class="btn-secondary" style="margin-top:8px" onclick="document.getElementById('import-file').click()"><i class="ti ti-upload" style="vertical-align:-2px"></i> Importer une sauvegarde</button>
         <div style="font-size:12px;color:var(--text3);margin-top:8px;line-height:1.5">Exporte régulièrement : c'est ta sauvegarde si tu changes d'appareil ou vides le cache.</div>
         <button class="btn-secondary" style="color:var(--red);border-color:var(--red-light);margin-top:8px" onclick="clearData()"><i class="ti ti-trash" style="vertical-align:-2px"></i> Réinitialiser tout</button>
+      </div>
+      <div class="card">
+        <div class="card-header" style="margin-bottom:6px"><div class="card-title">Idées & retours</div></div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.5">Note tout ce que tu veux changer, ajouter ou qui bug. Exporte la liste et envoie-la moi : je la code.</div>
+        <div class="fb-cats" id="fb-cats">
+          <button class="fb-cat active" data-c="Idée" onclick="setFbCat('Idée')">💡 Idée</button>
+          <button class="fb-cat" data-c="Bug" onclick="setFbCat('Bug')">🐞 Bug</button>
+          <button class="fb-cat" data-c="Nutrition" onclick="setFbCat('Nutrition')">🥗 Nutrition</button>
+          <button class="fb-cat" data-c="Séance" onclick="setFbCat('Séance')">💪 Séance</button>
+        </div>
+        <textarea class="form-input" id="fb-input" rows="2" placeholder="ex : ajouter un minuteur sonore sur les repos" style="margin-top:10px;resize:vertical"></textarea>
+        <button class="btn-primary" style="margin-top:10px" onclick="addFeedback()">Ajouter le retour</button>
+        <div id="fb-list" style="margin-top:12px"></div>
+        <button class="btn-secondary" id="fb-export-btn" style="margin-top:4px" onclick="exportFeedback()"><i class="ti ti-file-text" style="vertical-align:-2px"></i> Exporter mes retours (à m'envoyer)</button>
       </div>
     </div>
 
@@ -1081,6 +1120,7 @@ if(!APP.fridge) APP.fridge={loc:'maman',maman:[],papa:[]};
 if(!APP.shopChecked) APP.shopChecked={};
 if(!APP.shopExtra) APP.shopExtra=[];
 if(!APP.startWeight) APP.startWeight=APP.settings.weight;
+if(!APP.feedback) APP.feedback=[];
 
 function getTodayData(){
   const k=todayKey();
@@ -1227,6 +1267,17 @@ function renderFood(){
   document.getElementById('f-eaten').textContent=tot.k;
   document.getElementById('f-target').textContent=tgt.kcal;
 
+  const dfb=data.feedback||{};
+  document.getElementById('day-feedback').innerHTML=`
+    <div class="card" style="margin-top:10px">
+      <div class="card-title" style="margin-bottom:4px">Ressenti du jour</div>
+      <div class="fb-pill-label">Faim</div>
+      <div class="fb-pills">${['Rassasié','OK','Faim'].map(o=>`<button class="fb-pill ${dfb.faim===o?'on':''}" onclick="setDayFeedback('faim','${o}')">${o}</button>`).join('')}</div>
+      <div class="fb-pill-label">Énergie</div>
+      <div class="fb-pills">${['Basse','OK','Haute'].map(o=>`<button class="fb-pill ${dfb.energie===o?'on':''}" onclick="setDayFeedback('energie','${o}')">${o}</button>`).join('')}</div>
+      <textarea class="form-input" rows="2" placeholder="Note : fringales, digestion, sommeil…" oninput="saveDayNote(this.value)" style="margin-top:10px;resize:vertical">${dfb.note||''}</textarea>
+    </div>`;
+
   ['p','g','l'].forEach(m=>{
     const val=tot[m],tval=m==='p'?tgt.p:m==='g'?tgt.g:tgt.l;
     document.getElementById('f-'+m).textContent=val;
@@ -1361,6 +1412,19 @@ function copyYesterdayMeal(mealName){
   items.forEach(f=>today.meals[mealName].push(JSON.parse(JSON.stringify(f))));
   saveState();renderFood();renderHome();
   toast(items.length+' aliment(s) copié(s) d\'hier');
+}
+
+function setDayFeedback(field,val){
+  const d=getTodayData();
+  if(!d.feedback) d.feedback={};
+  d.feedback[field]=(d.feedback[field]===val?'':val);
+  saveState();renderFood();
+}
+function saveDayNote(val){
+  const d=getTodayData();
+  if(!d.feedback) d.feedback={};
+  d.feedback.note=val;
+  saveState();
 }
 
 // ===== EDIT FOOD =====
@@ -1689,12 +1753,22 @@ function renderSession(){
   const sessionKey=`${todayKey()}-${sName}-w${week}`;
   if(!APP.training[sessionKey]) APP.training[sessionKey]={sets:{}};
   const sesData=APP.training[sessionKey];
+  const fb=sesData.feedback||{};
+  const lf=lastSessionFeedback(sName,sessionKey);
+  let cue='';
+  if(lf&&lf.effort){
+    cue=lf.effort==='Facile'?'« Facile » la dernière fois → tente +2,5 kg sur les exos principaux.'
+      :lf.effort==='Correct'?'« Correct » la dernière fois → vise +1 rep ou +2,5 kg.'
+      :lf.effort==='Dur'?'« Dur » la dernière fois → garde les mêmes charges, gagne des reps.'
+      :'« Trop dur » la dernière fois → ne monte pas, soigne la technique et le repos.';
+  }
 
   sc.innerHTML=`<div class="session-card">
     <div class="session-header">
       <div class="session-title">${sName}</div>
       <div class="session-meta">${DAYS[day]} · ${wInfo.label} · ${wInfo.rir}</div>
     </div>
+    ${cue?`<div class="sess-cue"><i class="ti ti-bulb"></i> ${cue}</div>`:''}
     ${exercises.map((ex,ei)=>{
       const extraSet=wInfo.extraSets&&ex.priority;
       const totalSets=ex.sets+(extraSet?1:0);
@@ -1723,7 +1797,38 @@ function renderSession(){
         </table>
       </div>`;
     }).join('')}
+    <div class="sess-fb">
+      <div class="sess-fb-title">Ressenti de la séance</div>
+      <div class="fb-pill-label">Difficulté</div>
+      <div class="fb-pills">${['Facile','Correct','Dur','Trop dur'].map(o=>`<button class="fb-pill ${fb.effort===o?'on':''}" onclick="setSessionFeedback('${sessionKey}','effort','${o}')">${o}</button>`).join('')}</div>
+      <div class="fb-pill-label">Énergie</div>
+      <div class="fb-pills">${['Basse','OK','Haute'].map(o=>`<button class="fb-pill ${fb.energy===o?'on':''}" onclick="setSessionFeedback('${sessionKey}','energy','${o}')">${o}</button>`).join('')}</div>
+      <textarea class="form-input" rows="2" placeholder="Note : douleur, pump, sommeil…" oninput="saveSessionNote('${sessionKey}',this.value)" style="margin-top:10px;resize:vertical">${fb.note||''}</textarea>
+    </div>
   </div>`;
+}
+
+function lastSessionFeedback(sName,currentKey){
+  let best=null;
+  Object.entries(APP.training).forEach(([key,v])=>{
+    if(key===currentKey||!v.feedback||!v.feedback.effort) return;
+    const m=key.match(/^(\d{4}-\d{2}-\d{2})-(.+)-w(\d+)$/);
+    if(!m||m[2]!==sName) return;
+    if(!best||m[1]>best.date) best={date:m[1],effort:v.feedback.effort,energy:v.feedback.energy,note:v.feedback.note};
+  });
+  return best;
+}
+function setSessionFeedback(key,field,val){
+  if(!APP.training[key]) APP.training[key]={sets:{}};
+  if(!APP.training[key].feedback) APP.training[key].feedback={};
+  APP.training[key].feedback[field]=(APP.training[key].feedback[field]===val?'':val);
+  saveState();renderSession();
+}
+function saveSessionNote(key,val){
+  if(!APP.training[key]) APP.training[key]={sets:{}};
+  if(!APP.training[key].feedback) APP.training[key].feedback={};
+  APP.training[key].feedback.note=val;
+  saveState();
 }
 
 function saveSetWeight(sessionKey,setKey,val){
@@ -1849,6 +1954,31 @@ function buildTonnageChart(){
 }
 
 // ========== PROGRESS ==========
+function effortColor(e){return e==='Facile'?'var(--green)':e==='Correct'?'var(--blue)':e==='Dur'?'var(--orange)':'var(--red)';}
+function renderFeelSummary(){
+  const el=document.getElementById('feel-summary');
+  if(!el) return;
+  const sess=Object.entries(APP.training)
+    .filter(([k,v])=>v.feedback&&v.feedback.effort)
+    .map(([k,v])=>{const m=k.match(/^(\d{4}-\d{2}-\d{2})-(.+)-w/);return{date:m?m[1]:k,name:m?m[2]:'',effort:v.feedback.effort,energy:v.feedback.energy};})
+    .sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  const days=Object.entries(APP.days)
+    .filter(([k,d])=>d.feedback&&(d.feedback.faim||d.feedback.energie))
+    .map(([k,d])=>({date:k,faim:d.feedback.faim,energie:d.feedback.energie}))
+    .sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  if(!sess.length&&!days.length){el.innerHTML='<div style="font-size:13px;color:var(--text3);line-height:1.5">Pas encore de ressenti. Note la difficulté de tes séances et ta faim/énergie du jour — c\'est ce qui rendra le programme adaptable.</div>';return;}
+  let html='';
+  if(sess.length){
+    html+='<div class="fb-pill-label" style="margin-top:0">Séances</div>';
+    html+=sess.map(s=>`<div class="feel-row"><span>${s.date.slice(5).split('-').reverse().join('/')} · ${s.name}</span><span class="feel-tag" style="color:${effortColor(s.effort)}">${s.effort}${s.energy?' · '+s.energy:''}</span></div>`).join('');
+  }
+  if(days.length){
+    html+='<div class="fb-pill-label">Nutrition</div>';
+    html+=days.map(d=>`<div class="feel-row"><span>${d.date.slice(5).split('-').reverse().join('/')}</span><span class="feel-tag">${d.faim?'Faim '+d.faim:''}${d.energie?' · Énergie '+d.energie:''}</span></div>`).join('');
+  }
+  el.innerHTML=html;
+}
+
 function renderProgress(){
   const ws=[...APP.weights].sort((a,b)=>a.date.localeCompare(b.date));
   const lastWeight=ws.length?ws[ws.length-1].val:APP.settings.weight;
@@ -1885,6 +2015,7 @@ function renderProgress(){
   document.getElementById('weight-chart').innerHTML=buildWeightChart();
   document.getElementById('waist-chart').innerHTML=buildWaistChart();
   document.getElementById('tonnage-chart').innerHTML=buildTonnageChart();
+  renderFeelSummary();
 
   const pw=document.getElementById('prog-weeks');
   pw.innerHTML=WEEK_INFO.map((w,i)=>{
@@ -1992,6 +2123,66 @@ function clearData(){
   localStorage.removeItem('recomp_state');location.reload();
 }
 
+// ========== FEEDBACK / IDÉES ==========
+let fbCat='Idée';
+const FB_EMOJI={'Idée':'💡','Bug':'🐞','Nutrition':'🥗','Séance':'💪','Autre':'📝'};
+function setFbCat(c){
+  fbCat=c;
+  document.querySelectorAll('.fb-cat').forEach(b=>b.classList.toggle('active',b.dataset.c===c));
+}
+function addFeedback(){
+  const inp=document.getElementById('fb-input');
+  const text=inp.value.trim();
+  if(!text){toast('Écris ton retour d\'abord');return;}
+  APP.feedback.unshift({id:Date.now(),date:todayKey(),cat:fbCat,text});
+  inp.value='';saveState();renderFeedback();toast('Retour ajouté ✓');
+}
+function removeFeedback(id){
+  APP.feedback=APP.feedback.filter(f=>f.id!==id);
+  saveState();renderFeedback();
+}
+function renderFeedback(){
+  const list=document.getElementById('fb-list');
+  if(!list) return;
+  if(!APP.feedback.length){list.innerHTML='<div style="font-size:13px;color:var(--text3);padding:4px 0 8px">Aucun retour pour l\'instant.</div>';return;}
+  list.innerHTML=APP.feedback.map(f=>`
+    <div class="fb-item">
+      <div class="fb-item-main">
+        <div class="fb-item-top">${FB_EMOJI[f.cat]||'📝'} <span class="fb-item-cat">${f.cat}</span> · <span class="fb-item-date">${f.date.split('-').reverse().join('/')}</span></div>
+        <div class="fb-item-text">${f.text.replace(/</g,'&lt;')}</div>
+      </div>
+      <button class="food-delete" onclick="removeFeedback(${f.id})"><i class="ti ti-x"></i></button>
+    </div>`).join('');
+}
+function exportFeedback(){
+  const lines=['RecompCoach — Retours de Maxence ('+todayKey()+')',''];
+  if(APP.feedback.length){
+    lines.push('— Idées & retours app —');
+    APP.feedback.forEach(f=>lines.push(`[${f.cat}] ${f.date.split('-').reverse().join('/')} — ${f.text}`));
+  }
+  const sess=Object.entries(APP.training)
+    .filter(([k,v])=>v.feedback&&(v.feedback.effort||v.feedback.note))
+    .map(([k,v])=>{const m=k.match(/^(\d{4}-\d{2}-\d{2})-(.+)-w/);return{date:m?m[1]:k,name:m?m[2]:'',...v.feedback};})
+    .sort((a,b)=>b.date.localeCompare(a.date)).slice(0,12);
+  if(sess.length){
+    lines.push('','— Ressentis séances —');
+    sess.forEach(s=>lines.push(`${s.date.split('-').reverse().join('/')} ${s.name} : ${s.effort||'—'}${s.energy?', énergie '+s.energy:''}${s.note?' — '+s.note:''}`));
+  }
+  const days=Object.entries(APP.days)
+    .filter(([k,d])=>d.feedback&&(d.feedback.faim||d.feedback.energie||d.feedback.note))
+    .map(([k,d])=>({date:k,...d.feedback}))
+    .sort((a,b)=>b.date.localeCompare(a.date)).slice(0,12);
+  if(days.length){
+    lines.push('','— Ressentis nutrition —');
+    days.forEach(d=>lines.push(`${d.date.split('-').reverse().join('/')} : faim ${d.faim||'—'}, énergie ${d.energie||'—'}${d.note?' — '+d.note:''}`));
+  }
+  if(lines.length<=2){toast('Rien à exporter pour l\'instant');return;}
+  const blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='recomp_retours_'+todayKey()+'.txt';a.click();
+  toast('Retours exportés — envoie-moi le fichier');
+}
+
 // ========== MODAL ==========
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
@@ -2016,12 +2207,8 @@ document.getElementById('s-weight').value=APP.settings.weight;
 document.getElementById('s-kcal-e').value=APP.settings.kcalE;
 document.getElementById('s-kcal-r').value=APP.settings.kcalR;
 document.getElementById('s-prot').value=APP.settings.prot;
+renderFeedback();
 if(!storageAvailable()){setTimeout(()=>toast('⚠ Sauvegarde bloquée par le navigateur — héberge le fichier (Vercel) pour conserver tes données'),600);}
-</script>
-<script>
-if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')){
-  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
-}
 </script>
 </body>
 </html>
