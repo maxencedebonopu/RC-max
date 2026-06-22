@@ -824,6 +824,7 @@ input,textarea,select{font-family:inherit}
         <input type="file" id="import-file" accept="application/json,.json" style="display:none" onchange="importData(event)">
         <button class="btn-secondary" style="margin-top:8px" onclick="document.getElementById('import-file').click()"><i class="ti ti-upload" style="vertical-align:-2px"></i> Importer une sauvegarde</button>
         <button class="btn-secondary" style="margin-top:8px" onclick="exportCSV()"><i class="ti ti-table" style="vertical-align:-2px"></i> Exporter en CSV (Excel / Sheets)</button>
+        <button class="btn-secondary" style="margin-top:8px" onclick="importLensPaste()"><i class="ti ti-flask" style="vertical-align:-2px"></i> Importer un repas depuis Recomp Lens</button>
         <div style="font-size:12px;color:var(--text3);margin-top:8px;line-height:1.5">Exporte régulièrement : c'est ta sauvegarde si tu changes d'appareil ou vides le cache.</div>
         <button class="btn-secondary" style="color:var(--red);border-color:var(--red-light);margin-top:8px" onclick="clearData()"><i class="ti ti-trash" style="vertical-align:-2px"></i> Réinitialiser tout</button>
       </div>
@@ -3050,6 +3051,43 @@ function clearData(){
   localStorage.removeItem('recomp_state');location.reload();
 }
 
+// ========== PONT RECOMP LENS (réception) ==========
+const LENS_MEAL_MAP={'Petit-déj':'Petit-déjeuner','Petit-déjeuner':'Petit-déjeuner','Déjeuner':'Déjeuner','Dîner':'Dîner','Collation':'Collation'};
+function ingestLensCode(code){
+  let payload;
+  try{ payload=JSON.parse(decodeURIComponent(escape(atob(String(code).trim())))); }
+  catch(e){ toast('Code Lens illisible'); return null; }
+  if(!payload||payload.app!=='recomp-lens'||!Array.isArray(payload.items)||!payload.items.length){ toast('Code Lens invalide'); return null; }
+  const meal=LENS_MEAL_MAP[payload.meal]||'Déjeuner';
+  const data=getTodayData();
+  let n=0;
+  payload.items.forEach(it=>{
+    if(!it||!it.name) return;
+    data.meals[meal].push({
+      name:(it.emoji?it.emoji+' ':'')+it.name,
+      qty:(it.grams!=null?it.grams+' g':''),
+      kcal:Math.round(it.kcal||0), p:+(it.p||0), g:+(it.g||0), l:+(it.l||0)
+    });
+    n++;
+  });
+  if(n){ saveState(); renderFood(); renderHome(); }
+  return {n,meal};
+}
+function importFromLens(){
+  const m=(location.hash||'').match(/lens=([^&]+)/);
+  if(!m) return;
+  let r=null;
+  try{ r=ingestLensCode(decodeURIComponent(m[1])); }catch(e){}
+  try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){ location.hash=''; }
+  if(r&&r.n) setTimeout(()=>{ switchPanel('food'); toast(r.n+' aliment(s) reçus de Lens → '+r.meal); },300);
+}
+function importLensPaste(){
+  const code=prompt('Colle ici le code envoyé par Recomp Lens :');
+  if(!code) return;
+  const r=ingestLensCode(code);
+  if(r&&r.n){ switchPanel('food'); toast(r.n+' aliment(s) reçus de Lens → '+r.meal); }
+}
+
 // ========== FEEDBACK / IDÉES ==========
 let fbCat='Idée';
 const FB_EMOJI={'Idée':'💡','Bug':'🐞','Nutrition':'🥗','Séance':'💪','Autre':'📝'};
@@ -3135,6 +3173,7 @@ document.getElementById('s-kcal-e').value=APP.settings.kcalE;
 document.getElementById('s-kcal-r').value=APP.settings.kcalR;
 document.getElementById('s-prot').value=APP.settings.prot;
 renderFeedback();
+importFromLens();
 if(!storageAvailable()){setTimeout(()=>toast('⚠ Sauvegarde bloquée par le navigateur — héberge le fichier (Vercel) pour conserver tes données'),600);}
 </script>
 </body>
