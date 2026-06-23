@@ -462,6 +462,32 @@ input,textarea,select{font-family:inherit}
 #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;padding:11px 20px;border-radius:24px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:400;max-width:88%;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.2)}
 #toast.show{opacity:.96;transform:translateX(-50%) translateY(0)}
 /* ===================== DESKTOP / PC ===================== */
+.recipe-fav{border:none;background:none;font-size:18px;line-height:1;padding:0 4px;flex-shrink:0;cursor:pointer}
+/* ===== OPTIM MOBILE — zones tactiles plus grandes ===== */
+@media (max-width:899px){
+  .recipe-addbtn{padding:10px 14px;font-size:13px}
+  .set-done-btn{width:40px;height:40px;font-size:18px}
+  .set-input{width:72px;padding:10px 6px;font-size:15px}
+  .meal-add-btn{width:36px;height:36px;font-size:22px}
+  .meal-dup-btn{width:36px;height:36px;font-size:16px}
+  .preset-add{width:36px;height:36px;font-size:22px}
+  .food-delete{width:32px;height:32px;font-size:16px}
+  .rfilter{padding:9px 14px;font-size:13px}
+  .recipe-head{padding:16px 14px}
+  .recipe-fav{font-size:23px;padding:6px 8px}
+  .nav-btn{padding:12px 0 10px}
+  .nav-btn i{font-size:24px}
+  .fb-pill{padding:9px 15px;font-size:14px}
+  .shop-check{width:28px;height:28px}
+  .shop-item{padding:14px}
+  .ingr-chip{padding:9px 10px 9px 14px;font-size:14px}
+  .ingr-chip button{font-size:18px;padding:2px 4px}
+  .loc-btn,.subnav-btn,.dt-toggle button{padding:12px}
+  .add-row button{font-size:22px;padding:0 20px}
+  .water-cup{width:34px;height:34px;font-size:18px}
+  .menu-add{width:36px;height:36px}
+  .lib-load-btn,.recipe-addbtn{min-height:40px}
+}
 @media (min-width:900px){
   .app{
     max-width:1180px;height:100vh;
@@ -703,6 +729,7 @@ input,textarea,select{font-family:inherit}
         </div>
         <div class="rfilter-row" id="rfilter-row">
           <button class="rfilter active" data-f="tous" onclick="setRecipeFilter('tous')">Tous</button>
+          <button class="rfilter" data-f="fav" onclick="setRecipeFilter('fav')">❤️ Favoris</button>
           <button class="rfilter" data-f="cuisinable" onclick="setRecipeFilter('cuisinable')">🧊 Cuisinable</button>
           <button class="rfilter" data-f="asia" onclick="setRecipeFilter('asia')">🍜 Asiatique</button>
           <button class="rfilter" data-f="plat" onclick="setRecipeFilter('plat')">Plats</button>
@@ -1539,6 +1566,67 @@ const RECIPES = [
    ing:["1 dose de whey","1 œuf","1 banane","1 cs flocons d'avoine","1 cc levure","50 ml lait de chèvre"],
    steps:['Mélange tout dans un mug.','Micro-ondes 60-90 s.','Laisse tiédir 1 min.'],
    tip:'Dessert minute, ~28 g de protéines. Surveille la cuisson pour rester moelleux.'},
+
+  {id:'skyr-proteine-bowl',cat:'plat',emoji:'🥣',name:'Bowl skyr protéiné (48 g)',tag:'R',meal:'Petit-déjeuner',time:'5 min',macros:{kcal:420,p:48,g:40,l:6},
+   ing:["250 g skyr","1 dose de whey Bulk","40 g flocons d'avoine","100 g fruits rouges","1 cc sirop d'agave"],
+   steps:["Mélange le skyr et la whey jusqu'à une texture crémeuse.","Ajoute les flocons et les fruits rouges.","Filet d'agave."],
+   tip:"~48 g de protéines dès le réveil. La whey épaissit le skyr, texture parfaite."},
+  {id:'omelette-blancs-dinde',cat:'plat',emoji:'🍳',name:'Omelette jambon-épinards (maigre)',tag:'R',meal:'Petit-déjeuner',time:'10 min',macros:{kcal:340,p:46,g:6,l:14},
+   ing:["3 œufs","80 g jambon de poulet","100 g épinards","20 g parmesan","1 cc huile d'olive"],
+   steps:["Fais tomber les épinards à la poêle.","Verse les œufs battus + jambon.","Parmesan, plie quand c'est encore baveux."],
+   tip:"Très protéiné, quasi zéro glucides — idéal les jours repos."},
+  {id:'poulet-brocoli-riz',cat:'plat',emoji:'🍗',name:'Poulet brocoli riz (assiette propre)',tag:'E',meal:'Déjeuner',time:'20 min',macros:{kcal:560,p:55,g:60,l:9},
+   ing:["180 g poulet","200 g brocoli","200 g riz cuit","1 cs sauce soja","1 gousse d'ail","1 cc huile d'olive","1 pincée de piment"],
+   steps:["Cuis le riz et le brocoli vapeur.","Saisis le poulet avec ail + soja + piment.","Assemble."],
+   tip:"Le repas muscu classique : protéines + glucides propres, très peu de gras."},
+  {id:'thon-patate-douce',cat:'plat',emoji:'🐟',name:'Thon, patate douce & petits pois',tag:'E',meal:'Déjeuner',time:'25 min',macros:{kcal:480,p:40,g:55,l:6},
+   ing:["1 boîte de thon (140 g)","1 patate douce (250 g)","100 g petits pois","1 oignon","1 cs huile d'olive","1 pincée de paprika"],
+   steps:["Cubes de patate douce au four 200 °C, 25 min.","Réchauffe les petits pois + oignon.","Mélange le thon, paprika."],
+   tip:"Glucides à index bas + 40 g de protéines. Très rassasiant."},
+  {id:'boeuf-courgettes-riz',cat:'plat',emoji:'🥩',name:'Bœuf 5 %, courgettes & riz',tag:'R',meal:'Dîner',time:'18 min',macros:{kcal:520,p:48,g:45,l:14},
+   ing:["180 g steak haché 5 %","2 courgettes","150 g riz cuit","1 oignon","2 gousses d'ail","1 cs sauce soja"],
+   steps:["Colore le bœuf.","Ajoute courgettes + oignon + ail.","Soja, sers sur riz."],
+   tip:"Le 5 % de MG = un maximum de protéines pour un minimum de calories."},
+  {id:'cabillaud-legumes-citron',cat:'plat',emoji:'🐟',name:'Cabillaud citron & légumes',tag:'R',meal:'Dîner',time:'20 min',macros:{kcal:360,p:42,g:30,l:7},
+   ing:["200 g cabillaud (ou poisson blanc)","2 carottes","100 g petits pois","150 g riz cuit","1/2 citron","1 cs huile d'olive","1 poignée de persil"],
+   steps:["Vapeur ou poêle le cabillaud avec le citron.","Légumes à côté.","Persil."],
+   tip:"Ultra maigre : parfait quand tu veux trancher dans les calories sans avoir faim."},
+  {id:'shake-post-training',cat:'snack',emoji:'🥤',name:'Shake post-training (whey-banane)',tag:'E',meal:'Collation',time:'3 min',macros:{kcal:340,p:33,g:42,l:5},
+   ing:["1 dose de whey Bulk","1 banane","30 g flocons d'avoine","200 ml eau (ou lait de chèvre)"],
+   steps:["Mixe tout.","Bois juste après la séance."],
+   tip:"Protéines rapides + glucides pour recharger. À l'eau si tu surveilles les calories."},
+  {id:'cottage-fruits-miel',cat:'snack',emoji:'🧀',name:'Cottage cheese, fruits & miel',tag:'R',meal:'Collation',time:'3 min',macros:{kcal:230,p:24,g:22,l:5},
+   ing:["200 g cottage cheese","1 nectarine","100 g fruits rouges","1 cc miel"],
+   steps:["Mets le cottage cheese dans un bol.","Fruits + miel dessus."],
+   tip:"24 g de protéines, très peu de gras. Snack rassasiant pour pas cher en calories."},
+  {id:'crevettes-courgettes-ail',cat:'plat',emoji:'🦐',name:'Crevettes ail-courgettes',tag:'R',meal:'Dîner',time:'12 min',macros:{kcal:300,p:34,g:18,l:9},
+   ing:["250 g crevettes","2 courgettes","3 gousses d'ail","1 cs huile d'olive","1/2 citron","1 poignée de persil","1 pincée de piment"],
+   steps:["Saute l'ail + les courgettes.","Ajoute les crevettes 2-3 min.","Citron + persil + piment."],
+   tip:"Très peu de calories pour 34 g de protéines. Ajoute du riz si tu as plus faim."},
+  {id:'pancakes-blancs-avoine',cat:'plat',emoji:'🥞',name:'Pancakes protéinés avoine-whey',tag:'E',meal:'Petit-déjeuner',time:'12 min',macros:{kcal:420,p:38,g:50,l:8},
+   ing:["1 banane","3 œufs","1 dose de whey Bulk","40 g flocons d'avoine","1 cc levure"],
+   steps:["Mixe tout.","Cuis de petites louches 2 min par face.","Sers avec du skyr."],
+   tip:"~38 g de protéines, moelleux, sans farine."},
+  {id:'salade-poulet-pois-chiches',cat:'plat',emoji:'🥗',name:'Salade poulet, pois chiches & tomates',tag:'R',meal:'Déjeuner',time:'12 min',macros:{kcal:460,p:46,g:38,l:12},
+   ing:["180 g poulet","1 boîte de pois chiches (250 g)","2 tomates","1 oignon","1 poignée de persil","1 cs huile d'olive","1/2 citron"],
+   steps:["Saisis ou réchauffe le poulet émincé.","Mélange pois chiches + tomates + oignon.","Huile + citron + persil."],
+   tip:"Froide ou tiède, riche en fibres et protéines, peu de gras."},
+  {id:'saumon-epinards-creme-light',cat:'plat',emoji:'🐟',name:'Saumon épinards (crème de soja)',tag:'E',meal:'Dîner',time:'18 min',macros:{kcal:520,p:40,g:35,l:24},
+   ing:["1 pavé de saumon (150 g)","100 g épinards","100 ml crème de soja","2 gousses d'ail","150 g riz cuit","1/2 citron"],
+   steps:["Saisis le saumon.","Ail + épinards + crème de soja.","Sers sur riz, citron."],
+   tip:"La crème de soja allège la sauce. Oméga-3 + protéines."},
+  {id:'riz-saute-poulet-light',cat:'plat',cuisine:'asia',emoji:'🍚',name:'Riz sauté poulet léger',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:520,p:44,g:62,l:9},
+   ing:["200 g riz cuit froid","180 g poulet","1 œuf","100 g petits pois","1 oignon","1 cs sauce soja","1 cc huile de sésame"],
+   steps:["Brouille l'œuf, réserve.","Saisis le poulet + oignon + petits pois.","Riz froid + soja + sésame + œuf."],
+   tip:"Version protéinée du riz cantonais, peu de gras."},
+  {id:'oeufs-cocotte-epinards',cat:'plat',emoji:'🍳',name:'Œufs cocotte épinards-tomate',tag:'R',meal:'Petit-déjeuner',time:'15 min',macros:{kcal:360,p:28,g:14,l:22},
+   ing:["3 œufs","100 g épinards","100 g pulpe de tomate","20 g parmesan","1 gousse d'ail","2 tranches de pain"],
+   steps:["Base épinards + pulpe de tomate + ail à la poêle.","Casse les œufs dessus, couvre 5-6 min.","Parmesan, sers avec le pain."],
+   tip:"Brunch protéiné réconfortant."},
+  {id:'skyr-glace-whey',cat:'snack',emoji:'🍫',name:'Glace protéinée minute (skyr-whey)',tag:'R',meal:'Collation',time:'5 min + congel',macros:{kcal:240,p:34,g:18,l:3},
+   ing:["200 g skyr","1 dose de whey Bulk","50 g fruits rouges","1 cc sirop d'agave"],
+   steps:["Mélange skyr + whey + agave.","Ajoute les fruits rouges.","Congèle 1-2 h, remue une fois."],
+   tip:"Dessert glacé ~34 g de protéines — parfait en déficit."}
 ];
 
 // ===== FRIDGE / SHOPPING =====
@@ -2291,6 +2379,7 @@ if(!APP.feedback) APP.feedback=[];
 if(!APP.recents) APP.recents=[];
 if(!APP.mealTemplates) APP.mealTemplates=[];
 if(!APP.program) APP.program={};
+if(!APP.favRecipes) APP.favRecipes=[];
 if(!APP.menu) APP.menu={date:'',off:{}};
 if(!APP.calc) APP.calc={};
 
@@ -2451,7 +2540,7 @@ function addWholeMenu(){const menu=getMenuOfDay();let n=0;MENU_SLOTS.forEach(s=>
 
 // ========== CALCULATEUR D'OBJECTIFS ==========
 const ACT_LEVELS=[['Sédentaire (peu/pas de sport)',1.2],['Léger (1-3 j/sem)',1.375],['Modéré (3-5 j/sem)',1.55],['Actif (6-7 j/sem)',1.725],['Très actif (boulot physique + sport)',1.9]];
-const GOALS=[['Sèche',-0.20],['Recomp',-0.02],['Prise',0.10]];
+const GOALS=[['Sèche',-0.20,2.2],['Skinny-fat',-0.12,2.2],['Recomp',-0.02,2.0],['Prise',0.10,1.8]];
 function renderObjectives(){
   const el=document.getElementById('calc-card'); if(!el) return;
   const c=APP.calc||{};
@@ -2487,7 +2576,7 @@ function computeObjectives(){
   const bmr=Math.round(10*w+6.25*h-5*age+(sex==='H'?5:-161));
   const tdee=Math.round(bmr*ACT_LEVELS[actI][1]);
   const target=Math.round(tdee*(1+GOALS[goalI][1])/10)*10;
-  const protKg=goalI===0?2.2:(goalI===1?2.0:1.8);
+  const protKg=GOALS[goalI][2]||2.0;
   const P=Math.round(w*protKg),L=Math.round(w*0.9);
   const G=Math.max(0,Math.round((target-P*4-L*9)/4));
   APP.calc.result={bmr,tdee,target,P,G,L};
@@ -2502,6 +2591,7 @@ function computeObjectives(){
       <div class="cm"><span class="pip" style="background:var(--green)"></span>Gluc.<b>${G} g</b><small>le reste</small></div>
       <div class="cm"><span class="pip" style="background:var(--blue)"></span>Lip.<b>${L} g</b><small>0,9 g/kg</small></div>
     </div>
+    ${GOALS[goalI][0]==='Skinny-fat'?'<div style="font-size:12px;color:#7A3A00;background:var(--orange-light);border-radius:var(--radius-sm);padding:10px 12px;margin-top:10px;line-height:1.5"><strong>Skinny-fat :</strong> léger déficit + protéines hautes (2,2 g/kg) → tu perds du gras tout en construisant du muscle. La balance bougera peu : <strong>fie-toi au tour de taille, au miroir et à tes charges</strong>, pas au poids.</div>':''}
     <button class="btn-primary" style="margin-top:12px" onclick="applyObjectives()">Appliquer à mes objectifs</button>
     <div style="font-size:11px;color:var(--text3);margin-top:8px;line-height:1.5">Appliqué : jour Entraînement = cible, jour Repos ≈ cible −250 kcal (glucides plus bas). Estimation, pas un avis médical.</div>
   </div>`;
@@ -3033,6 +3123,24 @@ function setRecipeFilter(f){
   document.querySelectorAll('.rfilter').forEach(c=>c.classList.toggle('active',c.dataset.f===f));
   renderRecipes();
 }
+function isFavRecipe(id){return (APP.favRecipes||[]).includes(id);}
+function toggleFavRecipe(id,e){
+  if(e) e.stopPropagation();
+  if(!APP.favRecipes) APP.favRecipes=[];
+  const i=APP.favRecipes.indexOf(id);
+  if(i>=0) APP.favRecipes.splice(i,1); else APP.favRecipes.push(id);
+  saveState(); renderRecipes();
+  toast(i>=0?'Retiré des favoris':'Ajouté aux favoris ❤️');
+}
+function cardioFinisher(day){
+  const opts=[
+    '8 min HIIT vélo/rameur : 20 s fort / 40 s calme × 8.',
+    '10 min marche inclinée rapide (tapis 8-12 %) à la fin.',
+    'Circuit 6 min : 30 s burpees / squats sautés / mountain climbers, peu de repos.',
+    '12 min vélo modéré constant (zone 2), respiration contrôlée.'
+  ];
+  return opts[day%opts.length]+' <span style="color:var(--text3)">— ~200-300 kcal brûlées sans entamer la force.</span>';
+}
 function renderRecipes(){
   const list=document.getElementById('recipes-list');
   const si=document.getElementById('recipe-search');
@@ -3041,6 +3149,7 @@ function renderRecipes(){
     if(recipeFilter==='rapide'){const m=parseInt(r.time);if(!(m&&m<=15))return false;}
     else if(recipeFilter==='cuisinable'){if(recipeMatch(r).missing.length>2)return false;}
     else if(recipeFilter==='asia'){if(!ASIA_IDS.includes(r.id)&&r.cuisine!=='asia')return false;}
+    else if(recipeFilter==='fav'){if(!isFavRecipe(r.id))return false;}
     else if(recipeFilter!=='tous'&&recipeCat(r)!==recipeFilter) return false;
     if(q){const hay=norm(r.name+' '+r.ing.join(' '));if(!hay.includes(q))return false;}
     return true;
@@ -3049,7 +3158,7 @@ function renderRecipes(){
   const cnt=document.getElementById('recipes-count');
   if(cnt) cnt.textContent=filtered.length+' recette'+(filtered.length>1?'s':'');
   if(!filtered.length){
-    const msg=recipeFilter==='cuisinable'?'Ajoute des ingrédients dans <strong>Frigo</strong> pour voir ce que tu peux cuisiner maintenant.':'Aucune recette ne correspond.';
+    const msg=recipeFilter==='cuisinable'?'Ajoute des ingrédients dans <strong>Frigo</strong> pour voir ce que tu peux cuisiner maintenant.':recipeFilter==='fav'?'Aucun favori pour l\'instant. Touche le 🤍 sur une recette pour l\'ajouter ici.':'Aucune recette ne correspond.';
     list.innerHTML='<div class="chart-empty" style="padding:24px">'+msg+'</div>';return;
   }
   list.innerHTML=filtered.map(r=>{
@@ -3074,6 +3183,7 @@ function renderRecipes(){
             ${matchBadge}
           </div>
         </div>
+        <button class="recipe-fav" onclick="toggleFavRecipe('${r.id}',event)" title="Favori" aria-label="Favori">${isFavRecipe(r.id)?'❤️':'🤍'}</button>
         <i class="ti ti-chevron-right recipe-chevron"></i>
       </div>
       <div class="recipe-body">
@@ -3271,7 +3381,7 @@ function renderSession(){
     sc.innerHTML=`<div class="rest-card">
       <div class="rest-icon">🌿</div>
       <div class="rest-title">Jour de repos actif</div>
-      <div class="rest-text">LISS optionnel : 20–30 min vélo ou marche inclinée à faible intensité.<br><br>Canicule : sors <strong>avant 10h ou après 19h</strong> seulement. Sinon mobilité et stretching à l'intérieur.<br><br>Priorité : dormir 8h, boire 3L.</div>
+      <div class="rest-text"><strong>Cardio léger (LISS) :</strong> 25–35 min de marche inclinée ou vélo tranquille — parfait pour brûler du gras sans entamer la récup musculaire.<br><br>Vise <strong>8 000–10 000 pas</strong> dans la journée.<br><br>Canicule : sors <strong>avant 10h ou après 19h</strong>. Sinon mobilité + stretching à l'intérieur.<br><br>Priorité : dormir 8h, boire 3 L.</div>
     </div>`;
     document.getElementById('timer-bar').style.display='none';
     return;
@@ -3327,6 +3437,10 @@ function renderSession(){
         </table>
       </div>`;
     }).join('')}
+    <div class="ex-block" style="border-top:2px solid var(--border)">
+      <div class="ex-top"><div class="ex-name"><i class="ti ti-flame" style="color:var(--orange);vertical-align:-2px"></i> Finisher cardio <span style="font-size:11px;color:var(--text3);font-weight:500">· optionnel, perte de gras</span></div></div>
+      <div class="ex-guidance" style="margin-bottom:0;line-height:1.5">${cardioFinisher(day)}</div>
+    </div>
     <div class="sess-fb">
       <div class="sess-fb-title">Ressenti de la séance</div>
       <div class="fb-pill-label">Difficulté</div>
