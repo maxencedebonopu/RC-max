@@ -448,6 +448,16 @@ input,textarea,select{font-family:inherit}
 .calc-macros .cm b{display:block;font-size:17px;color:var(--text);margin-top:3px}
 .calc-macros .cm small{display:block;font-size:9.5px;color:var(--text3);font-weight:500}
 .calc-macros .pip{display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:4px}
+/* ESTIMATEUR (modal) */
+.est-tot{display:flex;gap:8px;margin:10px 0}
+.est-tot>div{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;text-align:center}
+.est-tot b{display:block;font-size:16px;font-weight:700}
+.est-tot span{font-size:10px;color:var(--text3)}
+.est-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:6px;font-size:13px}
+.est-item .est-n{flex:1;font-weight:500}
+.est-item .est-q{color:var(--text3);font-size:12px}
+.est-item .est-k{font-weight:700;color:var(--orange)}
+.est-item.unknown{border-style:dashed;color:var(--text3);font-size:12px;display:block}
 /* TOAST */
 #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;padding:11px 20px;border-radius:24px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:400;max-width:88%;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.2)}
 #toast.show{opacity:.96;transform:translateX(-50%) translateY(0)}
@@ -674,6 +684,14 @@ input,textarea,select{font-family:inherit}
         </div>
         <div id="day-feedback"></div>
         <div id="nut-suggestions"></div>
+        <div class="card" style="margin-top:10px">
+          <div class="card-title" style="margin-bottom:8px"><i class="ti ti-pill" style="font-size:14px;vertical-align:-2px;color:var(--orange)"></i> Compléments du jour</div>
+          <div class="recent-row">
+            <button class="recent-chip" onclick="logSupp('whey')">💪 Whey isolate <span>29g P</span></button>
+            <button class="recent-chip" onclick="logSupp('preworkout')">⚡ Pre-workout</button>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px">À l'eau uniquement. Ajoutés à la Collation en 1 tap.</div>
+        </div>
         <div id="meal-sections" style="margin-top:10px"></div>
       </div>
 
@@ -918,7 +936,8 @@ input,textarea,select{font-family:inherit}
     <div class="modal-title" id="food-modal-title">Ajouter un aliment</div>
     <div class="modal-body">
       <div class="modal-tabs">
-        <button class="modal-tab active" onclick="switchModalTab('presets')">Plan du jour</button>
+        <button class="modal-tab active" onclick="switchModalTab('presets')">Plan</button>
+        <button class="modal-tab" onclick="switchModalTab('estimer')">✦ Estimer</button>
         <button class="modal-tab" onclick="switchModalTab('search')">Recherche</button>
         <button class="modal-tab" onclick="switchModalTab('custom')">Manuel</button>
       </div>
@@ -949,6 +968,12 @@ input,textarea,select{font-family:inherit}
           <div><label class="form-label">Lipides (g)</label><input class="form-input" id="c-l" type="number" placeholder="0"></div>
         </div>
         <button class="btn-primary" onclick="addCustomFood()">Ajouter</button>
+      </div>
+
+      <div class="tab-panel" id="tab-estimer">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:8px;line-height:1.5">Décris ton plat en langage normal — l'app estime kcal + macros, puis ajoute au repas. Idéal pour logger ce que tu veux au cas où.</div>
+        <textarea class="form-input" id="est-input" rows="2" placeholder="ex : 150 g poulet, 100 g riz, filet d'huile d'olive, 1 banane" oninput="estOnInput()" style="resize:vertical"></textarea>
+        <div id="est-result"></div>
       </div>
     </div>
   </div>
@@ -1650,6 +1675,516 @@ const EX_SWAPS = [
   {grp:'Triceps',salle:['Extension poulie','Dips','Barre au front'],maison:['Dips sur chaise','Pompes serrées','Extension haltère nuque']},
   {grp:'Abdos/Core',salle:['Relevés de jambes suspendu','Crunch poulie','Roue abdominale'],maison:['Gainage','Relevés de jambes','Hollow hold','Russian twists']},
 ];
+
+
+// ====== MOTEUR ESTIMATEUR (porte de Lens, isole) ======
+const ESTI=(function(){
+const RAW_FOODS = [
+  // Œufs & laitages
+  ["Œuf","🥚",143,13,1.1,9.5,50,100,["oeuf","oeufs"]],
+  ["Blanc d'œuf","🥚",52,11,0.7,0.2,33,66,["blanc oeuf","blancs oeuf"]],
+  ["Skyr nature","🥛",63,11,4,0.2,0,150,["skyr"]],
+  ["Yaourt grec","🥛",97,9,4,5,0,150,["yaourt grec","grec"]],
+  ["Yaourt nature","🥛",61,4,5,3,125,125,["yaourt","yaourts"]],
+  ["Fromage blanc","🥛",75,8,4,3,0,100,["fromage blanc"]],
+  ["Ricotta","🧀",150,9,3,11,0,50,["ricotta"]],
+  ["Parmesan","🧀",392,36,3,28,0,15,["parmesan"]],
+  ["Mozzarella","🧀",280,22,2,21,125,40,["mozzarella","mozza"]],
+  ["Feta","🧀",264,14,4,21,0,40,["feta"]],
+  ["Cheddar","🧀",403,25,1,33,0,30,["cheddar"]],
+  ["Comté / Gruyère","🧀",410,27,0.5,34,0,30,["comte","gruyere","emmental"]],
+  ["Lait","🥛",47,3.4,4.8,1.6,0,200,["lait"]],
+  ["Lait de chèvre","🥛",60,3,4.5,3.5,0,200,["lait de chevre"]],
+  ["Crème fraîche","🥛",292,2,3,30,0,30,["creme fraiche","creme"]],
+  ["Crème de soja","🥛",180,3,3,17,0,30,["creme de soja","creme soja"]],
+  ["Crème / lait de coco","🥥",230,2,3,24,0,30,["creme de coco","lait de coco","coco"]],
+  ["Beurre","🧈",717,0.9,0.1,81,0,10,["beurre"]],
+  ["Whey (poudre)","💪",380,80,8,6,30,30,["whey","proteine en poudre","proteine poudre"]],
+  // Viandes & charcuterie
+  ["Poulet (blanc)","🍗",165,31,0,3.6,0,150,["poulet","blanc de poulet","escalope de poulet","filet de poulet","escalope"]],
+  ["Cuisse de poulet","🍗",209,26,0,11,0,150,["cuisse de poulet","cuisses de poulet"]],
+  ["Jambon de volaille","🍖",110,18,1,3,30,60,["jambon de poulet","jambon de dinde","jambon de volaille"]],
+  ["Jambon blanc","🍖",120,18,1,5,45,90,["jambon","jambon blanc"]],
+  ["Rumsteak / bœuf","🥩",180,27,0,8,0,150,["rumsteak","boeuf","steak","bavette"]],
+  ["Steak haché 5%","🥩",137,21,0,5,125,125,["steak hache","viande hachee","hache 5"]],
+  ["Porc","🐖",242,27,0,14,0,150,["porc","filet mignon"]],
+  ["Chorizo","🌶️",455,24,2,38,5,30,["chorizo"]],
+  ["Lardons","🥓",290,15,1,25,0,30,["lardon","lardons","bacon"]],
+  ["Saucisse","🌭",300,14,2,26,80,80,["saucisse","merguez"]],
+  ["Dinde","🦃",135,29,0,1.5,0,150,["dinde","escalope de dinde"]],
+  // Poissons
+  ["Saumon","🐟",208,20,0,13,0,150,["saumon","pave de saumon"]],
+  ["Thon nature","🐟",116,26,0,1,0,100,["thon","thon naturel"]],
+  ["Thon à l'huile","🐟",190,25,0,10,0,80,["thon huile","thon a l huile"]],
+  ["Sardines","🐟",208,25,0,11,0,80,["sardine","sardines"]],
+  ["Cabillaud","🐟",82,18,0,0.7,0,150,["cabillaud","colin","lieu","poisson blanc"]],
+  ["Crevettes","🦐",99,24,0,0.3,0,100,["crevette","crevettes","gamba"]],
+  ["Surimi","🦀",95,8,12,1,15,60,["surimi"]],
+  // Féculents / céréales (cuits sauf mention)
+  ["Riz (cuit)","🍚",130,2.7,28,0.3,0,150,["riz","riz basmati","riz blanc","riz complet"]],
+  ["Pâtes (cuites)","🍝",158,6,31,1,0,180,["pate","pates","spaghetti","penne","tagliatelle","linguine","fusilli","macaroni","rigatoni","coquillette"]],
+  ["Nouilles (cuites)","🍜",138,5,25,2,0,180,["nouille","nouilles","udon","ramen","vermicelle"]],
+  ["Pain","🍞",265,9,49,3,30,50,["pain","baguette"]],
+  ["Pain de mie","🍞",270,8,48,5,30,30,["pain de mie","toast"]],
+  ["Wrap / tortilla","🌯",310,8,50,8,60,60,["wrap","tortilla","galette","fajita"]],
+  ["Couscous / semoule","🌾",112,3.8,23,0.6,0,150,["couscous","semoule","boulgour","boulghour"]],
+  ["Quinoa (cuit)","🌾",120,4.4,21,1.9,0,150,["quinoa"]],
+  ["Pomme de terre","🥔",86,2,20,0.1,150,200,["pomme de terre","pommes de terre","patate"]],
+  ["Patate douce","🍠",90,1.6,21,0.1,200,200,["patate douce"]],
+  ["Frites","🍟",312,3.4,41,15,0,150,["frite","frites"]],
+  ["Flocons d'avoine","🥣",370,13,60,7,0,40,["avoine","flocon","flocons","flocons d avoine","porridge"]],
+  ["Muesli / granola","🥣",400,9,60,12,0,50,["muesli","granola"]],
+  ["Pizza","🍕",266,11,33,10,0,300,["pizza"]],
+  // Légumineuses
+  ["Pois chiches","🫘",139,8,20,2.6,0,130,["pois chiche","pois chiches","poischiche"]],
+  ["Lentilles","🫘",116,9,20,0.4,0,150,["lentille","lentilles"]],
+  ["Haricots rouges","🫘",127,8.7,22,0.5,0,150,["haricot rouge","haricots rouges"]],
+  ["Petits pois","🟢",81,5,14,0.4,0,100,["petit pois","petits pois","petitpois"]],
+  ["Haricots verts","🫛",31,1.8,7,0.1,0,150,["haricot vert","haricots verts"]],
+  // Légumes
+  ["Tomate","🍅",18,0.9,3.9,0.2,120,100,["tomate","tomates","pulpe de tomate","pulpe","coulis","passata"]],
+  ["Carotte","🥕",41,0.9,10,0.2,80,80,["carotte","carottes"]],
+  ["Courgette","🥒",17,1.2,3,0.3,200,150,["courgette","courgettes"]],
+  ["Brocoli","🥦",34,2.8,7,0.4,0,150,["brocoli"]],
+  ["Épinards","🥬",23,2.9,3.6,0.4,0,100,["epinard","epinards","pousses"]],
+  ["Oignon","🧅",40,1.1,9,0.1,110,50,["oignon","oignons","echalote"]],
+  ["Ail","🧄",149,6,33,0.5,5,5,["ail","gousse"]],
+  ["Poivron","🫑",31,1,6,0.3,150,100,["poivron","poivrons"]],
+  ["Salade","🥗",15,1.4,3,0.2,0,50,["salade","laitue","roquette","mache"]],
+  ["Concombre","🥒",15,0.7,3.6,0.1,300,100,["concombre"]],
+  ["Champignons","🍄",22,3.1,3.3,0.3,0,100,["champignon","champignons"]],
+  ["Avocat","🥑",160,2,9,15,150,75,["avocat"]],
+  ["Aubergine","🍆",25,1,6,0.2,250,150,["aubergine"]],
+  ["Maïs","🌽",86,3.2,19,1.2,0,80,["mais"]],
+  ["Courge / butternut","🎃",26,1,6,0.1,0,150,["courge","potiron","butternut"]],
+  // Fruits
+  ["Banane","🍌",89,1.1,23,0.3,120,120,["banane","bananes"]],
+  ["Pomme","🍎",52,0.3,14,0.2,150,150,["pomme","pommes"]],
+  ["Orange","🍊",47,0.9,12,0.1,130,130,["orange"]],
+  ["Nectarine / pêche","🍑",44,1,10,0.3,140,140,["nectarine","peche","nectarines"]],
+  ["Fraises","🍓",32,0.7,8,0.3,0,150,["fraise","fraises"]],
+  ["Fruits rouges","🫐",50,1,12,0.5,0,100,["fruits rouges","myrtille","myrtilles","framboise","framboises"]],
+  ["Raisin","🍇",69,0.7,18,0.2,0,100,["raisin"]],
+  ["Kiwi","🥝",61,1.1,15,0.5,75,75,["kiwi"]],
+  ["Mangue","🥭",60,0.8,15,0.4,200,150,["mangue"]],
+  ["Ananas","🍍",50,0.5,13,0.1,0,150,["ananas"]],
+  ["Poire","🍐",57,0.4,15,0.1,160,160,["poire"]],
+  ["Clémentine","🍊",47,0.9,12,0.1,70,70,["clementine","mandarine"]],
+  ["Citron","🍋",29,1.1,9,0.3,90,30,["citron","lime","citron vert"]],
+  ["Datte","🍯",282,2.5,75,0.4,8,30,["datte","dattes"]],
+  // Matières grasses / condiments / sucré
+  ["Huile d'olive","🫒",884,0,0,100,0,10,["huile","huile d olive","huile olive"]],
+  ["Beurre de cacahuète","🥜",588,25,20,50,0,20,["beurre de cacahuete","beurre cacahuete"]],
+  ["Mayonnaise","🥚",680,1,1,75,0,15,["mayo","mayonnaise"]],
+  ["Moutarde","🌭",66,4,5,4,0,10,["moutarde"]],
+  ["Ketchup","🍅",112,1.2,26,0.1,0,15,["ketchup"]],
+  ["Sauce soja","🍶",60,6,6,0,0,15,["sauce soja"]],
+  ["Miel","🍯",304,0.3,82,0,0,20,["miel"]],
+  ["Sirop d'agave / érable","🍯",310,0,76,0,0,20,["agave","sirop","sirop d agave","sirop d erable","gochujang"]],
+  ["Sucre","🍬",400,0,100,0,0,5,["sucre"]],
+  ["Confiture","🍓",250,0.5,60,0.1,0,20,["confiture"]],
+  ["Pâte à tartiner","🍫",539,6,57,31,0,20,["nutella","pate a tartiner"]],
+  ["Chocolat noir","🍫",546,8,46,38,0,20,["chocolat","chocolat noir"]],
+  // Oléagineux & snacks
+  ["Amandes","🌰",579,21,22,50,0,30,["amande","amandes"]],
+  ["Noix","🌰",654,15,14,65,0,30,["noix"]],
+  ["Cacahuètes","🥜",567,26,16,49,0,30,["cacahuete","cacahuetes","arachide"]],
+  ["Noix de cajou","🥜",553,18,30,44,0,30,["cajou","noix de cajou"]],
+  ["Chips","🥔",536,6,53,34,0,30,["chips"]],
+  ["Biscuit / cookie","🍪",480,6,64,22,12,25,["biscuit","cookie","gateau"]],
+  ["Barre protéinée","🍫",350,30,35,10,50,50,["barre proteinee","barre proteine"]],
+  // Boissons
+  ["Jus d'orange","🧃",45,0.7,10,0.2,0,200,["jus d orange","jus orange","jus"]],
+  ["Soda / cola","🥤",42,0,11,0,0,330,["coca","soda","cola"]],
+  ["Bière","🍺",43,0.5,3.6,0,0,250,["biere"]],
+  ["Vin","🍷",83,0.1,2.6,0,0,150,["vin","vin blanc","vin rouge"]],
+  ["Café","☕",2,0.1,0,0,0,200,["cafe"]],
+  // Plats préparés
+  ["Houmous","🫘",177,8,14,10,0,50,["houmous","hummus"]],
+  ["Sushi / maki","🍣",150,5,30,1,0,200,["sushi","maki"]],
+  ["Burger","🍔",250,15,20,12,0,250,["burger","hamburger"]],
+  ["Kebab / durum","🥙",215,15,15,11,0,300,["kebab","durum"]],
+  ["Pancakes","🥞",227,6,28,9,40,120,["pancake","pancakes"]],
+  // ===== Extension : viandes / poissons / végé =====
+  ["Veau","🥩",172,24,0,8,0,150,["veau","escalope de veau"]],
+  ["Agneau","🍖",250,25,0,17,0,150,["agneau","cotelette","gigot"]],
+  ["Magret de canard","🦆",230,20,0,17,0,150,["canard","magret"]],
+  ["Nuggets","🍗",290,15,16,18,18,120,["nugget","nuggets"]],
+  ["Cordon bleu","🍗",240,15,15,13,100,120,["cordon bleu"]],
+  ["Poisson pané","🐟",220,12,15,12,0,120,["poisson pane","panure"]],
+  ["Maquereau","🐟",205,19,0,14,0,120,["maquereau"]],
+  ["Truite","🐟",148,21,0,7,0,150,["truite"]],
+  ["Moules","🦪",86,12,4,2,0,150,["moule","moules"]],
+  ["Tofu","⬜",120,12,2,7,0,100,["tofu"]],
+  ["Tempeh","⬜",190,19,9,11,0,100,["tempeh"]],
+  ["Saucisson","🥓",350,15,2,32,0,40,["saucisson","boudin","rosette"]],
+  // ===== Laitages / œufs =====
+  ["Petit-suisse","🥛",95,8,4,5,60,120,["petit suisse","petits suisses"]],
+  ["Cottage cheese","🧀",98,11,3,4,0,100,["cottage","cottage cheese"]],
+  ["Vache qui rit / Kiri","🧀",260,9,7,22,17,17,["kiri","vache qui rit","fromage fondu"]],
+  ["Chèvre (fromage)","🧀",290,19,1,23,0,30,["chevre","buche de chevre","fromage de chevre"]],
+  ["Roquefort / bleu","🧀",350,19,2,30,0,30,["roquefort","bleu","gorgonzola"]],
+  ["Mascarpone","🧀",430,4,3,44,0,30,["mascarpone"]],
+  ["Glace","🍨",207,3.5,24,11,0,100,["glace","creme glacee"]],
+  ["Lait d'amande","🥛",24,0.5,3,1.1,0,200,["lait d amande","lait amande"]],
+  ["Lait de soja","🥛",42,3.3,1.6,1.8,0,200,["lait de soja","lait soja"]],
+  ["Lait d'avoine","🥛",46,1,7,1.5,0,200,["lait d avoine","lait avoine"]],
+  // ===== Féculents / pains / viennoiseries =====
+  ["Riz (cru)","🍚",350,7,78,1,0,75,["riz cru"]],
+  ["Pâtes (crues)","🍝",350,12,71,1.5,0,80,["pates crues","pate crue"]],
+  ["Gnocchi","🥟",170,4,32,2,0,200,["gnocchi"]],
+  ["Polenta","🌽",85,2,18,0.4,0,150,["polenta"]],
+  ["Pain complet","🍞",247,9,41,3,40,50,["pain complet","pain aux cereales","pain de campagne"]],
+  ["Biscotte","🍞",380,11,72,6,8,16,["biscotte","cracotte"]],
+  ["Brioche","🥐",350,8,52,12,35,50,["brioche"]],
+  ["Croissant","🥐",406,8,46,21,55,55,["croissant"]],
+  ["Pain au chocolat","🥐",414,7,47,22,65,65,["pain au chocolat","chocolatine"]],
+  ["Crêpe","🥞",150,5,20,5,60,80,["crepe","crepes"]],
+  ["Gaufre","🧇",290,6,40,12,80,80,["gaufre"]],
+  // ===== Légumineuses / légumes =====
+  ["Edamame","🫛",120,11,9,5,0,80,["edamame","feve de soja"]],
+  ["Haricots blancs","🫘",139,9,25,0.6,0,150,["haricot blanc","haricots blancs","flageolet","mogette"]],
+  ["Chou-fleur","🥦",25,1.9,5,0.3,0,150,["chou fleur","chou-fleur"]],
+  ["Chou","🥬",27,1.3,6,0.1,0,150,["chou","chou vert","chou rouge"]],
+  ["Poireau","🥬",27,1.5,6,0.3,0,100,["poireau","poireaux"]],
+  ["Céleri","🥬",16,0.7,3,0.2,0,100,["celeri"]],
+  ["Betterave","🟣",43,1.6,10,0.2,0,100,["betterave"]],
+  ["Asperge","🥬",20,2.2,4,0.1,0,120,["asperge","asperges"]],
+  ["Endive","🥬",17,1,4,0.1,80,100,["endive","endives"]],
+  ["Olives","🫒",145,1,4,15,0,30,["olive","olives"]],
+  ["Cornichon","🥒",14,0.7,2,0.1,8,20,["cornichon","cornichons"]],
+  ["Tomate cerise","🍅",18,0.9,3.9,0.2,10,80,["tomate cerise","tomates cerises"]],
+  ["Gingembre","🫚",80,1.8,18,0.8,0,5,["gingembre"]],
+  // ===== Fruits =====
+  ["Pamplemousse","🍊",42,0.8,11,0.1,250,150,["pamplemousse"]],
+  ["Abricot","🍑",48,1.4,11,0.4,35,70,["abricot","abricots"]],
+  ["Prune","🍑",46,0.7,11,0.3,50,100,["prune","prunes"]],
+  ["Cerises","🍒",63,1,16,0.2,0,100,["cerise","cerises"]],
+  ["Melon","🍈",34,0.8,8,0.2,0,150,["melon"]],
+  ["Pastèque","🍉",30,0.6,8,0.2,0,200,["pasteque"]],
+  ["Figue","🍈",74,0.8,19,0.3,50,100,["figue","figues"]],
+  ["Compote","🍎",62,0.3,15,0.1,100,100,["compote"]],
+  ["Raisins secs","🍇",299,3,79,0.5,0,30,["raisin sec","raisins secs"]],
+  ["Pruneaux","🍑",240,2.2,64,0.4,8,40,["pruneau","pruneaux"]],
+  // ===== Sauces / matières grasses =====
+  ["Huile (colza/tournesol)","🛢️",884,0,0,100,0,10,["huile de colza","huile de tournesol","huile vegetale"]],
+  ["Vinaigrette","🥗",450,1,5,47,0,15,["vinaigrette"]],
+  ["Sauce tomate (cuisinée)","🍅",70,1.6,9,3,0,100,["sauce tomate","sauce bolognaise","bolognaise","napolitaine","arrabiata"]],
+  ["Pesto","🌿",450,5,6,45,0,20,["pesto"]],
+  ["Béchamel","🥛",150,4,9,11,0,60,["bechamel","sauce blanche","mornay"]],
+  ["Crème balsamique","🍶",140,0.6,33,0.1,0,10,["balsamique","creme de balsamique","vinaigre balsamique"]],
+  ["Sauce barbecue","🍖",170,1,40,0.5,0,20,["barbecue","sauce bbq"]],
+  ["Sauce kebab","🥙",300,2,8,30,0,30,["sauce blanche kebab","sauce samourai","samourai","sauce algerienne","algerienne"]],
+  ["Tahini","🥣",595,17,21,54,0,15,["tahini","puree de sesame"]],
+  // ===== Oléagineux / graines =====
+  ["Noisettes","🌰",628,15,17,61,0,30,["noisette","noisettes"]],
+  ["Pistaches","🥜",560,20,28,45,0,30,["pistache","pistaches"]],
+  ["Graines (courge/tournesol)","🌻",560,24,20,47,0,20,["graine","graines","graine de courge","graines de tournesol"]],
+  ["Graines de chia","🌱",490,17,42,31,0,15,["chia","graine de chia","graines de chia"]],
+  ["Sésame","⚪",573,18,23,50,0,10,["sesame","graine de sesame"]],
+  ["Beurre d'amande","🥜",614,21,19,56,0,20,["beurre d amande","puree d amande"]],
+  // ===== Snacks / desserts =====
+  ["Bonbons","🍬",350,4,80,1,0,30,["bonbon","bonbons","haribo"]],
+  ["Pain d'épices","🍯",345,5,70,4,30,30,["pain d epices"]],
+  ["Madeleine","🧁",450,6,52,23,25,25,["madeleine","madeleines"]],
+  ["Brownie","🍫",466,6,55,25,50,50,["brownie"]],
+  ["Donut / beignet","🍩",420,5,50,22,60,60,["donut","beignet"]],
+  ["Muffin","🧁",380,5,50,18,70,70,["muffin"]],
+  ["Tarte aux fruits","🥧",250,3,35,11,0,120,["tarte","tarte aux pommes"]],
+  ["Flan / crème dessert","🍮",120,3,20,3,0,100,["flan","creme dessert","danette"]],
+  ["Riz au lait","🍚",130,3.5,22,3,0,120,["riz au lait"]],
+  ["Mousse au chocolat","🍫",230,4,28,11,0,80,["mousse au chocolat","mousse chocolat"]],
+  ["Tiramisu","🍰",270,5,28,15,0,100,["tiramisu"]],
+  ["Cheesecake","🍰",320,6,30,20,0,100,["cheesecake"]],
+  ["Popcorn","🍿",480,9,58,24,0,30,["popcorn"]],
+  ["Crackers / TUC","🍘",490,9,62,22,5,30,["cracker","crackers","tuc","biscuit apero"]],
+  // ===== Boissons =====
+  ["Thé / infusion","🍵",1,0,0,0,0,200,["the","infusion","tisane"]],
+  ["Chocolat chaud","☕",90,3,12,3,0,200,["chocolat chaud"]],
+  ["Smoothie","🥤",55,1,13,0.3,0,250,["smoothie"]],
+  ["Milkshake","🥤",110,3,18,3,0,250,["milkshake"]],
+  ["Energy drink","⚡",45,0,11,0,0,250,["energy drink","red bull","redbull","monster"]],
+  ["Jus de pomme","🧃",46,0.1,11,0.1,0,200,["jus de pomme","jus pomme"]],
+  ["Limonade / ice tea","🥤",38,0,9.5,0,0,250,["limonade","ice tea","the glace","oasis"]],
+  ["Champagne / mousseux","🍾",80,0.2,1.5,0,0,120,["champagne","mousseux","prosecco","cremant"]],
+  ["Spiritueux","🥃",250,0,0,0,0,40,["whisky","vodka","rhum","gin","spiritueux"]],
+  // ===== Plats / fast-food =====
+  ["Tacos / burrito","🌮",230,9,25,10,0,300,["tacos","taco","burrito"]],
+  ["Hot-dog","🌭",250,10,22,13,120,150,["hot dog","hotdog"]],
+  ["Croque-monsieur","🥪",290,15,25,14,0,180,["croque monsieur","croque"]],
+  ["Quiche","🥧",260,9,20,16,0,150,["quiche","quiche lorraine"]],
+  ["Lasagnes","🍝",135,7,12,6,0,300,["lasagne","lasagnes"]],
+  ["Gratin dauphinois","🥔",150,3,15,8,0,200,["gratin","gratin dauphinois","dauphinois"]],
+  ["Hachis parmentier","🥧",120,7,11,5,0,300,["hachis","parmentier","hachis parmentier"]],
+  ["Paella","🥘",160,9,18,5,0,300,["paella"]],
+  ["Risotto","🍚",160,4,25,5,0,250,["risotto"]],
+  ["Curry (plat)","🍛",130,7,12,6,0,300,["curry","tikka","massala"]],
+  ["Chili con carne","🌶️",150,11,12,6,0,300,["chili","chili con carne"]],
+  ["Tajine","🥘",120,8,12,4,0,300,["tajine","tagine"]],
+  ["Sandwich / panini","🥪",250,10,30,9,0,200,["sandwich","panini","baguette jambon"]],
+  ["Bagel","🥯",250,10,48,4,90,90,["bagel"]],
+  ["Poke bowl","🍱",150,9,18,5,0,350,["poke","poke bowl"]],
+  ["Salade César","🥗",180,11,6,12,0,250,["cesar","salade cesar"]],
+  ["Taboulé","🥗",130,3,22,3,0,150,["taboule"]],
+  ["Samoussa / nem","🥟",240,7,25,12,30,60,["samoussa","nem","nems","rouleau de printemps"]],
+  ["Gyoza / ravioli","🥟",180,7,22,7,15,120,["gyoza","ravioli","raviolis","dumpling"]],
+  ["Falafel","🧆",330,13,32,18,20,80,["falafel","falafels"]],
+  ["Omelette","🍳",154,11,1,11,0,150,["omelette","oeufs brouilles","brouilles"]],
+  ["Shakshuka","🍳",95,6,6,5,0,250,["shakshuka"]],
+  ["Soupe / velouté","🍲",40,2,6,1,0,250,["soupe","veloute","potage","minestrone"]],
+];
+
+/* ---------- Normalisation & tokens (repris/affiné de Recomp Coach) ---------- */
+function norm(s){return (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/œ/g,"oe").replace(/æ/g,"ae").trim();}
+function singular(w){ if(w.length<=3) return w; if(/(ois|ers|ars)$/.test(w)) return w; return w.replace(/[sx]$/,""); }
+const FOOD_STOP=new Set("de des du la le les un une et ou en a au aux avec sans dans sur d l environ env mini maxi peu quelque quelques gros grosse grosses petit petite grand grande moyen bien frais fraiche chaud froid cuit cru nature coupe emince hache rape tranche tranches morceau morceaux filet feuille feuilles gousse botte branche brin brins entier entiere demi demie quart portion portions part parts poignee poignees bol bols assiette assiettes verre verres pot pots boite boites dose doses noix pincee pincees trait traits cuillere cuilleres cs cc cl ml g gr kg l mg dl a".split(" "));
+
+function foodTokens(s){
+  let n=norm(s).replace(/\([^)]*\)/g," ");
+  const extra=[];
+  if(/pois\s*chiche/.test(n)) extra.push("poischiche");
+  else if(/petit[s]?\s*pois/.test(n)) extra.push("petitpois");
+  if(/pomme[s]?\s*de\s*terre/.test(n)) extra.push("patate");
+  if(/blanc[s]?\s*d?\s*oeuf/.test(n)) extra.push("blancoeuf");
+  const toks=n.replace(/[0-9]+([.,][0-9]+)?/g," ")
+    .split(/[^a-z]+/)
+    .map(singular)
+    .filter(w=>w.length>=2 && !FOOD_STOP.has(w) && w!=="chiche");
+  return [...new Set([...toks,...extra])];
+}
+
+/* Construire la base + index d'alias (par spécificité décroissante) */
+const FOODS=RAW_FOODS.map((r,i)=>({i,name:r[0],emoji:r[1],kcal:r[2],p:r[3],g:r[4],l:r[5],unit:r[6],portion:r[7],aliases:r[8]||[]}));
+const ALIAS_INDEX=[];
+FOODS.forEach(f=>{
+  const names=[norm(f.name),...f.aliases.map(norm)];
+  names.forEach(a=>{
+    let tk=foodTokens(a);
+    if(a==="poischiche"||a==="petitpois"||a==="blancoeuf") tk=[a];
+    if(tk.length) ALIAS_INDEX.push({f,toks:tk,n:tk.length});
+  });
+});
+ALIAS_INDEX.sort((a,b)=>b.n-a.n);
+
+function matchFood(text){
+  const T=new Set(foodTokens(text));
+  if(!T.size) return null;
+  let best=null,bestScore=0;
+  for(const a of ALIAS_INDEX){
+    if(a.toks.every(t=>T.has(t))){
+      if(a.n>bestScore){best=a.f;bestScore=a.n; if(bestScore>=3)break;}
+    }
+  }
+  if(best) return {food:best,strong:true};
+  // repli : un seul token connu en commun
+  let single=null,sc=0;
+  for(const a of ALIAS_INDEX){
+    const hit=a.toks.filter(t=>T.has(t)).length;
+    if(hit>sc){sc=hit;single=a.f;}
+  }
+  return single?{food:single,strong:false}:null;
+}
+
+/* ---------- Quantités ---------- */
+const NUMWORDS={"un":1,"une":1,"deux":2,"trois":3,"quatre":4,"cinq":5,"six":6,"sept":7,"huit":8,"neuf":9,"dix":10,"onze":11,"douze":12,"treize":13,"quatorze":14,"quinze":15,"seize":16,"vingt":20,"trente":30,"demi":0.5,"demie":0.5,"quart":0.25,"tiers":0.33,"douzaine":12,"dizaine":10};
+const MASS={"g":1,"gr":1,"gramme":1,"grammes":1,"mg":0.001,"kg":1000,"kilo":1000,"l":1000,"litre":1000,"litres":1000,"ml":1,"cl":10,"dl":100};
+const SPOON={"cs":15,"cas":15,"cuillereasoupe":15,"cuilleresasoupe":15,"cuilleresoupe":15,"cc":5,"cac":5,"cuillereacafe":5,"cuilleresacafe":5,"cuillerecafe":5,"cuillere":12,"cuilleres":12};
+const SERVE=new Set(["tranche","tranches","portion","portions","part","parts","poignee","poignees","bol","bols","assiette","assiettes","verre","verres","pot","pots","boite","boites","dose","doses","filet","filets","noix","pincee","pincees","trait","traits"]);
+// mots qui sont AUSSI des aliments : unité seulement si précédés d'un nombre
+const FOOD_UNIT_AMBIG=new Set(["noix","filet"]);
+function unitKey(w){
+  w=w.replace(/s$/,"");
+  const map={gramme:"g",gr:"g",g:"g",mg:"mg",kg:"kg",kilo:"kg",litre:"l",l:"l",ml:"ml",cl:"cl",dl:"dl",
+    cs:"cs",cas:"cs",cc:"cc",cac:"cc",cuillere:"cs",cuiller:"cs",cuilleree:"cs",
+    tranche:"tranche",rondelle:"tranche",portion:"portion",part:"portion",assiette:"assiette",bol:"bol",
+    poignee:"poignee",verre:"verre",pot:"pot",boite:"boite",conserve:"boite",dose:"dose",scoop:"dose",
+    filet:"filet",noix:"noix",pincee:"pincee",trait:"trait"};
+  return map[w]||null;
+}
+
+function parseQty(seg){
+  let s=" "+norm(seg).replace(/(\d),(\d)/g,"$1.$2")+" ";
+  s=s.replace(/½/g," 0.5 ").replace(/¼/g," 0.25 ").replace(/¾/g," 0.75 ").replace(/⅓/g," 0.333 ").replace(/⅔/g," 0.667 ");
+  s=s.replace(/(\d+)\s*\/\s*(\d+)/g,(m,a,b)=>" "+(parseInt(a)/parseInt(b))+" ");
+  let value=null,unit=null;
+  // nombre chiffré + éventuelle unité accolée (100g, 2cs…)
+  let m=s.match(/(?:^|\s)(\d+(?:\.\d+)?)\s*([a-z]+)?/);
+  if(m){ value=parseFloat(m[1]); if(m[2]) unit=m[2]; }
+  // mot-nombre (deux œufs, une banane, un demi…)
+  if(value===null){
+    for(const w in NUMWORDS){ if(new RegExp("(?:^|\\s)"+w+"(?:\\s|$)").test(s)){ value=NUMWORDS[w]; break; } }
+  }
+  // unité isolée si pas trouvée accolée
+  if(!unit){
+    const um=s.match(/(?:^|\s)(kg|kilo|grammes?|gr|g|mg|litres?|ml|cl|dl|l|c[aà]s|cas|c[aà]c|cac|cuilleres?(?:\s*[aà]\s*(?:soupe|cafe))?|tranches?|portions?|parts?|poignees?|bols?|assiettes?|verres?|pots?|bo[iî]tes?|doses?|filets?|pincees?|traits?)(?:\s|$)/);
+    if(um) unit=um[1].replace(/\s+/g,"");
+  }
+  return {value,unit};
+}
+
+function gramsFor(value,unit,food){
+  const u=(unit||"").replace(/\s+/g,"");
+  if(u && MASS[u]!=null) return (value??1)*MASS[u];
+  if(u && SPOON[u]!=null) return (value??1)*SPOON[u];
+  if(u && SERVE.has(u)){
+    const v=value??1;
+    if(u.startsWith("tranche")) return v*(food.unit>0&&food.unit<=60?food.unit:30);
+    if(u.startsWith("portion")||u.startsWith("part")) return v*food.portion;
+    if(u.startsWith("assiette")) return v*food.portion*1.6;
+    if(u.startsWith("bol")) return v*Math.max(food.portion,220);
+    if(u.startsWith("poignee")) return v*30;
+    if(u.startsWith("verre")) return v*200;
+    if(u.startsWith("pot")) return v*(food.portion||125);
+    if(u.startsWith("boite")) return v*(food.portion||130);
+    if(u.startsWith("dose")) return v*(food.unit||food.portion||30);
+    if(u.startsWith("filet")) return v*10;
+    if(u==="noix") return v*15;
+    if(u.startsWith("pincee")) return v*1;
+    if(u.startsWith("trait")) return v*5;
+    return v*food.portion;
+  }
+  // pas d'unité
+  if(value!=null){
+    if(food.unit>0) return value*food.unit;          // comptable : 2 œufs, 1 banane
+    if(value<=8) return value*food.portion;           // « 2 riz » = 2 portions
+    return value;                                     // « 150 riz » = 150 g
+  }
+  return food.unit>0?food.unit:food.portion;          // rien : 1 unité ou 1 portion
+}
+
+/* Découpe le texte en segments (protège décimales & parenthèses) */
+function splitSegments(text){
+  let t=text.replace(/(\d),(\d)/g,"$1·$2");
+  t=t.replace(/\([^)]*\)/g,m=>m.replace(/,/g,"¸"));
+  const parts=t.split(/\n|,|;|\bet\b|\bavec\b|\bpuis\b|\+|&|·{2,}/i);
+  return parts.map(p=>p.replace(/·/g,",").replace(/¸/g,",").trim()).filter(p=>p.length>0 && /[a-zA-Zà-ÿ]/.test(p));
+}
+
+/* ---------- Scanner multi-aliments d'un segment ---------- */
+function scanSegment(seg){
+  let s=" "+norm(seg)+" ";
+  s=s.replace(/cuiller\w*\s*a?\s*soupe/g," cs ").replace(/cuiller\w*\s*a?\s*cafe/g," cc "); // évite de lire « soupe »/« café » comme un plat
+  s=s.replace(/\(([^)]*)\)/g," $1 ");
+  s=s.replace(/(\d),(\d)/g,"$1.$2");
+  s=s.replace(/(\d+)\s*[-aà]\s*(\d+)\s*(kg|g|gr|ml|cl|dl)\b/g,(m,a,b,u)=>" "+((+a+ +b)/2)+" "+u+" "); // 200-300 g → 250
+  s=s.replace(/½/g," 0.5 ").replace(/¼/g," 0.25 ").replace(/¾/g," 0.75 ").replace(/⅓/g," 0.333 ").replace(/⅔/g," 0.667 ");
+  s=s.replace(/(\d+)\s*\/\s*(\d+)/g,(m,a,b)=>" "+(+a/+b)+" ");
+  s=s.replace(/(\d)\s*(kg|kilo|grammes?|gr|mg|ml|cl|dl|g|l)\b/g,"$1 $2 "); // détache l'unité collée (100g → 100 g)
+  s=s.replace(/\bx\s*(\d+)\b/g," $1 ").replace(/\b(\d+)\s*x\b/g," $1 ");
+  const words=s.split(/[^a-z0-9.]+/).filter(Boolean);
+  const foodToks=[], qtys=[];
+  let pNum=null,pIdx=-1;
+  const flush=()=>{ if(pNum!=null){qtys.push({i:pIdx,value:pNum,unit:null});pNum=null;pIdx=-1;} };
+  for(let i=0;i<words.length;i++){
+    const w=words[i];
+    if(/^\d+(\.\d+)?$/.test(w)){ flush(); pNum=parseFloat(w); pIdx=i; continue; }
+    if(NUMWORDS[w]!=null){ flush(); pNum=NUMWORDS[w]; pIdx=i; continue; }
+    let uk=unitKey(w);
+    if(uk && FOOD_UNIT_AMBIG.has(w.replace(/s$/,"")) && pNum==null) uk=null; // « noix »/« filet » = aliment si pas de nombre
+    if(uk){ qtys.push({i,value:pNum,unit:uk}); pNum=null;pIdx=-1; continue; }
+    const c=singular(w);
+    if(c.length>=2 && !FOOD_STOP.has(c) && c!=="chiche") foodToks.push({i,c,m:i});
+    else flush();
+  }
+  flush();
+  // tokens « joints » (positions de masquage uniques pour ne pas entrer en collision)
+  const ns=norm(seg); let jk=9000;
+  const findI=re=>{ const x=words.findIndex(w=>re.test(w)); return x<0?words.length:x; };
+  if(/pois\s*chiche/.test(ns)) foodToks.push({i:findI(/^pois$/),c:"poischiche",m:jk++});
+  else if(/petit[s]?\s*pois/.test(ns)) foodToks.push({i:findI(/^pois$/),c:"petitpois",m:jk++});
+  if(/pomme[s]?\s*de\s*terre/.test(ns)) foodToks.push({i:findI(/^pomme/),c:"patate",m:jk++});
+  if(/blanc[s]?\s*d?\s*oeuf/.test(ns)) foodToks.push({i:findI(/^blanc/),c:"blancoeuf",m:jk++});
+  // détection multi-aliments par masquage (du plus spécifique au plus simple)
+  const masked=new Set(), foundFoods=new Set(), found=[];
+  for(const a of ALIAS_INDEX){
+    if(foundFoods.has(a.f.i)) continue;
+    const picked=[]; let ok=true;
+    for(const t of a.toks){
+      const hit=foodToks.find(ft=>ft.c===t && !masked.has(ft.m) && !picked.includes(ft));
+      if(!hit){ok=false;break;} picked.push(hit);
+    }
+    if(ok){ found.push({food:a.f,idx:Math.min(...picked.map(p=>p.i))}); picked.forEach(p=>masked.add(p.m)); foundFoods.add(a.f.i); }
+  }
+  if(!found.length) return [{raw:seg,unknown:true,food:null,grams:100,kcal:0,p:0,g:0,l:0,value:null,unit:null,conf:0}];
+  found.sort((x,y)=>x.idx-y.idx);
+  // assigne chaque quantité à l'aliment le plus proche (préférence : juste avant)
+  const usedQ=new Set();
+  return found.map(fd=>{
+    let best=-1,bd=1e9;
+    qtys.forEach((q,qi)=>{ if(usedQ.has(qi))return; let d=Math.abs(q.i-fd.idx); if(q.i<fd.idx)d-=0.4; if(d<bd){bd=d;best=qi;} });
+    let value=null,unit=null;
+    if(best>=0 && bd<=6){ usedQ.add(best); value=qtys[best].value; unit=qtys[best].unit; }
+    return buildItem(fd.food,Math.round(gramsFor(value,unit,fd.food)),{raw:seg,value,unit,strong:true});
+  });
+}
+
+/* ---------- Parse complet d'un repas ---------- */
+function parseMeal(text){ return splitSegments(text).flatMap(scanSegment); }
+
+function buildItem(food,grams,extra={}){
+  const f=grams/100;
+  const it={
+    raw:extra.raw||food.name, foodIdx:food.i, food, unknown:false, grams,
+    kcal:Math.round(food.kcal*f), p:+(food.p*f).toFixed(1), g:+(food.g*f).toFixed(1), l:+(food.l*f).toFixed(1),
+    value:extra.value, unit:extra.unit
+  };
+  // confiance : 3 = aliment + quantité explicite ; 2 = quantité déduite ; 1 = match faible
+  let c=2;
+  if(extra.strong===false) c=1;
+  else if(extra.value!=null && extra.unit) c=3;
+  else if(extra.value!=null) c=2;
+  else c=2;
+  it.conf=c;
+  return it;
+}
+
+function recompute(it){ const f=it.grams/100,d=it.food; it.kcal=Math.round(d.kcal*f); it.p=+(d.p*f).toFixed(1); it.g=+(d.g*f).toFixed(1); it.l=+(d.l*f).toFixed(1); }
+return {parseMeal:parseMeal,FOODS:FOODS,matchFood:matchFood,gramsFor:gramsFor,buildItem:buildItem,recompute:recompute};
+})();
+
+// ====== Compléments — log quotidien rapide ======
+const SUPP={
+  whey:{name:"💪 Whey isolate Bulk (à l'eau)",qty:"1 dose · +3g glutamine +3g créatine",kcal:135,p:29,g:2,l:1},
+  preworkout:{name:"⚡ Pre-workout Bulk (à l'eau)",qty:"1 dose · ~30 min avant",kcal:15,p:0,g:3,l:0}
+};
+function logSupp(k){
+  const s=SUPP[k]; if(!s) return;
+  getTodayData().meals['Collation'].push(Object.assign({},s));
+  recordRecent(Object.assign({},s));
+  saveState(); renderFood(); renderHome();
+  toast('Complément ajouté ✓');
+}
+// ====== Estimateur (moteur Lens) dans le modal d'ajout ======
+let estItems=[],estTimer=null;
+function estOnInput(){ clearTimeout(estTimer); estTimer=setTimeout(estScan,250); }
+function estScan(){ const i=document.getElementById('est-input'); const t=i?i.value:''; estItems=t.trim()?ESTI.parseMeal(t):[]; renderEstimator(); }
+function renderEstimator(){
+  const el=document.getElementById('est-result'); if(!el) return;
+  if(!estItems.length){ el.innerHTML=''; return; }
+  const known=estItems.filter(x=>!x.unknown);
+  const T=known.reduce((a,x)=>({k:a.k+x.kcal,p:a.p+x.p,g:a.g+x.g,l:a.l+x.l}),{k:0,p:0,g:0,l:0});
+  el.innerHTML=`
+    <div class="est-tot">
+      <div><b>${Math.round(T.k)}</b><span>kcal</span></div>
+      <div><b>${Math.round(T.p)}g</b><span>P</span></div>
+      <div><b>${Math.round(T.g)}g</b><span>G</span></div>
+      <div><b>${Math.round(T.l)}g</b><span>L</span></div>
+    </div>
+    ${estItems.map(x=>x.unknown
+      ? `<div class="est-item unknown">❓ « ${x.raw} » — non reconnu, ignoré</div>`
+      : `<div class="est-item"><span class="est-n">${x.food.emoji} ${x.food.name}</span><span class="est-q">${x.grams} g</span><span class="est-k">${x.kcal} kcal</span></div>`).join('')}
+    <button class="btn-primary" style="margin-top:10px" onclick="estAdd()">Ajouter au repas (${known.length})</button>`;
+}
+function estAdd(){
+  const known=estItems.filter(x=>!x.unknown);
+  if(!known.length){ toast('Rien à ajouter'); return; }
+  const d=getTodayData();
+  known.forEach(x=>{ const it={name:x.food.emoji+' '+x.food.name,qty:x.grams+' g',kcal:x.kcal,p:x.p,g:x.g,l:x.l}; d.meals[currentMealContext].push(it); recordRecent(it); });
+  saveState(); renderFood(); renderHome(); closeModal('food-modal');
+  toast(known.length+' aliment(s) ajouté(s) à '+currentMealContext);
+  estItems=[]; const ei=document.getElementById('est-input'); if(ei) ei.value='';
+}
+
 
 // ========== HELPERS ==========
 function norm(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
@@ -3379,7 +3914,7 @@ document.querySelectorAll('.modal-overlay').forEach(m=>{
   m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id);});
 });
 function switchModalTab(name){
-  document.querySelectorAll('.modal-tab').forEach((t,i)=>t.classList.toggle('active',['presets','search','custom'][i]===name));
+  document.querySelectorAll('.modal-tab').forEach((t,i)=>t.classList.toggle('active',['presets','estimer','search','custom'][i]===name));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
 }
