@@ -463,6 +463,7 @@ input,textarea,select{font-family:inherit}
 #toast.show{opacity:.96;transform:translateX(-50%) translateY(0)}
 /* ===================== DESKTOP / PC ===================== */
 .recipe-fav{border:none;background:none;font-size:18px;line-height:1;padding:0 4px;flex-shrink:0;cursor:pointer}
+.ex-fav{border:none;background:none;font-size:16px;line-height:1;padding:2px 4px;cursor:pointer;flex-shrink:0}
 /* ===== OPTIM MOBILE — zones tactiles plus grandes ===== */
 @media (max-width:899px){
   .recipe-addbtn{padding:10px 14px;font-size:13px}
@@ -730,6 +731,7 @@ input,textarea,select{font-family:inherit}
         <div class="rfilter-row" id="rfilter-row">
           <button class="rfilter active" data-f="tous" onclick="setRecipeFilter('tous')">Tous</button>
           <button class="rfilter" data-f="fav" onclick="setRecipeFilter('fav')">❤️ Favoris</button>
+          <button class="rfilter" data-f="ete" onclick="setRecipeFilter('ete')">☀️ Été</button>
           <button class="rfilter" data-f="cuisinable" onclick="setRecipeFilter('cuisinable')">🧊 Cuisinable</button>
           <button class="rfilter" data-f="asia" onclick="setRecipeFilter('asia')">🍜 Asiatique</button>
           <button class="rfilter" data-f="plat" onclick="setRecipeFilter('plat')">Plats</button>
@@ -1627,6 +1629,47 @@ const RECIPES = [
    ing:["200 g skyr","1 dose de whey Bulk","50 g fruits rouges","1 cc sirop d'agave"],
    steps:["Mélange skyr + whey + agave.","Ajoute les fruits rouges.","Congèle 1-2 h, remue une fois."],
    tip:"Dessert glacé ~34 g de protéines — parfait en déficit."}
+,
+  {id:'poke-thon-froid',cat:'plat',ete:true,emoji:'🐟',name:'Poke bowl thon froid',tag:'E',meal:'Déjeuner',time:'12 min',macros:{kcal:520,p:42,g:62,l:10},
+   ing:["1 boîte de thon (140 g)","200 g riz cuit froid","1/2 concombre","100 g petits pois (ou edamame)","1 carotte","1 cs sauce soja","1 cc huile de sésame","1 cc graines de sésame"],
+   steps:["Riz froid au fond du bol.","Thon + concombre + carotte + petits pois.","Soja + sésame dessus."],
+   tip:"Frais et complet, zéro cuisson (riz cuit à l'avance). Parfait par forte chaleur."},
+  {id:'gaspacho-skyr',cat:'plat',ete:true,emoji:'🍅',name:'Gaspacho tomate express',tag:'R',meal:'Dîner',time:'10 min',macros:{kcal:220,p:14,g:24,l:7},
+   ing:["400 g pulpe de tomate (ou 4 tomates fraîches)","1/2 concombre","1 oignon","1 gousse d'ail","2 cs skyr","1 cs huile d'olive","1 pincée de piment","1 poignée de persil"],
+   steps:["Mixe tomate + concombre + oignon + ail + huile.","Sel + piment, réfrigère 30 min.","Cuillère de skyr + persil au service."],
+   tip:"Soupe froide ultra rafraîchissante. Le skyr ajoute du crémeux et des protéines."},
+  {id:'salade-pates-froide-thon',cat:'plat',ete:true,emoji:'🍝',name:'Salade de pâtes froide au thon',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:540,p:34,g:68,l:14},
+   ing:["100 g pâtes","1 boîte de thon (140 g)","2 tomates","1/2 concombre","1 oignon","1 poignée de persil","2 cs huile d'olive","1/2 citron"],
+   steps:["Cuis les pâtes, refroidis-les sous l'eau.","Mélange thon + tomates + concombre + oignon.","Huile + citron + persil, au frais."],
+   tip:"Se prépare la veille, meilleure froide. Facile à emporter."},
+  {id:'wrap-frais-poulet',cat:'plat',ete:true,emoji:'🌯',name:'Wrap frais poulet-crudités',tag:'E',meal:'Déjeuner',time:'10 min',macros:{kcal:480,p:42,g:46,l:12},
+   ing:["2 wraps","150 g poulet froid","3 cs skyr","1/2 concombre","1 tomate","1 carotte","1 poignée de persil","1/2 citron"],
+   steps:["Sauce skyr + citron + persil.","Garnis de poulet + crudités râpées.","Roule serré, sers frais."],
+   tip:"Idéal avec un reste de poulet froid. Frais et protéiné."},
+  {id:'salade-riz-poulet-froid',cat:'plat',ete:true,emoji:'🥗',name:'Salade de riz poulet-crudités',tag:'E',meal:'Déjeuner',time:'12 min',macros:{kcal:520,p:44,g:58,l:10},
+   ing:["180 g poulet froid","200 g riz cuit froid","2 tomates","1/2 concombre","1 oignon","1 cs huile d'olive","1/2 citron","1 poignée de persil"],
+   steps:["Mélange riz froid + poulet émincé.","Tomates + concombre + oignon.","Huile + citron + persil."],
+   tip:"Le meal-prep froid parfait pour la canicule."},
+  {id:'smoothie-vert-proteine',cat:'snack',ete:true,emoji:'🥤',name:'Smoothie vert protéiné',tag:'R',meal:'Collation',time:'5 min',macros:{kcal:280,p:30,g:34,l:4},
+   ing:["1 dose de whey Bulk","1 banane","100 g épinards","200 g skyr","200 ml eau glacée"],
+   steps:["Mixe tout avec des glaçons.","Bois bien frais."],
+   tip:"30 g de protéines, des légumes cachés, ultra frais."},
+  {id:'concombre-skyr-menthe',cat:'side',ete:true,emoji:'🥒',name:'Concombre skyr-menthe (tzatziki)',tag:'R',meal:'Collation',time:'8 min',macros:{kcal:120,p:12,g:10,l:3},
+   ing:["1 concombre","150 g skyr","1 gousse d'ail","1/2 citron","1 poignée de menthe ou persil","1 pincée de sel"],
+   steps:["Râpe le concombre, égoutte.","Mélange skyr + ail + citron + herbes.","Au frais 10 min."],
+   tip:"Façon tzatziki protéiné. En accompagnement ou en dip de crudités."},
+  {id:'salade-pois-chiches-frais',cat:'plat',ete:true,emoji:'🥗',name:'Salade pois chiches-tomates fraîche',tag:'R',meal:'Déjeuner',time:'10 min',macros:{kcal:420,p:20,g:48,l:16},
+   ing:["1 boîte de pois chiches (250 g)","2 tomates","1/2 concombre","1 oignon","1 poignée de persil","2 cs huile d'olive","1/2 citron","1 pincée de cumin"],
+   steps:["Égoutte les pois chiches.","Tomates + concombre + oignon en dés.","Huile + citron + cumin + persil."],
+   tip:"Fraîche et riche en fibres. Ajoute une boîte de thon pour plus de protéines."},
+  {id:'taboule-citron-frais',cat:'plat',ete:true,emoji:'🌿',name:'Taboulé citron-persil frais',tag:'R',meal:'Déjeuner',time:'12 min',macros:{kcal:380,p:12,g:62,l:9},
+   ing:["150 g couscous","2 tomates","1/2 concombre","1 oignon","1 grosse botte de persil","2 cs huile d'olive","jus d'1 citron"],
+   steps:["Gonfle le couscous, laisse refroidir.","Beaucoup de persil + tomates + concombre.","Citron + huile, au frais 1 h."],
+   tip:"Le vrai taboulé libanais : surtout des herbes. Meilleur bien frais."},
+  {id:'bowl-skyr-fruits-ete',cat:'snack',ete:true,emoji:'🍓',name:"Bowl skyr glacé fruits d'été",tag:'R',meal:'Collation',time:'5 min',macros:{kcal:300,p:28,g:38,l:4},
+   ing:["250 g skyr","1 dose de whey Bulk (option)","1 nectarine","100 g fruits rouges","1 cc miel","quelques glaçons pilés"],
+   steps:["Skyr (+ whey) bien froid dans un bol.","Nectarine + fruits rouges + glaçons pilés.","Filet de miel."],
+   tip:"Dessert glacé protéiné, parfait quand il fait chaud."}
 ];
 
 // ===== FRIDGE / SHOPPING =====
@@ -2380,6 +2423,7 @@ if(!APP.recents) APP.recents=[];
 if(!APP.mealTemplates) APP.mealTemplates=[];
 if(!APP.program) APP.program={};
 if(!APP.favRecipes) APP.favRecipes=[];
+if(!APP.favExos) APP.favExos=[];
 if(!APP.menu) APP.menu={date:'',off:{}};
 if(!APP.calc) APP.calc={};
 
@@ -3124,6 +3168,17 @@ function setRecipeFilter(f){
   renderRecipes();
 }
 function isFavRecipe(id){return (APP.favRecipes||[]).includes(id);}
+function isFavExo(n){return (APP.favExos||[]).includes(n);}
+function toggleFavExo(n,e){
+  if(e) e.stopPropagation();
+  if(!APP.favExos) APP.favExos=[];
+  const i=APP.favExos.indexOf(n);
+  if(i>=0) APP.favExos.splice(i,1); else APP.favExos.push(n);
+  saveState(); renderSession();
+  toast(i>=0?'Retiré des favoris':'Exercice ajouté aux favoris ❤️');
+}
+const ETE_IDS=['salade-thon-pc','wrap-thon','taboule-thon','salade-medit','cucumber-salad','carrot-ribbon','larb','nouilles-froides','skyr-nectarine','smoothie-banane','smoothie-bowl','ricotta-miel','cottage-fruits-miel','skyr-glace-whey','skyr-proteine-bowl','salade-poulet-pois-chiches','houmous','yogurt-clusters','sauce-skyr'];
+function isEte(r){return r.ete===true||ETE_IDS.includes(r.id);}
 function toggleFavRecipe(id,e){
   if(e) e.stopPropagation();
   if(!APP.favRecipes) APP.favRecipes=[];
@@ -3150,6 +3205,7 @@ function renderRecipes(){
     else if(recipeFilter==='cuisinable'){if(recipeMatch(r).missing.length>2)return false;}
     else if(recipeFilter==='asia'){if(!ASIA_IDS.includes(r.id)&&r.cuisine!=='asia')return false;}
     else if(recipeFilter==='fav'){if(!isFavRecipe(r.id))return false;}
+    else if(recipeFilter==='ete'){if(!isEte(r))return false;}
     else if(recipeFilter!=='tous'&&recipeCat(r)!==recipeFilter) return false;
     if(q){const hay=norm(r.name+' '+r.ing.join(' '));if(!hay.includes(q))return false;}
     return true;
@@ -3158,7 +3214,7 @@ function renderRecipes(){
   const cnt=document.getElementById('recipes-count');
   if(cnt) cnt.textContent=filtered.length+' recette'+(filtered.length>1?'s':'');
   if(!filtered.length){
-    const msg=recipeFilter==='cuisinable'?'Ajoute des ingrédients dans <strong>Frigo</strong> pour voir ce que tu peux cuisiner maintenant.':recipeFilter==='fav'?'Aucun favori pour l\'instant. Touche le 🤍 sur une recette pour l\'ajouter ici.':'Aucune recette ne correspond.';
+    const msg=recipeFilter==='cuisinable'?'Ajoute des ingrédients dans <strong>Frigo</strong> pour voir ce que tu peux cuisiner maintenant.':recipeFilter==='fav'?'Aucun favori pour l\'instant. Touche le 🤍 sur une recette pour l\'ajouter ici.':recipeFilter==='ete'?'Aucune recette d\'été ne correspond.':'Aucune recette ne correspond.';
     list.innerHTML='<div class="chart-empty" style="padding:24px">'+msg+'</div>';return;
   }
   list.innerHTML=filtered.map(r=>{
@@ -3427,7 +3483,10 @@ function renderSession(){
       return `<div class="ex-block">
         <div class="ex-top">
           <div class="ex-name">${ex.name}</div>
-          ${ex.priority?`<span class="ex-tag">Principal</span>`:''}
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            ${ex.priority?`<span class="ex-tag">Principal</span>`:''}
+            <button class="ex-fav" onclick="toggleFavExo('${ex.name.replace(/'/g,"\\'")}',event)" title="Exercice favori" aria-label="Favori">${isFavExo(ex.name)?'❤️':'🤍'}</button>
+          </div>
         </div>
         ${last?`<div class="ex-last"><i class="ti ti-history" style="font-size:13px;vertical-align:-2px"></i> Dernière fois : <strong>${last.weight} kg</strong> · ${last.date.slice(5).split('-').reverse().join('/')}</div>`:''}
         <div class="ex-guidance">Repos : ${ex.rest>=120?Math.floor(ex.rest/60)+'–3 min':'60–90s'}</div>
