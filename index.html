@@ -898,6 +898,18 @@ input,textarea,select{font-family:inherit}
         <button class="btn-secondary" style="color:var(--red);border-color:var(--red-light);margin-top:8px" onclick="clearData()"><i class="ti ti-trash" style="vertical-align:-2px"></i> Réinitialiser tout</button>
       </div>
       <div class="card">
+        <div class="card-header" style="margin-bottom:6px"><div class="card-title">☁ Synchronisation tél ↔ PC</div></div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.5">Mets le <strong>même code</strong> sur ton téléphone et ton PC → tes données se synchronisent toutes seules. (Nécessite le stockage Vercel activé — voir le guide.)</div>
+        <label class="form-label">Code de sync (identique sur tes 2 appareils)</label>
+        <input class="form-input" id="sync-code" placeholder="ex : maxence-7392" onchange="setSyncCode(this.value)">
+        <button class="btn-primary" id="sync-toggle-btn" style="margin-top:12px" onclick="toggleSync()">Activer la sync auto</button>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn-secondary" style="margin-top:0;flex:1" onclick="syncPushNow()"><i class="ti ti-cloud-up" style="vertical-align:-2px"></i> Envoyer</button>
+          <button class="btn-secondary" style="margin-top:0;flex:1" onclick="syncPullNow()"><i class="ti ti-cloud-down" style="vertical-align:-2px"></i> Récupérer</button>
+        </div>
+        <div id="sync-status" style="font-size:12px;color:var(--text3);margin-top:8px"></div>
+      </div>
+      <div class="card">
         <div class="card-header" style="margin-bottom:6px"><div class="card-title">Idées & retours</div></div>
         <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.5">Note tout ce que tu veux changer, ajouter ou qui bug. Exporte la liste et envoie-la moi : je la code.</div>
         <div class="fb-cats" id="fb-cats">
@@ -2198,7 +2210,69 @@ function getDay(){const d=new Date().getDay();return d===0?6:d-1;}
 let STORAGE_OK=true;
 function storageAvailable(){try{const t='__rc_test__';localStorage.setItem(t,'1');localStorage.removeItem(t);return true;}catch{return false;}}
 function loadState(){try{return JSON.parse(localStorage.getItem('recomp_state'))||{}}catch{return{}}}
-function saveState(){try{localStorage.setItem('recomp_state',JSON.stringify(APP));}catch{STORAGE_OK=false;}}
+function saveState(){try{localStorage.setItem('recomp_state',JSON.stringify(APP));}catch{STORAGE_OK=false;} syncPush();}
+
+// ====== SYNC CLOUD (téléphone ↔ PC via /api/sync) ======
+var SYNC={on:false,code:''};
+try{const _sr=localStorage.getItem('recomp_sync'); if(_sr) SYNC=Object.assign(SYNC,JSON.parse(_sr));}catch(e){}
+var _syncTimer=null;
+function saveSyncCfg(){ try{localStorage.setItem('recomp_sync',JSON.stringify(SYNC));}catch(e){} }
+function setSyncStatus(t){ const el=document.getElementById('sync-status'); if(el) el.textContent=t; }
+function ensureAppDefaults(){
+  if(!APP.settings) APP.settings={weight:68,kcalE:2300,kcalR:2000,prot:160};
+  ['days','training','water','program','menu','calc','shopChecked'].forEach(k=>{if(!APP[k])APP[k]={};});
+  ['weights','waist','feedback','recents','mealTemplates','shopExtra'].forEach(k=>{if(!APP[k])APP[k]=[];});
+  if(!APP.fridge) APP.fridge={loc:'maman',maman:[],papa:[]};
+  if(APP.currentWeek==null) APP.currentWeek=0;
+  if(APP.selectedTrainDay==null) APP.selectedTrainDay=getDay();
+}
+function refreshAll(){ try{renderHome();renderFood();renderTraining();renderProgress();renderMenu();}catch(e){} }
+function syncPush(){
+  if(!SYNC||!SYNC.on||!SYNC.code) return;
+  clearTimeout(_syncTimer);
+  _syncTimer=setTimeout(()=>{
+    APP._syncTs=Date.now();
+    try{localStorage.setItem('recomp_state',JSON.stringify(APP));}catch(e){}
+    fetch('/api/sync?key='+encodeURIComponent(SYNC.code),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({app:APP,ts:APP._syncTs})})
+      .then(()=>setSyncStatus('Sauvegardé en ligne ✓ '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})))
+      .catch(()=>setSyncStatus('Hors ligne — renvoi auto plus tard'));
+  },1500);
+}
+async function syncPull(silent){
+  if(!SYNC||!SYNC.on||!SYNC.code) return false;
+  try{
+    const r=await fetch('/api/sync?key='+encodeURIComponent(SYNC.code));
+    const j=await r.json();
+    if(j&&j.ok&&j.data&&j.data.app){
+      const remote=j.data;
+      if((remote.ts||0)>(APP._syncTs||0)){
+        APP=remote.app; ensureAppDefaults(); APP._syncTs=remote.ts;
+        try{localStorage.setItem('recomp_state',JSON.stringify(APP));}catch(e){}
+        refreshAll();
+        setSyncStatus('À jour — récupéré du cloud ✓');
+        if(!silent) toast('Synchronisé depuis le cloud ⬇');
+        return true;
+      }
+      setSyncStatus('À jour ✓');
+    } else if(j&&j.ok){ setSyncStatus('Connecté — rien en ligne encore'); }
+    else { setSyncStatus('Réponse inattendue du serveur'); }
+  }catch(e){ setSyncStatus('Connexion impossible (déploie /api/sync + stockage)'); }
+  return false;
+}
+function setSyncCode(v){ SYNC.code=(v||'').trim(); saveSyncCfg(); }
+function toggleSync(){ SYNC.on=!SYNC.on; saveSyncCfg(); renderSyncCard(); if(SYNC.on){ if(!SYNC.code){toast('Mets d\'abord un code de sync');return;} syncPull(false); toast('Sync activée'); } else toast('Sync coupée'); }
+function syncPushNow(){ if(!SYNC.code){toast('Mets un code de sync');return;} SYNC.on=true; saveSyncCfg(); renderSyncCard(); APP._syncTs=Date.now(); try{localStorage.setItem('recomp_state',JSON.stringify(APP));}catch(e){} setSyncStatus('Envoi…'); fetch('/api/sync?key='+encodeURIComponent(SYNC.code),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({app:APP,ts:APP._syncTs})}).then(r=>r.json()).then(()=>{setSyncStatus('Envoyé ✓');toast('Données envoyées ☁');}).catch(()=>{setSyncStatus('Échec — vérifie /api/sync + le stockage Vercel');toast('Échec de l\'envoi');}); }
+async function syncPullNow(){ if(!SYNC.code){toast('Mets un code de sync');return;} SYNC.on=true; saveSyncCfg(); renderSyncCard(); setSyncStatus('Récupération…'); const ok=await syncPull(false); if(!ok) toast('Rien de plus récent en ligne'); }
+function renderSyncCard(){
+  const b=document.getElementById('sync-toggle-btn');
+  if(b){ b.textContent=SYNC.on?'✓ Sync auto activée (couper)':'Activer la sync auto'; b.style.background=SYNC.on?'var(--green)':'var(--orange)'; }
+  const ci=document.getElementById('sync-code'); if(ci&&document.activeElement!==ci) ci.value=SYNC.code||'';
+}
+function syncInit(){
+  renderSyncCard();
+  if(SYNC.on&&SYNC.code) syncPull(true);
+  if(!window._syncHooked){ window._syncHooked=true; document.addEventListener('visibilitychange',()=>{ if(!document.hidden) syncPull(true); }); }
+}
 
 let APP = loadState();
 if(!APP.settings) APP.settings={weight:68,kcalE:2300,kcalR:2000,prot:160};
@@ -3933,6 +4007,7 @@ document.getElementById('s-kcal-r').value=APP.settings.kcalR;
 document.getElementById('s-prot').value=APP.settings.prot;
 renderFeedback();
 importFromLens();
+syncInit();
 if(!storageAvailable()){setTimeout(()=>toast('⚠ Sauvegarde bloquée par le navigateur — héberge le fichier (Vercel) pour conserver tes données'),600);}
 </script>
 </body>
