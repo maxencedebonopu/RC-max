@@ -409,6 +409,45 @@ input,textarea,select{font-family:inherit}
 .lib-swap-row{font-size:12.5px;color:var(--text2);line-height:1.5;margin-bottom:3px}
 .lib-swap-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px;background:var(--orange-light);color:var(--orange);margin-right:4px}
 
+/* MENU DU JOUR */
+.menu-head{display:flex;align-items:center;justify-content:space-between;margin:12px 16px 0}
+.menu-title{font-size:17px;font-weight:700}
+.menu-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.menu-refresh{width:38px;height:38px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:var(--orange);font-size:18px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center}
+.menu-totals{display:flex;gap:8px;margin:10px 16px 0}
+.menu-totals>div{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px;text-align:center;box-shadow:var(--shadow)}
+.menu-totals b{display:block;font-size:17px;font-weight:700}
+.menu-totals span{font-size:10px;color:var(--text3)}
+.menu-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin:10px 16px 0;padding:12px 14px;box-shadow:var(--shadow)}
+.menu-slot{font-size:11px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.menu-reco{display:flex;align-items:center;gap:12px}
+.menu-emoji{width:44px;height:44px;border-radius:var(--radius-sm);background:var(--orange-light);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.menu-info{flex:1;min-width:0}
+.menu-name{font-size:15px;font-weight:700}
+.menu-macro{font-size:12px;color:var(--text3);margin-top:2px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.menu-empty{font-size:13px;color:var(--text3);padding:6px 0}
+.menu-actions{display:flex;gap:6px;margin-top:10px}
+.menu-btn{flex:1;padding:8px;border-radius:var(--radius-sm);font-size:12.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px;border:1.5px solid var(--border)}
+.menu-btn.alt{background:var(--surface2);color:var(--text2)}
+.menu-btn.add{background:var(--orange);color:#fff;border-color:var(--orange)}
+.menu-btn i{font-size:15px}
+/* CALCULATEUR D'OBJECTIFS */
+.calc-seg{display:flex;gap:6px}
+.calc-seg button{flex:1;padding:9px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:transparent;font-size:13px;font-weight:600;color:var(--text2)}
+.calc-seg button.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:4px}
+.calc-grid label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.03em;display:flex;flex-direction:column;gap:4px}
+.calc-lab{display:block;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.03em;margin:12px 0 6px}
+.calc-out{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+.calc-row{display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:4px 0;color:var(--text2)}
+.calc-row b{color:var(--text);font-weight:700}
+.calc-row.big{font-size:16px;border-top:1px dashed var(--border);border-bottom:1px dashed var(--border);padding:8px 0;margin:4px 0}
+.calc-row.big b{color:var(--orange);font-size:18px}
+.calc-macros{display:flex;gap:8px;margin-top:12px}
+.calc-macros .cm{flex:1;background:var(--surface2);border-radius:var(--radius-sm);padding:10px 8px;text-align:center;font-size:11px;color:var(--text3);font-weight:600}
+.calc-macros .cm b{display:block;font-size:17px;color:var(--text);margin-top:3px}
+.calc-macros .cm small{display:block;font-size:9.5px;color:var(--text3);font-weight:500}
+.calc-macros .pip{display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:4px}
 /* TOAST */
 #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;padding:11px 20px;border-radius:24px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:400;max-width:88%;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.2)}
 #toast.show{opacity:.96;transform:translateX(-50%) translateY(0)}
@@ -604,15 +643,21 @@ input,textarea,select{font-family:inherit}
       </div>
 
       <div class="subnav">
-        <button class="subnav-btn active" data-sub="journal" onclick="switchNutSub('journal')">Journal</button>
+        <button class="subnav-btn active" data-sub="menu" onclick="switchNutSub('menu')">Menu</button>
+        <button class="subnav-btn" data-sub="journal" onclick="switchNutSub('journal')">Journal</button>
         <button class="subnav-btn" data-sub="recettes" onclick="switchNutSub('recettes')">Recettes</button>
         <button class="subnav-btn" data-sub="frigo" onclick="switchNutSub('frigo')">Frigo</button>
         <button class="subnav-btn" data-sub="courses" onclick="switchNutSub('courses')">Courses</button>
-        <button class="subnav-btn" data-sub="reperes" onclick="switchNutSub('reperes')">Repères</button>
+        <button class="subnav-btn" data-sub="reperes" onclick="switchNutSub('reperes')">Objectifs</button>
+      </div>
+
+      <!-- MENU DU JOUR -->
+      <div class="subview active" id="sub-menu">
+        <div id="menu-content"></div>
       </div>
 
       <!-- JOURNAL -->
-      <div class="subview active" id="sub-journal">
+      <div class="subview" id="sub-journal">
         <div class="dt-toggle">
           <button id="dt-E" onclick="setDayType('E')"><i class="ti ti-barbell"></i> Jour Entraînement</button>
           <button id="dt-R" onclick="setDayType('R')"><i class="ti ti-bed"></i> Jour Repos</button>
@@ -690,8 +735,9 @@ input,textarea,select{font-family:inherit}
 
       <!-- REPÈRES NUTRITION -->
       <div class="subview" id="sub-reperes">
+        <div id="calc-card"></div>
         <div class="card" style="margin-top:10px">
-          <div class="card-header" style="margin-bottom:10px"><div class="card-title">Tes cibles du jour</div></div>
+          <div class="card-header" style="margin-bottom:10px"><div class="card-title">Repères de répartition (exemple)</div></div>
           <table class="rep-table">
             <tr><th></th><th>Jour E</th><th>Jour R</th></tr>
             <tr><td>Calories</td><td>2300</td><td>2000</td></tr>
@@ -1628,6 +1674,8 @@ if(!APP.feedback) APP.feedback=[];
 if(!APP.recents) APP.recents=[];
 if(!APP.mealTemplates) APP.mealTemplates=[];
 if(!APP.program) APP.program={};
+if(!APP.menu) APP.menu={date:'',off:{}};
+if(!APP.calc) APP.calc={};
 
 function getTodayData(){
   const k=todayKey();
@@ -1653,10 +1701,11 @@ function setDayType(t){
 }
 function getTargets(){
   const type=getEffectiveDayType();
-  const kcal=type==='E'?APP.settings.kcalE:APP.settings.kcalR;
-  const p=APP.settings.prot;
-  const g=type==='E'?270:180;
-  const lp=type==='E'?65:70;
+  const s=APP.settings;
+  const kcal=type==='E'?s.kcalE:s.kcalR;
+  const p=s.prot;
+  const g=(s.carbs!=null)?(type==='E'?s.carbs:Math.max(0,s.carbs-60)):(type==='E'?270:180);
+  const lp=(s.fat!=null)?s.fat:(type==='E'?65:70);
   return{kcal,p,g,l:lp};
 }
 
@@ -1676,7 +1725,7 @@ function switchPanel(name){
   document.getElementById('nav-'+name).classList.add('active');
   document.getElementById('main-scroll').scrollTop=0;
   if(name==='home') renderHome();
-  if(name==='food') renderFood();
+  if(name==='food'){ renderFood(); renderMenu(); }
   if(name==='training') renderTraining();
   if(name==='progress') renderProgress();
 }
@@ -1685,9 +1734,147 @@ function switchNutSub(name){
   document.querySelectorAll('.subnav-btn').forEach(b=>b.classList.toggle('active',b.dataset.sub===name));
   document.querySelectorAll('#panel-food .subview').forEach(v=>v.classList.remove('active'));
   document.getElementById('sub-'+name).classList.add('active');
+  if(name==='menu') renderMenu();
   if(name==='recettes') renderRecipes();
   if(name==='frigo') renderFridge();
   if(name==='courses') renderShopping();
+  if(name==='reperes') renderObjectives();
+}
+
+// ========== MENU DU JOUR (recommandé, basé sur le frigo) ==========
+const MENU_SLOTS=[['Petit-déjeuner','☀️','Petit-déj'],['Déjeuner','🥗','Déjeuner'],['Dîner','🌙','Dîner'],['Collation','🍎','Snack']];
+function menuSeed(){const k=todayKey();let h=0;for(let i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))>>>0;return h;}
+function getMenuOfDay(){
+  if(!APP.menu||APP.menu.date!==todayKey()) APP.menu={date:todayKey(),off:{}};
+  const seed=menuSeed(),out={};
+  MENU_SLOTS.forEach((s,si)=>{
+    const slot=s[0];
+    let cand=RECIPES.filter(r=>r.macros&&r.meal===slot);
+    if(!cand.length) cand=RECIPES.filter(r=>r.macros);
+    cand=cand.map(r=>({r,miss:recipeMatch(r).missing.length})).sort((a,b)=>a.miss-b.miss||a.r.id.localeCompare(b.r.id));
+    const cook=cand.filter(x=>x.miss<=2);
+    const pool=cook.length?cook:cand;
+    const off=APP.menu.off[slot]||0;
+    const idx=((seed+si*7+off)%pool.length+pool.length)%pool.length;
+    out[slot]={recipe:pool[idx].r,miss:pool[idx].miss};
+  });
+  return out;
+}
+function renderMenu(){
+  const el=document.getElementById('menu-content'); if(!el) return;
+  const menu=getMenuOfDay(), tgt=getTargets();
+  let mk=0,mp=0;
+  MENU_SLOTS.forEach(s=>{const m=menu[s[0]];if(m&&m.recipe&&m.recipe.macros){mk+=m.recipe.macros.kcal;mp+=m.recipe.macros.p;}});
+  const fc=(APP.fridge[APP.fridge.loc]||[]).length;
+  let html=`<div class="menu-head">
+    <div><div class="menu-title">Menu du jour</div><div class="menu-sub">basé sur ton frigo (${fc} ingrédient${fc>1?'s':''})</div></div>
+    <button class="menu-refresh" onclick="rerollAllMenu()" title="Nouveau menu"><i class="ti ti-refresh"></i></button>
+  </div>
+  <div class="menu-totals">
+    <div><b>${mk}</b><span>kcal menu</span></div>
+    <div><b>${Math.round(mp)}g</b><span>protéines</span></div>
+    <div><b>${tgt.kcal}</b><span>ta cible kcal</span></div>
+  </div>`;
+  if(!fc) html+=`<div class="banner" style="margin:10px 16px 0"><i class="ti ti-bulb"></i><div class="banner-text">Ajoute ce que tu as dans <strong>Frigo</strong> pour des recos vraiment cuisinables. En attendant, voici des idées.</div></div>`;
+  MENU_SLOTS.forEach(s=>{
+    const m=menu[s[0]];
+    if(!m||!m.recipe){html+=`<div class="menu-card"><div class="menu-slot">${s[1]} ${s[2]}</div><div class="menu-empty">Aucune recette pour ce repas.</div></div>`;return;}
+    const r=m.recipe;
+    const badge=m.miss===0?'<span class="rmatch ok"><i class="ti ti-check" style="font-size:11px"></i> Tout dispo</span>':(m.miss<=2?`<span class="rmatch near">Manque ${m.miss}</span>`:'<span class="rmatch near" style="background:var(--surface2);color:var(--text3)">à compléter</span>');
+    html+=`<div class="menu-card">
+      <div class="menu-slot">${s[1]} ${s[2]}</div>
+      <div class="menu-reco">
+        <div class="menu-emoji">${r.emoji}</div>
+        <div class="menu-info"><div class="menu-name">${r.name}</div>
+          <div class="menu-macro">${r.macros.kcal} kcal · ${r.macros.p}g P · ${r.macros.g}g G · ${r.macros.l}g L ${badge}</div></div>
+      </div>
+      <div class="menu-actions">
+        <button class="menu-btn alt" onclick="rerollMenu('${slotEsc(s[0])}')"><i class="ti ti-refresh"></i> Autre</button>
+        <button class="menu-btn alt" onclick="viewRecipe('${r.id}')"><i class="ti ti-list-details"></i> Voir</button>
+        <button class="menu-btn add" onclick="addRecipeToMeal('${r.id}','${slotEsc(s[0])}')"><i class="ti ti-plus"></i> Ajouter</button>
+      </div>
+    </div>`;
+  });
+  html+=`<button class="btn-primary" style="margin:14px 16px 0;width:calc(100% - 32px)" onclick="addWholeMenu()">＋ Ajouter tout le menu au journal</button>`;
+  el.innerHTML=html;
+}
+function slotEsc(s){return s.replace(/'/g,"\\'");}
+function rerollMenu(slot){getMenuOfDay();APP.menu.off[slot]=(APP.menu.off[slot]||0)+1;saveState();renderMenu();}
+function rerollAllMenu(){getMenuOfDay();MENU_SLOTS.forEach(s=>APP.menu.off[s[0]]=(APP.menu.off[s[0]]||0)+1);saveState();renderMenu();toast('Nouveau menu du jour');}
+function viewRecipe(id){switchNutSub('recettes');setTimeout(()=>{const el=document.getElementById('rc-'+id);if(el){el.classList.add('open');el.scrollIntoView({behavior:'smooth',block:'start'});}},140);}
+function addWholeMenu(){const menu=getMenuOfDay();let n=0;MENU_SLOTS.forEach(s=>{const m=menu[s[0]];if(m&&m.recipe&&m.recipe.macros){addRecipeToMeal(m.recipe.id,s[0]);n++;}});toast(n+' repas ajoutés au journal');}
+
+// ========== CALCULATEUR D'OBJECTIFS ==========
+const ACT_LEVELS=[['Sédentaire (peu/pas de sport)',1.2],['Léger (1-3 j/sem)',1.375],['Modéré (3-5 j/sem)',1.55],['Actif (6-7 j/sem)',1.725],['Très actif (boulot physique + sport)',1.9]];
+const GOALS=[['Sèche',-0.20],['Recomp',-0.02],['Prise',0.10]];
+function renderObjectives(){
+  const el=document.getElementById('calc-card'); if(!el) return;
+  const c=APP.calc||{};
+  const sex=c.sex||'H',age=c.age||25,h=c.height||175,w=c.weight||APP.settings.weight||70,act=(c.activity!=null?c.activity:2),goal=(c.goal!=null?c.goal:1);
+  el.innerHTML=`<div class="card" style="margin-top:10px">
+    <div class="card-header" style="margin-bottom:6px"><div class="card-title"><i class="ti ti-calculator" style="font-size:15px;vertical-align:-2px;color:var(--orange)"></i> Calculateur d'objectifs</div></div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.5">Estime ton maintien (TDEE) et tes cibles selon ton objectif. Formule Mifflin-St Jeor.</div>
+    <div class="calc-seg" style="margin-bottom:10px">${['H','F'].map(s=>`<button class="${s===sex?'on':''}" onclick="setCalc('sex','${s}')">${s==='H'?'Homme':'Femme'}</button>`).join('')}</div>
+    <div class="calc-grid">
+      <label>Âge<input class="prog-input" type="number" id="c-age" value="${age}" oninput="computeObjectives()"></label>
+      <label>Taille cm<input class="prog-input" type="number" id="c-h" value="${h}" oninput="computeObjectives()"></label>
+      <label>Poids kg<input class="prog-input" type="number" id="c-w" value="${w}" oninput="computeObjectives()"></label>
+    </div>
+    <label class="calc-lab">Niveau d'activité</label>
+    <select class="prog-input" id="c-act" onchange="computeObjectives()" style="width:100%">${ACT_LEVELS.map((a,i)=>`<option value="${i}" ${i===act?'selected':''}>${a[0]}</option>`).join('')}</select>
+    <label class="calc-lab">Objectif</label>
+    <div class="calc-seg">${GOALS.map((g,i)=>`<button class="${i===goal?'on':''}" onclick="setCalc('goal',${i})">${g[0]}</button>`).join('')}</div>
+    <div id="calc-result"></div>
+  </div>`;
+  computeObjectives();
+}
+function setCalc(k,v){APP.calc=APP.calc||{};APP.calc[k]=v;saveState();renderObjectives();}
+function computeObjectives(){
+  if(!document.getElementById('c-age')) return;
+  const c=APP.calc||{};
+  const sex=c.sex||'H';
+  const age=parseFloat(document.getElementById('c-age').value)||25;
+  const h=parseFloat(document.getElementById('c-h').value)||175;
+  const w=parseFloat(document.getElementById('c-w').value)||70;
+  const actI=parseInt(document.getElementById('c-act').value)||0;
+  const goalI=(c.goal!=null?c.goal:1);
+  APP.calc={sex,age,height:h,weight:w,activity:actI,goal:goalI};
+  const bmr=Math.round(10*w+6.25*h-5*age+(sex==='H'?5:-161));
+  const tdee=Math.round(bmr*ACT_LEVELS[actI][1]);
+  const target=Math.round(tdee*(1+GOALS[goalI][1])/10)*10;
+  const protKg=goalI===0?2.2:(goalI===1?2.0:1.8);
+  const P=Math.round(w*protKg),L=Math.round(w*0.9);
+  const G=Math.max(0,Math.round((target-P*4-L*9)/4));
+  APP.calc.result={bmr,tdee,target,P,G,L};
+  saveState();
+  const res=document.getElementById('calc-result'); if(!res) return;
+  res.innerHTML=`<div class="calc-out">
+    <div class="calc-row"><span>Métabolisme de base</span><b>${bmr} kcal</b></div>
+    <div class="calc-row"><span>Maintien (TDEE)</span><b>${tdee} kcal</b></div>
+    <div class="calc-row big"><span>Cible — ${GOALS[goalI][0]}</span><b>${target} kcal</b></div>
+    <div class="calc-macros">
+      <div class="cm"><span class="pip" style="background:var(--orange)"></span>Prot.<b>${P} g</b><small>${protKg} g/kg</small></div>
+      <div class="cm"><span class="pip" style="background:var(--green)"></span>Gluc.<b>${G} g</b><small>le reste</small></div>
+      <div class="cm"><span class="pip" style="background:var(--blue)"></span>Lip.<b>${L} g</b><small>0,9 g/kg</small></div>
+    </div>
+    <button class="btn-primary" style="margin-top:12px" onclick="applyObjectives()">Appliquer à mes objectifs</button>
+    <div style="font-size:11px;color:var(--text3);margin-top:8px;line-height:1.5">Appliqué : jour Entraînement = cible, jour Repos ≈ cible −250 kcal (glucides plus bas). Estimation, pas un avis médical.</div>
+  </div>`;
+}
+function applyObjectives(){
+  const r=APP.calc&&APP.calc.result; if(!r){toast('Renseigne tes infos');return;}
+  APP.settings.kcalE=r.target;
+  APP.settings.kcalR=Math.max(1200,r.target-250);
+  APP.settings.prot=r.P;
+  APP.settings.carbs=r.G;
+  APP.settings.fat=r.L;
+  if(r.weight) APP.settings.weight=r.weight;
+  saveState();
+  const se=document.getElementById('s-kcal-e'); if(se)se.value=APP.settings.kcalE;
+  const sr=document.getElementById('s-kcal-r'); if(sr)sr.value=APP.settings.kcalR;
+  const sp=document.getElementById('s-prot'); if(sp)sp.value=APP.settings.prot;
+  renderHome();renderFood();
+  toast('Objectifs appliqués ✓');
 }
 
 // ========== HOME ==========
