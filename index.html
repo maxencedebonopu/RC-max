@@ -1754,18 +1754,44 @@ const MENU_SLOTS=[['Petit-déjeuner','☀️','Petit-déj'],['Déjeuner','🥗',
 function menuSeed(){const k=todayKey();let h=0;for(let i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))>>>0;return h;}
 function getMenuOfDay(){
   if(!APP.menu||APP.menu.date!==todayKey()) APP.menu={date:todayKey(),off:{}};
-  const seed=menuSeed(),out={};
-  MENU_SLOTS.forEach((s,si)=>{
-    const slot=s[0];
+  const seed=menuSeed();
+  const tgt=getTargets();
+  const protAim=Math.max(130,tgt.p||140);   // vise la cible protéines, plancher dur 130
+  const slots=MENU_SLOTS.map(s=>s[0]);
+  const data={};
+  slots.forEach((slot,si)=>{
     let cand=RECIPES.filter(r=>r.macros&&r.meal===slot);
     if(!cand.length) cand=RECIPES.filter(r=>r.macros);
-    cand=cand.map(r=>({r,miss:recipeMatch(r).missing.length})).sort((a,b)=>a.miss-b.miss||a.r.id.localeCompare(b.r.id));
+    cand=cand.map(r=>({r,miss:recipeMatch(r).missing.length,p:r.macros.p}));
     const cook=cand.filter(x=>x.miss<=2);
-    const pool=cook.length?cook:cand;
-    const off=APP.menu.off[slot]||0;
-    const idx=((seed+si*7+off)%pool.length+pool.length)%pool.length;
-    out[slot]={recipe:pool[idx].r,miss:pool[idx].miss};
+    const pool=(cook.length?cook:cand).slice().sort((a,b)=>b.p-a.p||a.miss-b.miss); // protéines décroissantes
+    const full=cand.slice().sort((a,b)=>b.p-a.p||a.miss-b.miss);
+    data[slot]={pool,full,si};
   });
+  // choix initial : rotation dans le tiers le plus protéiné du pool cuisinable (variété jour par jour)
+  slots.forEach(slot=>{
+    const d=data[slot],pool=d.pool;
+    const topN=Math.max(1,Math.ceil(pool.length/3));
+    const off=APP.menu.off[slot]||0;
+    d.pick=pool[((seed+d.si*7+off)%topN+topN)%topN];
+  });
+  const total=()=>slots.reduce((a,s)=>a+data[s].pick.p,0);
+  // garde-fou 1 : viser la cible protéines en montant les repas (dans le cuisinable)
+  let g=0;
+  while(total()<protAim && g++<14){
+    let best=null;
+    slots.forEach(s=>{const d=data[s],mx=d.pool[0],gain=mx.p-d.pick.p;if(gain>0&&(!best||gain>best.gain))best={s,mx,gain};});
+    if(!best) break; data[best.s].pick=best.mx;
+  }
+  // garde-fou 2 : plancher dur 130 g — si le cuisinable ne suffit pas, on pioche hors-frigo
+  g=0;
+  while(total()<130 && g++<14){
+    let best=null;
+    slots.forEach(s=>{const d=data[s],mx=d.full[0],gain=mx.p-d.pick.p;if(gain>0&&(!best||gain>best.gain))best={s,mx,gain};});
+    if(!best) break; data[best.s].pick=best.mx;
+  }
+  const out={};
+  slots.forEach(s=>{out[s]={recipe:data[s].pick.r,miss:data[s].pick.miss};});
   return out;
 }
 function renderMenu(){
@@ -1774,14 +1800,16 @@ function renderMenu(){
   let mk=0,mp=0;
   MENU_SLOTS.forEach(s=>{const m=menu[s[0]];if(m&&m.recipe&&m.recipe.macros){mk+=m.recipe.macros.kcal;mp+=m.recipe.macros.p;}});
   const fc=(APP.fridge[APP.fridge.loc]||[]).length;
+  const protAim=Math.max(130,tgt.p||140);
+  const protCol=mp<130?'var(--red)':(mp>=protAim?'var(--green)':'var(--orange)');
   let html=`<div class="menu-head">
     <div><div class="menu-title">Menu du jour</div><div class="menu-sub">basé sur ton frigo (${fc} ingrédient${fc>1?'s':''})</div></div>
     <button class="menu-refresh" onclick="rerollAllMenu()" title="Nouveau menu"><i class="ti ti-refresh"></i></button>
   </div>
   <div class="menu-totals">
     <div><b>${mk}</b><span>kcal menu</span></div>
-    <div><b>${Math.round(mp)}g</b><span>protéines</span></div>
-    <div><b>${tgt.kcal}</b><span>ta cible kcal</span></div>
+    <div><b style="color:${protCol}">${Math.round(mp)}g</b><span>protéines / ${protAim}</span></div>
+    <div><b>${tgt.kcal}</b><span>cible kcal</span></div>
   </div>`;
   if(!fc) html+=`<div class="banner" style="margin:10px 16px 0"><i class="ti ti-bulb"></i><div class="banner-text">Ajoute ce que tu as dans <strong>Frigo</strong> pour des recos vraiment cuisinables. En attendant, voici des idées.</div></div>`;
   MENU_SLOTS.forEach(s=>{
