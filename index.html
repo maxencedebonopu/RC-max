@@ -732,6 +732,7 @@ input,textarea,select{font-family:inherit}
           <button class="rfilter active" data-f="tous" onclick="setRecipeFilter('tous')">Tous</button>
           <button class="rfilter" data-f="fav" onclick="setRecipeFilter('fav')">❤️ Favoris</button>
           <button class="rfilter" data-f="ete" onclick="setRecipeFilter('ete')">☀️ Été</button>
+          <button class="rfilter" data-f="af" onclick="setRecipeFilter('af')">🔥 Air fryer</button>
           <button class="rfilter" data-f="cuisinable" onclick="setRecipeFilter('cuisinable')">🧊 Cuisinable</button>
           <button class="rfilter" data-f="asia" onclick="setRecipeFilter('asia')">🍜 Asiatique</button>
           <button class="rfilter" data-f="plat" onclick="setRecipeFilter('plat')">Plats</button>
@@ -867,7 +868,7 @@ input,textarea,select{font-family:inherit}
           <div class="stat-tile-val" id="prog-days">0</div>
           <div class="stat-tile-sub">ce mois</div>
         </div>
-        <div class="stat-tile">
+        <div class="stat-tile" style="display:none">
           <div class="stat-tile-label">Tour de taille</div>
           <div class="stat-tile-val" id="prog-waist">— cm</div>
           <div class="stat-tile-sub" id="prog-waist-sub">non mesuré</div>
@@ -880,9 +881,10 @@ input,textarea,select{font-family:inherit}
       <div class="section-head" style="margin-top:10px"><span class="section-title">Courbe de poids</span></div>
       <div class="chart-card" id="weight-chart"></div>
 
+      <div style="display:none">
       <div class="section-head" style="margin-top:10px"><span class="section-title">Tour de taille</span></div>
       <div class="chart-card" id="waist-chart"></div>
-      <div class="banner" style="margin-top:8px"><i class="ti ti-bulb"></i><div class="banner-text">Si la taille baisse pendant que tes charges montent, ta recomp marche — même si la balance bouge peu.</div></div>
+      </div>
 
       <div class="section-head" style="margin-top:10px"><span class="section-title">Volume par séance (tonnage estimé)</span></div>
       <div class="chart-card" id="tonnage-chart"></div>
@@ -1053,9 +1055,7 @@ input,textarea,select{font-family:inherit}
     <div class="modal-body">
       <label class="form-label">Poids (kg)</label>
       <input class="form-input" id="w-input" type="number" step="0.1" placeholder="68.0">
-      <label class="form-label">Tour de taille (cm)</label>
-      <input class="form-input" id="waist-input" type="number" step="0.5" placeholder="ex : 80">
-      <div style="font-size:12px;color:var(--text3);margin-top:8px;line-height:1.5">En recomp, le tour de taille est un meilleur signal que la balance. Mesure au nombril, à jeun, relâché.</div>
+      <input id="waist-input" type="hidden">
       <button class="btn-primary" onclick="saveWeight()">Enregistrer</button>
       <button class="btn-secondary" onclick="closeModal('weight-modal')">Annuler</button>
     </div>
@@ -1095,6 +1095,23 @@ input,textarea,select{font-family:inherit}
   </div>
 </div>
 
+<div class="modal-overlay" id="recipe-adj-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="adj-title">Ajuster la recette</div>
+    <div class="modal-body">
+      <div class="fb-pill-label" style="margin-top:0">Portion</div>
+      <div class="fb-pills" id="adj-mult"></div>
+      <div class="fb-pill-label">Ajustements</div>
+      <div class="fb-pills" id="adj-toggles"></div>
+      <div id="adj-macros" class="calc-out" style="margin-top:14px"></div>
+      <div class="fb-pill-label">Ajouter à</div>
+      <div class="fb-pills" id="adj-meal"></div>
+      <button class="btn-primary" onclick="addAdjustedRecipe()">Ajouter au journal</button>
+      <button class="btn-secondary" onclick="closeModal('recipe-adj-modal')">Annuler</button>
+    </div>
+  </div>
+</div>
 <div id="toast"></div>
 
 <script>
@@ -1670,6 +1687,87 @@ const RECIPES = [
    ing:["250 g skyr","1 dose de whey Bulk (option)","1 nectarine","100 g fruits rouges","1 cc miel","quelques glaçons pilés"],
    steps:["Skyr (+ whey) bien froid dans un bol.","Nectarine + fruits rouges + glaçons pilés.","Filet de miel."],
    tip:"Dessert glacé protéiné, parfait quand il fait chaud."}
+,
+  {id:'af-poulet-croustillant',cat:'plat',af:true,emoji:'🍗',name:'Poulet croustillant air fryer',tag:'E',meal:'Déjeuner',time:'18 min',macros:{kcal:520,p:52,g:55,l:9},
+   ing:["200 g poulet","1 cs huile d'olive","1 cc paprika","1 cc cumin","1 pincée de sel","200 g riz cuit","200 g brocoli"],
+   steps:["Enrobe le poulet d'huile + épices.","Air fryer 200 °C, 12-15 min en retournant à mi-cuisson.","Sers avec riz + brocoli vapeur."],
+   tip:"Croustillant dehors, moelleux dedans, sans friture."},
+  {id:'af-frites-patate-douce',cat:'side',af:true,emoji:'🍠',name:'Frites de patate douce air fryer',tag:'E',meal:'Déjeuner',time:'20 min',macros:{kcal:220,p:3,g:42,l:5},
+   ing:["1 patate douce (250 g)","1 cs huile d'olive","1 cc paprika","1 pincée de sel"],
+   steps:["Coupe en frites, enrobe d'huile + paprika.","Air fryer 200 °C, 15-18 min en secouant à mi-cuisson."],
+   tip:"Croustillantes avec très peu d'huile. L'accompagnement parfait."},
+  {id:'af-saumon',cat:'plat',af:true,emoji:'🐟',name:'Saumon air fryer & légumes',tag:'E',meal:'Dîner',time:'15 min',macros:{kcal:480,p:40,g:30,l:24},
+   ing:["1 pavé de saumon (150 g)","1 cs sauce soja","1 cc miel","150 g riz cuit","150 g brocoli","1/2 citron"],
+   steps:["Badigeonne le saumon de soja + miel.","Air fryer 190 °C, 8-10 min.","Sers riz + brocoli + citron."],
+   tip:"Saumon fondant, peau croustillante."},
+  {id:'af-nuggets-maison',cat:'plat',af:true,emoji:'🍗',name:'Nuggets de poulet maison',tag:'E',meal:'Déjeuner',time:'20 min',macros:{kcal:460,p:48,g:30,l:14},
+   ing:["200 g poulet en morceaux","1 œuf","30 g chapelure (ou flocons mixés)","1 cc paprika","1 pincée de sel","sauce skyr-moutarde"],
+   steps:["Trempe le poulet dans l'œuf puis la chapelure + paprika.","Air fryer 200 °C, 10-12 min.","Sauce skyr-moutarde à côté."],
+   tip:"Bien plus sains que ceux du commerce, et 48 g de protéines."},
+  {id:'af-legumes-rotis',cat:'side',af:true,emoji:'🥕',name:'Légumes rôtis air fryer',tag:'R',meal:'Dîner',time:'18 min',macros:{kcal:170,p:4,g:24,l:7},
+   ing:["2 carottes","1 courgette","1 oignon","2 tomates","1 cs huile d'olive","1 cc paprika","1 gousse d'ail"],
+   steps:["Coupe les légumes, enrobe d'huile + paprika + ail.","Air fryer 190 °C, 14-16 min en secouant."],
+   tip:"Caramélisés à souhait avec un minimum d'huile."},
+  {id:'af-falafels-pois-chiches',cat:'plat',af:true,emoji:'🧆',name:'Falafels de pois chiches',tag:'R',meal:'Déjeuner',time:'22 min',macros:{kcal:420,p:18,g:52,l:14},
+   ing:["1 boîte de pois chiches (250 g)","1 oignon","2 gousses d'ail","1 poignée de persil","1 cc cumin","1 cs huile d'olive","2 wraps","sauce skyr"],
+   steps:["Mixe pois chiches + oignon + ail + persil + cumin.","Forme des boulettes, filet d'huile.","Air fryer 200 °C, 12-14 min. Sers en wrap + sauce skyr."],
+   tip:"Croustillants sans bain de friture."},
+  {id:'af-chorizo-patates',cat:'plat',af:true,emoji:'🌶️',name:'Patates & chorizo air fryer',tag:'E',meal:'Déjeuner',time:'20 min',macros:{kcal:520,p:22,g:50,l:26},
+   ing:["300 g pommes de terre","50 g chorizo","1 oignon","1 cc paprika","1 cs huile d'olive","2 œufs"],
+   steps:["Cubes de patates + chorizo + oignon + paprika.","Air fryer 200 °C, 16-18 min.","Ajoute 2 œufs au plat à la fin."],
+   tip:"Brunch costaud. Le chorizo parfume tout."},
+  {id:'af-crevettes-ail',cat:'plat',af:true,emoji:'🦐',name:'Crevettes ail-paprika air fryer',tag:'R',meal:'Dîner',time:'12 min',macros:{kcal:300,p:34,g:18,l:9},
+   ing:["250 g crevettes","2 gousses d'ail","1 cc paprika","1 cs huile d'olive","1/2 citron","150 g riz cuit","1 poignée de persil"],
+   steps:["Mélange crevettes + ail + paprika + huile.","Air fryer 190 °C, 6-8 min.","Citron + persil, sers sur riz."],
+   tip:"6 minutes chrono, 34 g de protéines."},
+  {id:'pdj-oeufs-jambon',cat:'plat',emoji:'🍳',name:'Œufs brouillés jambon (matin salé)',tag:'E',meal:'Petit-déjeuner',time:'8 min',macros:{kcal:380,p:34,g:8,l:24},
+   ing:["3 œufs","80 g jambon de poulet","20 g parmesan","2 tranches de pain","1 cc beurre","1 poignée de persil/ciboulette"],
+   steps:["Brouille les œufs doucement avec le jambon.","Parmesan + herbes.","Sur pain toasté."],
+   tip:"Matin salé et protéiné pour bien démarrer."},
+  {id:'pdj-skyr-sale-concombre',cat:'plat',emoji:'🥛',name:'Skyr salé concombre-herbes',tag:'R',meal:'Petit-déjeuner',time:'5 min',macros:{kcal:200,p:20,g:14,l:5},
+   ing:["200 g skyr","1/2 concombre","1 gousse d'ail","1 poignée de persil/ciboulette","1 pincée de sel","2 tranches de pain"],
+   steps:["Mélange skyr + ail + sel + herbes.","Concombre en dés dedans.","Tartine sur pain."],
+   tip:"Le skyr en version salée (façon labneh) : 20 g de protéines."},
+  {id:'pdj-toast-oeuf-tomate',cat:'plat',emoji:'🍳',name:'Toast œuf-tomate (matin salé)',tag:'R',meal:'Petit-déjeuner',time:'8 min',macros:{kcal:320,p:18,g:32,l:13},
+   ing:["2 tranches de pain","2 œufs","1 tomate","20 g parmesan","1 poignée de persil","1 cc huile d'olive"],
+   steps:["Toaste le pain.","Œuf au plat + tomate poêlée.","Parmesan + persil dessus."],
+   tip:"Rapide, salé, équilibré."},
+  {id:'pdj-wrap-oeuf-brouille',cat:'plat',emoji:'🌯',name:'Wrap œufs brouillés-jambon',tag:'E',meal:'Petit-déjeuner',time:'10 min',macros:{kcal:420,p:32,g:42,l:14},
+   ing:["1 wrap","3 œufs","60 g jambon de poulet","20 g parmesan","1 poignée de persil"],
+   steps:["Brouille œufs + jambon.","Garnis le wrap + parmesan.","Roule et coupe."],
+   tip:"Le breakfast burrito protéiné, à emporter."},
+  {id:'pdj-skyr-sale-oeuf-dur',cat:'plat',emoji:'🥛',name:'Bol skyr salé, œuf dur & crudités',tag:'R',meal:'Petit-déjeuner',time:'10 min',macros:{kcal:280,p:28,g:14,l:13},
+   ing:["200 g skyr","2 œufs durs","1/2 concombre","1 tomate","1 pincée de sel","1 poignée de persil","1 filet d'huile d'olive"],
+   steps:["Skyr salé au fond du bol.","Œufs durs + crudités dessus.","Sel + huile + persil."],
+   tip:"Skyr salé + œufs = ~28 g de protéines, frais."},
+  {id:'pdj-omelette-pommes-terre',cat:'plat',emoji:'🍳',name:'Omelette pommes de terre (tortilla)',tag:'E',meal:'Petit-déjeuner',time:'18 min',macros:{kcal:420,p:24,g:34,l:21},
+   ing:["3 œufs","200 g pommes de terre","1 oignon","20 g parmesan","1 cs huile d'olive","1 poignée de persil"],
+   steps:["Cuis les patates en dés + oignon.","Verse les œufs, cuis doucement.","Parmesan + persil, retourne."],
+   tip:"La tortilla espagnole : se mange chaude ou froide."},
+  {id:'wrap-poulet-cesar',cat:'plat',emoji:'🌯',name:'Wrap poulet façon César',tag:'E',meal:'Déjeuner',time:'10 min',macros:{kcal:500,p:44,g:46,l:14},
+   ing:["2 wraps","150 g poulet","3 cs skyr","1 cc moutarde","20 g parmesan","salade","1/2 citron"],
+   steps:["Sauce : skyr + moutarde + parmesan + citron.","Garnis poulet + salade.","Roule serré."],
+   tip:"La César protéinée, sans la sauce grasse."},
+  {id:'wrap-boeuf-gochujang',cat:'plat',cuisine:'asia',emoji:'🌯',name:'Wrap bœuf gochujang',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:560,p:40,g:52,l:18},
+   ing:["2 wraps","200 g bœuf haché 5 %","1 cs gochujang","1 cs sauce soja","1 carotte","1/2 concombre","2 cébettes"],
+   steps:["Saisis le bœuf + gochujang + soja.","Garnis les wraps + carotte + concombre.","Roule."],
+   tip:"Fusion coréenne-wrap, ultra savoureux."},
+  {id:'wrap-sardines-ricotta',cat:'plat',emoji:'🌯',name:'Wrap sardines-ricotta',tag:'R',meal:'Déjeuner',time:'8 min',macros:{kcal:440,p:26,g:40,l:20},
+   ing:["2 wraps","1 boîte de sardines (120 g)","60 g ricotta","1/2 citron","1 poignée de persil","1 tomate"],
+   steps:["Écrase sardines + ricotta + citron.","Garnis + tomate + persil.","Roule."],
+   tip:"Oméga-3 + protéines, sans cuisson."},
+  {id:'wrap-pois-chiches-curry',cat:'plat',emoji:'🌯',name:'Wrap pois chiches curry',tag:'R',meal:'Déjeuner',time:'10 min',macros:{kcal:460,p:18,g:60,l:14},
+   ing:["2 wraps","1 boîte de pois chiches (250 g)","3 cs skyr","1 cc curry (ou paprika)","1/2 concombre","1 poignée de persil","1/2 citron"],
+   steps:["Écrase pois chiches + skyr + curry.","Garnis + concombre + persil + citron.","Roule."],
+   tip:"Végé, riche en fibres, rassasiant."},
+  {id:'wrap-saumon-skyr',cat:'plat',emoji:'🌯',name:'Wrap saumon-skyr',tag:'E',meal:'Déjeuner',time:'10 min',macros:{kcal:480,p:34,g:42,l:18},
+   ing:["2 wraps","1 pavé de saumon cuit (150 g)","3 cs skyr","1/2 concombre","1/2 citron","1 poignée de persil"],
+   steps:["Émiette le saumon, mélange au skyr + citron.","Garnis + concombre + herbes.","Roule."],
+   tip:"Façon bagel saumon, version wrap protéinée."},
+  {id:'wrap-quesadilla-poulet',cat:'plat',emoji:'🌯',name:'Quesadilla poulet-fromage',tag:'E',meal:'Dîner',time:'12 min',macros:{kcal:540,p:42,g:46,l:20},
+   ing:["2 wraps","150 g poulet","40 g parmesan (ou fromage)","1/2 oignon","1 tomate","1 cc paprika"],
+   steps:["Garnis un wrap de poulet + fromage + oignon + tomate.","Replie, poêle 2 min par face jusqu'à doré.","Coupe en parts."],
+   tip:"Croustillant et fondant. Parfait avec une sauce skyr."}
 ];
 
 // ===== FRIDGE / SHOPPING =====
@@ -2416,6 +2514,7 @@ if(!APP.currentWeek) APP.currentWeek=0;
 if(APP.selectedTrainDay==null) APP.selectedTrainDay=getDay();
 if(!APP.fridge) APP.fridge={loc:'maman',maman:[],papa:[]};
 if(!APP.shopChecked) APP.shopChecked={};
+if(!APP._wrapsAdded){var _wl=APP.fridge.loc||'maman';var _wh=[].concat(APP.fridge.maman||[],APP.fridge.papa||[]).some(function(x){return /wrap/i.test(x);});if(!_wh){(APP.fridge[_wl]=APP.fridge[_wl]||[]).push('Wraps (6)');}APP._wrapsAdded=true;}
 if(!APP.shopExtra) APP.shopExtra=[];
 if(!APP.startWeight) APP.startWeight=APP.settings.weight;
 if(!APP.feedback) APP.feedback=[];
@@ -3206,6 +3305,7 @@ function renderRecipes(){
     else if(recipeFilter==='asia'){if(!ASIA_IDS.includes(r.id)&&r.cuisine!=='asia')return false;}
     else if(recipeFilter==='fav'){if(!isFavRecipe(r.id))return false;}
     else if(recipeFilter==='ete'){if(!isEte(r))return false;}
+    else if(recipeFilter==='af'){if(!r.af)return false;}
     else if(recipeFilter!=='tous'&&recipeCat(r)!==recipeFilter) return false;
     if(q){const hay=norm(r.name+' '+r.ing.join(' '));if(!hay.includes(q))return false;}
     return true;
@@ -3214,7 +3314,7 @@ function renderRecipes(){
   const cnt=document.getElementById('recipes-count');
   if(cnt) cnt.textContent=filtered.length+' recette'+(filtered.length>1?'s':'');
   if(!filtered.length){
-    const msg=recipeFilter==='cuisinable'?'Ajoute des ingrédients dans <strong>Frigo</strong> pour voir ce que tu peux cuisiner maintenant.':recipeFilter==='fav'?'Aucun favori pour l\'instant. Touche le 🤍 sur une recette pour l\'ajouter ici.':recipeFilter==='ete'?'Aucune recette d\'été ne correspond.':'Aucune recette ne correspond.';
+    const msg=recipeFilter==='cuisinable'?'Ajoute des ingrédients dans <strong>Frigo</strong> pour voir ce que tu peux cuisiner maintenant.':recipeFilter==='fav'?'Aucun favori pour l\'instant. Touche le 🤍 sur une recette pour l\'ajouter ici.':recipeFilter==='ete'?'Aucune recette d\'été ne correspond.':recipeFilter==='af'?'Aucune recette air fryer ne correspond.':'Aucune recette ne correspond.';
     list.innerHTML='<div class="chart-empty" style="padding:24px">'+msg+'</div>';return;
   }
   list.innerHTML=filtered.map(r=>{
@@ -3226,6 +3326,7 @@ function renderRecipes(){
       : (fm.missing.length<=2?`<span class="rmatch near">Manque ${fm.missing.length}</span>`:'');
     const missingBlock=fm.missing.length?`<div class="recipe-section-label">À acheter (${fm.missing.length})</div><div class="recipe-missing">${fm.missing.map(x=>`<span class="miss-chip">${x}</span>`).join('')}</div>`:'<div class="recipe-missing-ok"><i class="ti ti-check"></i> Tu as tout pour cette recette</div>';
     const addRow=r.macros?`<div class="recipe-addrow">
+        <button class="recipe-addbtn" style="border-color:var(--border2);background:var(--surface2);color:var(--text2)" onclick="openRecipeAdjust('${r.id}')"><i class="ti ti-adjustments-horizontal" style="font-size:13px;vertical-align:-2px"></i> Ajuster</button>
         ${MEAL_NAMES.map(m=>`<button class="recipe-addbtn" onclick="addRecipeToMeal('${r.id}','${m}')">+ ${m.replace('Petit-déjeuner','Petit-déj')}</button>`).join('')}
       </div>`:'';
     return `<div class="recipe-card" id="rc-${r.id}">
@@ -3260,6 +3361,43 @@ function toggleRecipe(id){
   document.getElementById('rc-'+id).classList.toggle('open');
 }
 
+let adjCtx={id:null,mult:1,lowCarb:false,hiProt:false,meal:'Déjeuner'};
+const ADJ_MULTS=[['½',0.5],['¾',0.75],['1',1],['1½',1.5],['2',2]];
+function adjMacros(){
+  const r=RECIPES.find(x=>x.id===adjCtx.id); if(!r||!r.macros) return {kcal:0,p:0,g:0,l:0};
+  let p=r.macros.p*adjCtx.mult; if(adjCtx.hiProt) p+=25;
+  let g=r.macros.g*adjCtx.mult*(adjCtx.lowCarb?0.5:1);
+  let l=r.macros.l*adjCtx.mult;
+  return {kcal:Math.round(p*4+g*4+l*9),p:Math.round(p),g:Math.round(g),l:Math.round(l)};
+}
+function openRecipeAdjust(id){
+  const r=RECIPES.find(x=>x.id===id); if(!r||!r.macros){toast('Recette non ajustable');return;}
+  adjCtx={id,mult:1,lowCarb:false,hiProt:false,meal:(r.meal&&MEAL_NAMES.includes(r.meal))?r.meal:'Déjeuner'};
+  document.getElementById('adj-title').textContent='Ajuster · '+r.name;
+  renderAdjModal(); openModal('recipe-adj-modal');
+}
+function renderAdjModal(){
+  document.getElementById('adj-mult').innerHTML=ADJ_MULTS.map(m=>`<button class="fb-pill ${adjCtx.mult===m[1]?'on':''}" onclick="adjCtx.mult=${m[1]};renderAdjModal()">${m[0]}</button>`).join('');
+  document.getElementById('adj-toggles').innerHTML=
+    `<button class="fb-pill ${adjCtx.lowCarb?'on':''}" onclick="adjCtx.lowCarb=!adjCtx.lowCarb;renderAdjModal()">🥖 − Glucides</button>`+
+    `<button class="fb-pill ${adjCtx.hiProt?'on':''}" onclick="adjCtx.hiProt=!adjCtx.hiProt;renderAdjModal()">💪 + Protéines</button>`;
+  const m=adjMacros();
+  document.getElementById('adj-macros').innerHTML=
+    `<div class="calc-row big"><span>Calories</span><b>${m.kcal} kcal</b></div>`+
+    `<div class="calc-macros"><div class="cm"><span class="pip" style="background:var(--orange)"></span>Prot.<b>${m.p} g</b></div><div class="cm"><span class="pip" style="background:var(--green)"></span>Gluc.<b>${m.g} g</b></div><div class="cm"><span class="pip" style="background:var(--blue)"></span>Lip.<b>${m.l} g</b></div></div>`;
+  document.getElementById('adj-meal').innerHTML=MEAL_NAMES.map(mn=>`<button class="fb-pill ${adjCtx.meal===mn?'on':''}" onclick="adjCtx.meal='${mn}';renderAdjModal()">${mn.replace('Petit-déjeuner','Petit-déj')}</button>`).join('');
+}
+function addAdjustedRecipe(){
+  const r=RECIPES.find(x=>x.id===adjCtx.id); if(!r) return;
+  const m=adjMacros();
+  const suffix=[]; if(adjCtx.mult!==1) suffix.push('×'+adjCtx.mult); if(adjCtx.lowCarb) suffix.push('− gluc'); if(adjCtx.hiProt) suffix.push('+ prot');
+  const item={name:r.name+(suffix.length?' ('+suffix.join(', ')+')':''),qty:'1 portion',kcal:m.kcal,p:m.p,g:m.g,l:m.l};
+  getTodayData().meals[adjCtx.meal].push(item);
+  recordRecent(item);
+  saveState();renderHome();renderFood();
+  closeModal('recipe-adj-modal');
+  toast('Ajouté (ajusté) → '+adjCtx.meal);
+}
 function addRecipeToMeal(id,meal){
   const r=RECIPES.find(x=>x.id===id);
   if(!r||!r.macros) return;
@@ -3450,13 +3588,7 @@ function renderSession(){
   const sesData=APP.training[sessionKey];
   const fb=sesData.feedback||{};
   const lf=lastSessionFeedback(sName,sessionKey);
-  let cue='';
-  if(lf&&lf.effort){
-    cue=lf.effort==='Facile'?'« Facile » la dernière fois → tente +2,5 kg sur les exos principaux.'
-      :lf.effort==='Correct'?'« Correct » la dernière fois → vise +1 rep ou +2,5 kg.'
-      :lf.effort==='Dur'?'« Dur » la dernière fois → garde les mêmes charges, gagne des reps.'
-      :'« Trop dur » la dernière fois → ne monte pas, soigne la technique et le repos.';
-  }
+  const cue=adaptCue(lf);
 
   const tSugg=computeSuggestions().filter(s=>s.cat==='seance');
   sc.innerHTML=`${tSugg.length?`<div style="margin:0 16px 12px">${tSugg.map(suggestionHTML).join('')}</div>`:''}<div class="session-card">
@@ -3506,6 +3638,8 @@ function renderSession(){
       <div class="fb-pills">${['Facile','Correct','Dur','Trop dur'].map(o=>`<button class="fb-pill ${fb.effort===o?'on':''}" onclick="setSessionFeedback('${sessionKey}','effort','${o}')">${o}</button>`).join('')}</div>
       <div class="fb-pill-label">Énergie</div>
       <div class="fb-pills">${['Basse','OK','Haute'].map(o=>`<button class="fb-pill ${fb.energy===o?'on':''}" onclick="setSessionFeedback('${sessionKey}','energy','${o}')">${o}</button>`).join('')}</div>
+      <div class="fb-pill-label">Courbatures (jours suivants)</div>
+      <div class="fb-pills">${['Aucune','Légères','Fortes'].map(o=>`<button class="fb-pill ${fb.doms===o?'on':''}" onclick="setSessionFeedback('${sessionKey}','doms','${o}')">${o}</button>`).join('')}</div>
       <textarea class="form-input" rows="2" placeholder="Note : douleur, pump, sommeil…" oninput="saveSessionNote('${sessionKey}',this.value)" style="margin-top:10px;resize:vertical">${fb.note||''}</textarea>
     </div>
   </div>`;
@@ -3517,9 +3651,19 @@ function lastSessionFeedback(sName,currentKey){
     if(key===currentKey||!v.feedback||!v.feedback.effort) return;
     const m=key.match(/^(\d{4}-\d{2}-\d{2})-(.+)-w(\d+)$/);
     if(!m||m[2]!==sName) return;
-    if(!best||m[1]>best.date) best={date:m[1],effort:v.feedback.effort,energy:v.feedback.energy,note:v.feedback.note};
+    if(!best||m[1]>best.date) best={date:m[1],effort:v.feedback.effort,energy:v.feedback.energy,note:v.feedback.note,doms:v.feedback.doms};
   });
   return best;
+}
+function adaptCue(lf){
+  if(!lf||!lf.effort) return '';
+  const sore=lf.doms==='Fortes';
+  if(lf.effort==='Trop dur'||(lf.effort==='Dur'&&sore))
+    return 'Dernière fois : dur'+(sore?' + grosses courbatures':'')+'. Aujourd\'hui → <strong>−10 % sur les charges</strong>, vise le bas des fourchettes de reps, +30 s de repos. La récup d\'abord.';
+  if(lf.effort==='Dur') return '« Dur » la dernière fois → garde les mêmes charges et <strong>gagne 1-2 reps</strong> avant de monter.';
+  if(lf.effort==='Correct') return '« Correct » la dernière fois → <strong>+1 rep ou +2,5 kg</strong> sur les principaux.';
+  if(lf.effort==='Facile') return sore?'« Facile » mais courbatures → <strong>+2,5 kg</strong> max, sans forcer le volume.':'« Facile » la dernière fois → <strong>+2,5 à +5 kg</strong> sur les gros exercices.';
+  return '';
 }
 function setSessionFeedback(key,field,val){
   if(!APP.training[key]) APP.training[key]={sets:{}};
