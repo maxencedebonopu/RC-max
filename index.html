@@ -464,6 +464,15 @@ input,textarea,select{font-family:inherit}
 /* ===================== DESKTOP / PC ===================== */
 .recipe-fav{border:none;background:none;font-size:18px;line-height:1;padding:0 4px;flex-shrink:0;cursor:pointer}
 .ex-fav{border:none;background:none;font-size:16px;line-height:1;padding:2px 4px;cursor:pointer;flex-shrink:0}
+.adj-ing{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)}
+.adj-ing:last-child{border-bottom:none}
+.adj-n{flex:1;font-size:13px;min-width:0}
+.adj-k{font-size:13px;font-weight:700;color:var(--orange);flex-shrink:0;min-width:48px;text-align:right}
+.adj-k::after{content:' kcal';font-size:10px;color:var(--text3);font-weight:500}
+.adj-stepper{display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:8px;flex-shrink:0}
+.adj-stepper button{width:28px;height:32px;border:none;background:none;font-size:17px;color:var(--text2);cursor:pointer}
+.adj-stepper input{width:44px;text-align:center;border:none;background:none;font-size:13px;font-weight:600;color:var(--text);padding:0}
+.adj-stepper span{font-size:10px;color:var(--text3);padding-right:6px}
 /* ===== OPTIM MOBILE — zones tactiles plus grandes ===== */
 @media (max-width:899px){
   .recipe-addbtn{padding:10px 14px;font-size:13px}
@@ -1100,10 +1109,9 @@ input,textarea,select{font-family:inherit}
     <div class="modal-handle"></div>
     <div class="modal-title" id="adj-title">Ajuster la recette</div>
     <div class="modal-body">
-      <div class="fb-pill-label" style="margin-top:0">Portion</div>
-      <div class="fb-pills" id="adj-mult"></div>
-      <div class="fb-pill-label">Ajustements</div>
-      <div class="fb-pills" id="adj-toggles"></div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:6px;line-height:1.5">Bouge les grammes de chaque ingrédient → les macros se recalculent, et l'ajout met à jour ta journée.</div>
+      <div class="fb-pill-label" style="margin-top:4px">Ingrédients (grammes)</div>
+      <div id="adj-body"></div>
       <div id="adj-macros" class="calc-out" style="margin-top:14px"></div>
       <div class="fb-pill-label">Ajouter à</div>
       <div class="fb-pills" id="adj-meal"></div>
@@ -1752,6 +1760,103 @@ const RECIPES = [
    ing:["2 wraps","150 g poulet","40 g parmesan (ou fromage)","1/2 oignon","1 tomate","1 cc paprika"],
    steps:["Garnis un wrap de poulet + fromage + oignon + tomate.","Replie, poêle 2 min par face jusqu'à doré.","Coupe en parts."],
    tip:"Croustillant et fondant. Parfait avec une sauce skyr."}
+,
+  {id:'pdj-porridge-proteine',cat:'plat',emoji:'🥣',name:'Porridge protéiné pomme-cannelle',tag:'E',meal:'Petit-déjeuner',time:'8 min',macros:{kcal:440,p:32,g:58,l:9},
+   ing:["60 g flocons d'avoine","250 ml lait de chèvre","1 dose de whey Bulk","1 banane","1 cc cannelle","1 cc miel"],
+   steps:["Chauffe avoine + lait 5 min.","Hors du feu : whey + banane écrasée.","Cannelle + miel."],
+   tip:"Ajoute la whey hors du feu pour ne pas la cuire. ~32 g de protéines."},
+  {id:'pdj-oeufs-cocotte-tomate',cat:'plat',emoji:'🍳',name:'Œufs cocotte tomate-parmesan',tag:'R',meal:'Petit-déjeuner',time:'15 min',macros:{kcal:340,p:26,g:16,l:20},
+   ing:["3 œufs","150 g pulpe de tomate","20 g parmesan","1 gousse d'ail","2 tranches de pain","1 poignée de persil"],
+   steps:["Base pulpe + ail à la poêle.","Casse les œufs dessus, couvre 5-6 min.","Parmesan + persil, sers avec le pain."],
+   tip:"Pas une omelette : œufs pochés dans la tomate, fondants."},
+  {id:'pdj-bagel-thon-skyr',cat:'plat',emoji:'🥯',name:'Tartine thon-skyr (matin salé)',tag:'R',meal:'Petit-déjeuner',time:'6 min',macros:{kcal:360,p:30,g:38,l:8},
+   ing:["2 tranches de pain","1 boîte de thon (140 g)","3 cs skyr","1/2 concombre","1/2 citron","1 poignée de persil"],
+   steps:["Mélange thon + skyr + citron.","Étale sur le pain toasté.","Concombre + persil."],
+   tip:"30 g de protéines salées, sans cuisson."},
+  {id:'pdj-skyr-granola-fruits',cat:'snack',emoji:'🥛',name:'Skyr granola & fruits',tag:'R',meal:'Petit-déjeuner',time:'4 min',macros:{kcal:380,p:28,g:50,l:8},
+   ing:["250 g skyr","50 g muesli","1 nectarine","100 g fruits rouges","1 cc miel"],
+   steps:["Skyr dans un bol.","Muesli + fruits + miel."],
+   tip:"Le petit-déj sucré minute, 28 g de protéines."},
+  {id:'pdj-pain-perdu-proteine',cat:'plat',emoji:'🍞',name:'Pain perdu protéiné',tag:'E',meal:'Petit-déjeuner',time:'12 min',macros:{kcal:440,p:30,g:50,l:13},
+   ing:["2 tranches de pain","2 œufs","100 ml lait de chèvre","1 dose de whey Bulk","1 cc cannelle","100 g fruits rouges"],
+   steps:["Mélange œufs + lait + whey + cannelle.","Trempe le pain, dore 2 min/face.","Fruits rouges dessus."],
+   tip:"Recycle le pain, version protéinée."},
+  {id:'pdj-jambon-fromage-oeuf',cat:'plat',emoji:'🍳',name:'Œuf au plat, jambon & pain',tag:'E',meal:'Petit-déjeuner',time:'8 min',macros:{kcal:400,p:32,g:30,l:18},
+   ing:["2 œufs","80 g jambon de poulet","20 g parmesan","2 tranches de pain","1 tomate"],
+   steps:["Œufs au plat + jambon poêlé.","Parmesan, sur pain toasté.","Tomate à côté."],
+   tip:"Matin salé costaud, 32 g de protéines."},
+  {id:'pdj-smoothie-bowl-proteine',cat:'snack',emoji:'🍓',name:'Smoothie bowl protéiné',tag:'R',meal:'Petit-déjeuner',time:'6 min',macros:{kcal:400,p:34,g:48,l:6},
+   ing:["250 g skyr","1 dose de whey Bulk","1 banane","100 g fruits rouges","30 g muesli"],
+   steps:["Mixe skyr + whey + banane épais.","Verse, muesli + fruits dessus."],
+   tip:"34 g de protéines, à la cuillère."},
+  {id:'pdj-wrap-poulet-oeuf',cat:'plat',emoji:'🌯',name:'Wrap matin poulet-œuf',tag:'E',meal:'Petit-déjeuner',time:'10 min',macros:{kcal:460,p:42,g:40,l:14},
+   ing:["1 wrap","2 œufs","100 g poulet","20 g parmesan","1 poignée de persil"],
+   steps:["Brouille les œufs avec le poulet émincé.","Garnis le wrap + parmesan.","Roule."],
+   tip:"Le wrap du matin, 42 g de protéines, à emporter."},
+  {id:'gen-poulet-teriyaki-bowl',cat:'plat',cuisine:'asia',emoji:'🍗',name:'Bowl poulet teriyaki',tag:'E',meal:'Déjeuner',time:'20 min',macros:{kcal:560,p:48,g:64,l:9},
+   ing:["180 g poulet","200 g riz cuit","3 cs sauce soja","1 cs miel","1 cc gingembre","150 g brocoli","2 cébettes"],
+   steps:["Poêle le poulet.","Soja + miel + gingembre, glace.","Sers riz + brocoli + cébette."],
+   tip:"Maison = moins sucré que le commerce."},
+  {id:'gen-chili-poulet',cat:'plat',emoji:'🌶️',name:'Chili de poulet haché',tag:'E',meal:'Déjeuner',time:'25 min',macros:{kcal:520,p:46,g:56,l:12},
+   ing:["200 g poulet haché","1 boîte de haricots rouges (250 g)","200 g pulpe de tomate","1 oignon","1 cc cumin","1 cc paprika","150 g riz cuit"],
+   steps:["Colore le poulet + oignon.","Tomate + haricots + épices, mijote 15 min.","Sers sur riz."],
+   tip:"Version volaille du chili, plus maigre."},
+  {id:'gen-saute-boeuf-brocoli',cat:'plat',cuisine:'asia',emoji:'🥩',name:'Sauté bœuf-brocoli',tag:'E',meal:'Dîner',time:'15 min',macros:{kcal:540,p:44,g:48,l:18},
+   ing:["180 g rumsteak","200 g brocoli","1 cs sauce huître","1 cs sauce soja","1 gousse d'ail","150 g riz cuit"],
+   steps:["Saisis le bœuf tranché à feu vif.","Brocoli + ail + sauces.","Sers sur riz."],
+   tip:"Classique du wok, prêt en 15 min."},
+  {id:'gen-pates-thon-citron',cat:'plat',emoji:'🍝',name:'Pâtes thon-citron',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:540,p:38,g:68,l:10},
+   ing:["100 g pâtes","1 boîte de thon (140 g)","1/2 citron","2 gousses d'ail","1 poignée de persil","1 cs huile d'olive","20 g parmesan"],
+   steps:["Cuis les pâtes.","Ail doré + thon + citron.","Mélange, parmesan + persil."],
+   tip:"Frais et rapide, 38 g de protéines."},
+  {id:'gen-curry-poulet-coco-light',cat:'plat',emoji:'🍛',name:'Curry poulet coco léger',tag:'E',meal:'Dîner',time:'20 min',macros:{kcal:540,p:44,g:50,l:18},
+   ing:["180 g poulet","150 ml crème de coco","200 g pulpe de tomate","1 oignon","1 cc curry","150 g riz cuit","100 g épinards"],
+   steps:["Revenir oignon + curry.","Poulet + tomate + coco, mijote 12 min.","Épinards, sers sur riz."],
+   tip:"La crème de coco en petite dose = onctueux sans exploser les calories."},
+  {id:'gen-bol-poulet-patate-douce',cat:'plat',emoji:'🍠',name:'Bol poulet-patate douce',tag:'E',meal:'Déjeuner',time:'25 min',macros:{kcal:520,p:46,g:52,l:12},
+   ing:["180 g poulet","1 patate douce (250 g)","100 g brocoli","1 cs huile d'olive","1 cc paprika"],
+   steps:["Patate douce au four 200 °C, 25 min.","Poêle le poulet au paprika.","Assemble + brocoli."],
+   tip:"Glucides à index bas, parfait recomp."},
+  {id:'gen-saumon-riz-soja',cat:'plat',cuisine:'asia',emoji:'🐟',name:'Saumon glacé soja & riz',tag:'E',meal:'Dîner',time:'15 min',macros:{kcal:560,p:38,g:52,l:22},
+   ing:["1 pavé de saumon (150 g)","3 cs sauce soja","1 cs miel","200 g riz cuit","150 g brocoli","1 cc graines de sésame"],
+   steps:["Poêle le saumon.","Soja + miel, glace 2 min.","Riz + brocoli + sésame."],
+   tip:"Oméga-3 + protéines, sauce qui claque."},
+  {id:'gen-steak-haricots-riz',cat:'plat',emoji:'🥩',name:'Steak haché, haricots & riz',tag:'R',meal:'Dîner',time:'15 min',macros:{kcal:520,p:46,g:50,l:14},
+   ing:["180 g steak haché 5 %","1 boîte de haricots rouges (250 g)","150 g riz cuit","1 oignon","1 cc paprika"],
+   steps:["Colore le steak + oignon + paprika.","Ajoute les haricots.","Sers sur riz."],
+   tip:"Rapide, fibres + protéines, peu de gras."},
+  {id:'gen-crevettes-nouilles',cat:'plat',cuisine:'asia',emoji:'🦐',name:'Nouilles sautées crevettes',tag:'E',meal:'Dîner',time:'18 min',macros:{kcal:520,p:36,g:64,l:12},
+   ing:["150 g nouilles","200 g crevettes","1 cs sauce huître","1 cs sauce soja","2 carottes","2 cébettes","1 gousse d'ail"],
+   steps:["Cuis les nouilles.","Saute crevettes + ail + carottes.","Sauces + nouilles, fais sauter."],
+   tip:"Feu vif et tout prêt d'avance : secret du wok."},
+  {id:'gen-poulet-roti-legumes',cat:'plat',emoji:'🍗',name:'Poulet rôti & légumes',tag:'E',meal:'Dîner',time:'25 min',macros:{kcal:500,p:50,g:40,l:14},
+   ing:["200 g poulet","2 carottes","1 courgette","1 oignon","1 cs huile d'olive","1 cc paprika","150 g riz cuit"],
+   steps:["Four 200 °C : poulet + légumes huilés + paprika, 22 min.","Sers avec riz."],
+   tip:"Un plat, peu de vaisselle, 50 g de protéines."},
+  {id:'gen-pates-boeuf-tomate',cat:'plat',emoji:'🍝',name:'Pâtes bolo express',tag:'E',meal:'Déjeuner',time:'20 min',macros:{kcal:580,p:42,g:70,l:14},
+   ing:["100 g pâtes","180 g steak haché 5 %","200 g pulpe de tomate","1 oignon","2 gousses d'ail","20 g parmesan"],
+   steps:["Bolo : bœuf + oignon + ail + tomate, 12 min.","Mélange aux pâtes, parmesan."],
+   tip:"La bolo maigre et rapide."},
+  {id:'gen-bol-pois-chiches-poulet',cat:'plat',emoji:'🥗',name:'Bol poulet-pois chiches',tag:'R',meal:'Déjeuner',time:'15 min',macros:{kcal:520,p:46,g:50,l:14},
+   ing:["150 g poulet","1 boîte de pois chiches (250 g)","2 tomates","1 oignon","1 cs huile d'olive","1/2 citron","1 poignée de persil"],
+   steps:["Réchauffe le poulet émincé.","Pois chiches + tomates + oignon.","Huile + citron + persil."],
+   tip:"Tiède ou froid, fibres + protéines."},
+  {id:'gen-thon-couscous',cat:'plat',emoji:'🌾',name:'Couscous thon-légumes',tag:'R',meal:'Déjeuner',time:'15 min',macros:{kcal:500,p:34,g:66,l:9},
+   ing:["150 g couscous","1 boîte de thon (140 g)","2 carottes","1 oignon","1 boîte de pois chiches (250 g)","1 poignée de persil","1/2 citron"],
+   steps:["Gonfle le couscous.","Mélange thon + pois chiches + carottes + oignon.","Citron + persil."],
+   tip:"Meal-prep facile à emporter."},
+  {id:'gen-saumon-pates-epinards',cat:'plat',emoji:'🍝',name:'Pâtes saumon-épinards',tag:'E',meal:'Dîner',time:'18 min',macros:{kcal:600,p:42,g:64,l:22},
+   ing:["100 g pâtes","1 pavé de saumon (150 g)","100 g épinards","100 ml crème de soja","2 gousses d'ail","20 g parmesan"],
+   steps:["Cuis les pâtes.","Saumon émietté + ail + épinards + crème de soja.","Mélange, parmesan."],
+   tip:"Crémeux et léger grâce à la crème de soja."},
+  {id:'gen-poulet-gochujang-riz',cat:'plat',cuisine:'asia',emoji:'🔥',name:'Poulet gochujang & riz',tag:'E',meal:'Déjeuner',time:'20 min',macros:{kcal:560,p:48,g:60,l:12},
+   ing:["180 g poulet","2 cs gochujang","1 cs sauce soja","1 cc miel","200 g riz cuit","1/2 concombre","1 cc graines de sésame"],
+   steps:["Marinade gochujang + soja + miel.","Poêle le poulet, glace.","Riz + concombre + sésame."],
+   tip:"Sucré-piquant coréen, 48 g de protéines."},
+  {id:'gen-boeuf-saute-riz',cat:'plat',cuisine:'asia',emoji:'🥩',name:'Bœuf sauté oignons & riz',tag:'E',meal:'Dîner',time:'15 min',macros:{kcal:540,p:44,g:52,l:16},
+   ing:["180 g rumsteak","1 oignon","2 carottes","1 cs sauce soja","1 cs sauce huître","150 g riz cuit"],
+   steps:["Saisis le bœuf tranché.","Oignon + carottes + sauces.","Sers sur riz."],
+   tip:"Express et savoureux, peu de gras."}
 ];
 
 // ===== FRIDGE / SHOPPING =====
@@ -3345,37 +3450,32 @@ function toggleRecipe(id){
   document.getElementById('rc-'+id).classList.toggle('open');
 }
 
-let adjCtx={id:null,mult:1,lowCarb:false,hiProt:false,meal:'Déjeuner'};
-const ADJ_MULTS=[['½',0.5],['¾',0.75],['1',1],['1½',1.5],['2',2]];
-function adjMacros(){
-  const r=RECIPES.find(x=>x.id===adjCtx.id); if(!r||!r.macros) return {kcal:0,p:0,g:0,l:0};
-  let p=r.macros.p*adjCtx.mult; if(adjCtx.hiProt) p+=25;
-  let g=r.macros.g*adjCtx.mult*(adjCtx.lowCarb?0.5:1);
-  let l=r.macros.l*adjCtx.mult;
-  return {kcal:Math.round(p*4+g*4+l*9),p:Math.round(p),g:Math.round(g),l:Math.round(l)};
-}
+let adjCtx={id:null,items:[],meal:'Déjeuner'};
+function adjTotal(){return adjCtx.items.reduce((a,it)=>it.unknown?a:{kcal:a.kcal+(it.kcal||0),p:a.p+(it.p||0),g:a.g+(it.g||0),l:a.l+(it.l||0)},{kcal:0,p:0,g:0,l:0});}
 function openRecipeAdjust(id){
-  const r=RECIPES.find(x=>x.id===id); if(!r||!r.macros){toast('Recette non ajustable');return;}
-  adjCtx={id,mult:1,lowCarb:false,hiProt:false,meal:(r.meal&&MEAL_NAMES.includes(r.meal))?r.meal:'Déjeuner'};
+  const r=RECIPES.find(x=>x.id===id); if(!r||!r.ing){toast('Recette non ajustable');return;}
+  let items=[]; try{ items=ESTI.parseMeal(r.ing.join('\n')); }catch(e){ items=[]; }
+  adjCtx={id,items,meal:(r.meal&&MEAL_NAMES.includes(r.meal))?r.meal:'Déjeuner'};
   document.getElementById('adj-title').textContent='Ajuster · '+r.name;
   renderAdjModal(); openModal('recipe-adj-modal');
 }
+function adjSetGrams(i,v){ const it=adjCtx.items[i]; if(!it||it.unknown) return; it.grams=Math.max(0,Math.round(+v||0)); ESTI.recompute(it); renderAdjModal(); }
+function adjBump(i,d){ const it=adjCtx.items[i]; if(!it||it.unknown) return; const step=it.grams>=200?25:(it.grams>=40?10:5); adjSetGrams(i,Math.max(0,it.grams+d*step)); }
 function renderAdjModal(){
-  document.getElementById('adj-mult').innerHTML=ADJ_MULTS.map(m=>`<button class="fb-pill ${adjCtx.mult===m[1]?'on':''}" onclick="adjCtx.mult=${m[1]};renderAdjModal()">${m[0]}</button>`).join('');
-  document.getElementById('adj-toggles').innerHTML=
-    `<button class="fb-pill ${adjCtx.lowCarb?'on':''}" onclick="adjCtx.lowCarb=!adjCtx.lowCarb;renderAdjModal()">🥖 − Glucides</button>`+
-    `<button class="fb-pill ${adjCtx.hiProt?'on':''}" onclick="adjCtx.hiProt=!adjCtx.hiProt;renderAdjModal()">💪 + Protéines</button>`;
-  const m=adjMacros();
-  document.getElementById('adj-macros').innerHTML=
-    `<div class="calc-row big"><span>Calories</span><b>${m.kcal} kcal</b></div>`+
-    `<div class="calc-macros"><div class="cm"><span class="pip" style="background:var(--orange)"></span>Prot.<b>${m.p} g</b></div><div class="cm"><span class="pip" style="background:var(--green)"></span>Gluc.<b>${m.g} g</b></div><div class="cm"><span class="pip" style="background:var(--blue)"></span>Lip.<b>${m.l} g</b></div></div>`;
+  const rows=adjCtx.items.map((it,i)=>{
+    if(it.unknown) return `<div class="adj-ing"><span class="adj-n">${(it.raw||'?').replace(/</g,'&lt;')} <span style="color:var(--text3)">(non compté)</span></span></div>`;
+    const nm=it.food?(it.food.emoji+' '+it.food.name):(it.raw||'?');
+    return `<div class="adj-ing"><span class="adj-n">${nm}</span><span class="adj-stepper"><button onclick="adjBump(${i},-1)">−</button><input type="number" value="${it.grams}" onchange="adjSetGrams(${i},this.value)" inputmode="numeric"><span>g</span><button onclick="adjBump(${i},1)">＋</button></span><span class="adj-k">${it.kcal}</span></div>`;
+  }).join('');
+  document.getElementById('adj-body').innerHTML=rows||'<div style="color:var(--text3);font-size:13px;padding:8px 0">Ingrédients non analysables — ajoute la recette telle quelle via « + ».</div>';
+  const t=adjTotal();
+  document.getElementById('adj-macros').innerHTML=`<div class="calc-row big"><span>Total ajusté</span><b>${Math.round(t.kcal)} kcal</b></div><div class="calc-macros"><div class="cm"><span class="pip" style="background:var(--orange)"></span>Prot.<b>${Math.round(t.p)} g</b></div><div class="cm"><span class="pip" style="background:var(--green)"></span>Gluc.<b>${Math.round(t.g)} g</b></div><div class="cm"><span class="pip" style="background:var(--blue)"></span>Lip.<b>${Math.round(t.l)} g</b></div></div>`;
   document.getElementById('adj-meal').innerHTML=MEAL_NAMES.map(mn=>`<button class="fb-pill ${adjCtx.meal===mn?'on':''}" onclick="adjCtx.meal='${mn}';renderAdjModal()">${mn.replace('Petit-déjeuner','Petit-déj')}</button>`).join('');
 }
 function addAdjustedRecipe(){
   const r=RECIPES.find(x=>x.id===adjCtx.id); if(!r) return;
-  const m=adjMacros();
-  const suffix=[]; if(adjCtx.mult!==1) suffix.push('×'+adjCtx.mult); if(adjCtx.lowCarb) suffix.push('− gluc'); if(adjCtx.hiProt) suffix.push('+ prot');
-  const item={name:r.name+(suffix.length?' ('+suffix.join(', ')+')':''),qty:'1 portion',kcal:m.kcal,p:m.p,g:m.g,l:m.l};
+  const t=adjTotal();
+  const item={name:r.name+' (ajusté)',qty:'ajusté',kcal:Math.round(t.kcal),p:Math.round(t.p),g:Math.round(t.g),l:Math.round(t.l)};
   getTodayData().meals[adjCtx.meal].push(item);
   recordRecent(item);
   saveState();renderHome();renderFood();
