@@ -745,6 +745,7 @@ input,textarea,select{font-family:inherit}
           <button class="rfilter" data-f="fav" onclick="setRecipeFilter('fav')">❤️ Favoris</button>
           <button class="rfilter" data-f="ete" onclick="setRecipeFilter('ete')">☀️ Été</button>
           <button class="rfilter" data-f="af" onclick="setRecipeFilter('af')">🔥 Air fryer</button>
+          <button class="rfilter" data-f="pdj" onclick="setRecipeFilter('pdj')">🌅 Petit-déj</button>
           <button class="rfilter" data-f="cuisinable" onclick="setRecipeFilter('cuisinable')">🧊 Cuisinable</button>
           <button class="rfilter" data-f="asia" onclick="setRecipeFilter('asia')">🍜 Asiatique</button>
           <button class="rfilter" data-f="plat" onclick="setRecipeFilter('plat')">Plats</button>
@@ -1860,6 +1861,35 @@ const RECIPES = [
    ing:["180 g rumsteak","1 oignon","2 carottes","1 cs sauce soja","1 cs sauce huître","150 g riz cuit"],
    steps:["Saisis le bœuf tranché.","Oignon + carottes + sauces.","Sers sur riz."],
    tip:"Express et savoureux, peu de gras."}
+,
+  {id:'pdj-cookie-dough',cat:'snack',emoji:'🍪',name:'Cookie dough protéiné (skyr)',tag:'R',meal:'Petit-déjeuner',time:'4 min',macros:{kcal:380,p:34,g:42,l:8},
+   ing:["250 g skyr","1 dose de whey Bulk","30 g flocons d'avoine","20 g chocolat noir (pépites)","1 cc miel"],
+   steps:["Mélange skyr + whey + avoine + miel.","Ajoute les pépites de chocolat.","Mange à la cuillère, façon pâte à cookie."],
+   tip:"Le dessert-petit-déj viral, 34 g de protéines, sans cuisson."},
+  {id:'pdj-riz-au-lait-proteine',cat:'plat',emoji:'🍚',name:'Riz au lait protéiné cannelle',tag:'E',meal:'Petit-déjeuner',time:'8 min',macros:{kcal:420,p:30,g:60,l:6},
+   ing:["150 g riz cuit","250 ml lait de chèvre","1 dose de whey Bulk","1 cc cannelle","1 cc miel","1 banane"],
+   steps:["Chauffe riz + lait 5 min.","Hors du feu : whey + cannelle.","Banane tranchée + miel dessus."],
+   tip:"Recycle un reste de riz en petit-déj réconfortant et protéiné."},
+  {id:'pdj-proffee',cat:'snack',emoji:'🥤',name:'Proffee (café protéiné glacé)',tag:'R',meal:'Petit-déjeuner',time:'3 min',macros:{kcal:160,p:28,g:6,l:2},
+   ing:["1 dose de whey Bulk","1 grand café froid","200 ml lait de chèvre (ou eau)","quelques glaçons"],
+   steps:["Shake ou mixe whey + café + lait + glaçons.","Bois bien frais."],
+   tip:"Le café-protéiné qui réveille : ~28 g de protéines, ultra léger."},
+  {id:'pdj-porridge-sale',cat:'plat',emoji:'🥣',name:'Porridge salé œuf-parmesan',tag:'R',meal:'Petit-déjeuner',time:'10 min',macros:{kcal:380,p:26,g:36,l:15},
+   ing:["50 g flocons d'avoine","250 ml bouillon de volaille","1 œuf","20 g parmesan","1 poignée de persil","poivre"],
+   steps:["Cuis l'avoine dans le bouillon 5 min (façon risotto).","Œuf poché ou mollet dessus + parmesan.","Persil + poivre."],
+   tip:"L'avoine en version salée — original, crémeux et rassasiant."},
+  {id:'pdj-overnight-tiramisu',cat:'snack',emoji:'🍮',name:'Overnight oats tiramisu',tag:'R',meal:'Petit-déjeuner',time:'5 min + nuit',macros:{kcal:400,p:30,g:48,l:9},
+   ing:["50 g flocons d'avoine","200 g skyr","1 dose de whey Bulk","1 café fort","10 g cacao","1 cc miel"],
+   steps:["Mélange avoine + skyr + whey + café.","Réfrigère une nuit.","Cacao + miel le matin."],
+   tip:"Un tiramisu sain à préparer la veille, 30 g de protéines."},
+  {id:'pdj-toast-ricotta-banane',cat:'plat',emoji:'🍞',name:'Toast ricotta-banane-miel',tag:'E',meal:'Petit-déjeuner',time:'4 min',macros:{kcal:380,p:18,g:50,l:12},
+   ing:["2 tranches de pain","60 g ricotta","1 banane","1 cc miel","1 pincée de cannelle"],
+   steps:["Toaste le pain, étale la ricotta.","Banane tranchée + miel + cannelle."],
+   tip:"Sucré, crémeux, prêt en 3 min."},
+  {id:'pdj-bowl-choco-pb',cat:'snack',emoji:'🍫',name:'Bowl protéiné choco-cacahuète',tag:'E',meal:'Petit-déjeuner',time:'5 min',macros:{kcal:440,p:36,g:40,l:14},
+   ing:["250 g skyr","1 dose de whey Bulk","1 cs beurre de cacahuète","1 banane","10 g cacao","20 g muesli"],
+   steps:["Mélange skyr + whey + cacao.","Banane + beurre de cacahuète + muesli dessus."],
+   tip:"Le combo choco-cacahuète, 36 g de protéines pour bien démarrer."}
 ];
 
 // ===== FRIDGE / SHOPPING =====
@@ -3420,6 +3450,7 @@ function renderRecipes(){
     else if(recipeFilter==='fav'){if(!isFavRecipe(r.id))return false;}
     else if(recipeFilter==='ete'){if(!isEte(r))return false;}
     else if(recipeFilter==='af'){if(!r.af)return false;}
+    else if(recipeFilter==='pdj'){if(r.meal!=='Petit-déjeuner')return false;}
     else if(recipeFilter!=='tous'&&recipeCat(r)!==recipeFilter) return false;
     if(q){const hay=norm(r.name+' '+r.ing.join(' '));if(!hay.includes(q))return false;}
     return true;
@@ -3428,7 +3459,7 @@ function renderRecipes(){
   const cnt=document.getElementById('recipes-count');
   if(cnt) cnt.textContent=filtered.length+' recette'+(filtered.length>1?'s':'');
   if(!filtered.length){
-    const msg=recipeFilter==='cuisinable'?'Ajoute des ingrédients dans <strong>Frigo</strong> pour voir ce que tu peux cuisiner maintenant.':recipeFilter==='fav'?'Aucun favori pour l\'instant. Touche le 🤍 sur une recette pour l\'ajouter ici.':recipeFilter==='ete'?'Aucune recette d\'été ne correspond.':recipeFilter==='af'?'Aucune recette air fryer ne correspond.':'Aucune recette ne correspond.';
+    const msg=recipeFilter==='cuisinable'?'Ajoute des ingrédients dans <strong>Frigo</strong> pour voir ce que tu peux cuisiner maintenant.':recipeFilter==='fav'?'Aucun favori pour l\'instant. Touche le 🤍 sur une recette pour l\'ajouter ici.':recipeFilter==='ete'?'Aucune recette d\'été ne correspond.':recipeFilter==='af'?'Aucune recette air fryer ne correspond.':recipeFilter==='pdj'?'Aucune recette de petit-déjeuner ne correspond.':'Aucune recette ne correspond.';
     list.innerHTML='<div class="chart-empty" style="padding:24px">'+msg+'</div>';return;
   }
   list.innerHTML=filtered.map(r=>{
