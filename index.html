@@ -473,6 +473,9 @@ input,textarea,select{font-family:inherit}
 .adj-stepper button{width:28px;height:32px;border:none;background:none;font-size:17px;color:var(--text2);cursor:pointer}
 .adj-stepper input{width:44px;text-align:center;border:none;background:none;font-size:13px;font-weight:600;color:var(--text);padding:0}
 .adj-stepper span{font-size:10px;color:var(--text3);padding-right:6px}
+.portion-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);font-weight:600;margin-top:8px}
+.portion-row button{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--orange);background:var(--orange-light);color:var(--orange);font-size:17px;line-height:1;cursor:pointer}
+.portion-row b{min-width:18px;text-align:center;color:var(--text);font-size:15px}
 /* ===== OPTIM MOBILE — zones tactiles plus grandes ===== */
 @media (max-width:899px){
   .recipe-addbtn{padding:10px 14px;font-size:13px}
@@ -1225,15 +1228,15 @@ const RECIPES = [
    ing:["60 g flocons d'avoine","200 g yaourt grec","20 g beurre de cacahuète","1 cs miel","100 ml lait","1 banane","50 g fruits rouges surgelés","1 dose de whey (option)"],
    steps:['Mélange avoine + yaourt + beurre de cacahuète + miel + lait dans un bocal.','Réfrigère une nuit.','Le matin : banane tranchée + fruits rouges dessus.','Pour taper 40-50 g de protéines : ajoute une dose de whey ou un yaourt à côté.'],
    tip:'Les fruits rouges surgelés dégèlent dans la nuit si tu les mets directement dans le bocal.'},
-  {id:'poulet',emoji:'🍗',name:'Poulet harissa (batch bureau)',tag:'E',meal:'Déjeuner',time:'25 min + marinade',macros:{kcal:580,p:52,g:62,l:11},
+  {id:'poulet',serves:5,emoji:'🍗',name:'Poulet harissa (batch bureau)',tag:'E',meal:'Déjeuner',time:'25 min + marinade',macros:{kcal:580,p:52,g:62,l:11},
    ing:["1 kg poulet (filets/cuisses)","2 cs harissa","1 cs huile d'olive","1 cc paprika fumé","1 cc cumin","1 cc sel","jus d'1 citron","2 gousses d'ail confit","300 g riz basmati (cru)","2 carottes"],
    steps:['Coupe le poulet en gros morceaux.','Marinade : harissa + huile + paprika + cumin + sel + citron + ail confit. 30 min mini (idéal une nuit).','Poêle feu vif 3-4 min par face, OU four 200 °C pendant 20-25 min.','Portion bureau : 180 g poulet + 75 g riz cru cuit + julienne de carottes + sauce yaourt-harissa à part.'],
    tip:'Se conserve 4 jours au frigo. Garde la sauce dans un pot séparé pour que ça ne détrempe pas.'},
-  {id:'chili',emoji:'🌶️',name:'Chili con carne',tag:'E',meal:'Déjeuner',time:'35 min',macros:{kcal:600,p:48,g:64,l:14},
+  {id:'chili',serves:4,emoji:'🌶️',name:'Chili con carne',tag:'E',meal:'Déjeuner',time:'35 min',macros:{kcal:600,p:48,g:64,l:14},
    ing:["500 g bœuf haché","1 oignon","2 gousses d'ail","1 cs concentré de tomate","1 cs harissa","1 cc cumin","1 cc paprika","1 cc chipotle","200 g purée de tomate","2 boîtes de haricots rouges (260 g égouttés)","300 g riz basmati (cru)"],
    steps:['Fais revenir oignon + ail dans huile / chili oil.','Ajoute le bœuf, fais colorer.','Concentré + harissa + cumin + paprika + chipotle + sel.','Mouille avec la purée de tomate + haricots rouges égouttés.','Mijote 25-30 min à feu moyen, goûte, ajuste. Sert sur riz.'],
    tip:'Se congèle parfaitement — garde une part pour la semaine 2.'},
-  {id:'curry',emoji:'🍛',name:'Curry rouge poulet',tag:'E',meal:'Déjeuner',time:'20 min',macros:{kcal:560,p:44,g:58,l:14},
+  {id:'curry',serves:3,emoji:'🍛',name:'Curry rouge poulet',tag:'E',meal:'Déjeuner',time:'20 min',macros:{kcal:560,p:44,g:58,l:14},
    ing:["2 cs pâte de curry rouge","450 g poulet","1 boîte de lait de coco (400 ml)","1 cs sauce soja","1 cc miel","jus d'1 citron vert","200 g brocoli","250 g riz jasmin (cru)"],
    steps:['Fais revenir la pâte de curry 1 min dans un peu d\'huile.','Ajoute le poulet en morceaux, saisis 2-3 min.','Verse le lait de coco.','Soja + miel + citron vert.','Brocoli les 10 dernières minutes. Mijote 15-20 min total.'],
    tip:'La sauce est meilleure le lendemain.'},
@@ -1257,15 +1260,15 @@ const RECIPES = [
    ing:["400 g yaourt grec","3 cs harissa","jus d'1/2 citron","1 gousse d'ail confit","1 pincée de sel","1 cc cumin"],
    steps:['Mélange tout dans un bol.','Goûte, ajuste harissa / sel.','Transfère en bocal hermétique.'],
    tip:'Dure 5-6 jours. Sauce naan, dressing salade, dip légumes, ou pour rehausser n\'importe quel bol de riz.'},
-  {id:'gochujang-chicken',cat:'plat',emoji:'🔥',name:'Bol poulet gochujang',tag:'E',meal:'Déjeuner',time:'25 min',macros:{kcal:590,p:50,g:64,l:12},
+  {id:'gochujang-chicken',serves:2,cat:'plat',emoji:'🔥',name:'Bol poulet gochujang',tag:'E',meal:'Déjeuner',time:'25 min',macros:{kcal:590,p:50,g:64,l:12},
    ing:["400 g poulet","2 cs gochujang","1 cs sauce soja","1 cc miel","1 gousse d'ail","1 cc gingembre râpé","1 cc huile de sésame","200 g riz (cru)","1/2 concombre","2 cébettes","1 cc graines de sésame"],
    steps:['Marinade : gochujang + soja + miel + ail + gingembre.','Poêle feu vif, poulet 6-8 min.','Déglace avec le reste de marinade + filet d\'eau, laisse glacer.','Sert sur riz + concombre + cébette + sésame.'],
    tip:'Double la sauce gochujang pour en garder au frigo : elle relève n\'importe quel bol.'},
-  {id:'korean-beef',cat:'plat',emoji:'🥩',name:'Bœuf coréen gochujang',tag:'E',meal:'Dîner',time:'12 min',macros:{kcal:580,p:44,g:56,l:18},
+  {id:'korean-beef',serves:2,cat:'plat',emoji:'🥩',name:'Bœuf coréen gochujang',tag:'E',meal:'Dîner',time:'12 min',macros:{kcal:580,p:44,g:56,l:18},
    ing:["300 g bœuf haché 5%","2 cs gochujang","1 cs sauce soja","1 cc miel","2 gousses d'ail","1 cc gingembre","2 cébettes","200 g riz (cru)","1 cc graines de sésame"],
    steps:['Colore le bœuf à feu vif.','Ail + gingembre 30 s.','Gochujang + soja + miel + splash d\'eau.','Caramélise 2-3 min. Sert sur riz, cébette + sésame.'],
    tip:'Version allégée jour R : sers dans des feuilles de salade au lieu du riz.'},
-  {id:'turkish-pasta',cat:'plat',emoji:'🍝',name:'Turkish pasta (manti express)',tag:'E',meal:'Déjeuner',time:'30 min',macros:{kcal:620,p:46,g:70,l:16},
+  {id:'turkish-pasta',serves:2,cat:'plat',emoji:'🍝',name:'Turkish pasta (manti express)',tag:'E',meal:'Déjeuner',time:'30 min',macros:{kcal:620,p:46,g:70,l:16},
    ing:["300 g bœuf haché","200 g pâtes courtes","200 g yaourt grec","2 gousses d'ail","1 cs concentré de tomate","1 cs beurre","1 cc paprika fumé","1 pincée de sel","1 cc menthe séchée"],
    steps:['Cuis les pâtes.','Poêle le bœuf : sel + concentré de tomate + épices.','Sauce froide : yaourt + ail écrasé + sel.','Beurre fondu + paprika (drizzle rouge).','Assemble : pâtes → bœuf → sauce yaourt → beurre paprika.'],
    tip:'Le secret c\'est la sauce yaourt-ail froide sur les pâtes chaudes. Ne saute pas le beurre paprika.'},
@@ -1277,11 +1280,11 @@ const RECIPES = [
    ing:["250 g crevettes","1 cs gochujang","100 ml crème (ou lait de coco)","1 gousse d'ail","1 cc miel","1 citron vert","200 g riz (cru)","150 g brocoli"],
    steps:['Revenir l\'ail.','Crevettes 2 min.','Gochujang + crème + miel.','2-3 min jusqu\'à sauce nappante, citron vert. Sert sur riz.'],
    tip:'Crème = plus riche, lait de coco = plus léger. Ne surcuis pas les crevettes.'},
-  {id:'pad-kra-pao',cat:'plat',emoji:'🌿',name:'Pad kra pao (basilic)',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:560,p:42,g:54,l:18},
+  {id:'pad-kra-pao',serves:2,cat:'plat',emoji:'🌿',name:'Pad kra pao (basilic)',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:560,p:42,g:54,l:18},
    ing:["350 g poulet ou bœuf haché","3 gousses d'ail","1-2 piments","1 cs sauce soja","1 cs sauce poisson","1 cc miel","1 grosse poignée de basilic","200 g riz (cru)","1 œuf"],
    steps:['Pile ail + piment.','Feu très vif : viande hachée.','Soja + sauce poisson + miel.','Hors du feu : le basilic tombe et fane.','Sert sur riz + œuf au plat (option).'],
    tip:'Le basilic se met à la fin, juste fané. L\'œuf au plat croustillant ajoute ~6 g de protéines.'},
-  {id:'sticky-beef-rice',cat:'plat',emoji:'🍚',name:'Bol riz bœuf collant',tag:'E',meal:'Dîner',time:'15 min',macros:{kcal:600,p:42,g:62,l:18},
+  {id:'sticky-beef-rice',serves:2,cat:'plat',emoji:'🍚',name:'Bol riz bœuf collant',tag:'E',meal:'Dîner',time:'15 min',macros:{kcal:600,p:42,g:62,l:18},
    ing:["300 g bœuf haché","2 cs sauce soja","1 cs gochujang","1 cc miel","1 cc gingembre","1 gousse d'ail","1 cc chili oil","200 g riz (cru)","1/2 concombre","2 cébettes","1 cc graines de sésame"],
    steps:['Colore le bœuf.','Soja + gochujang + miel + gingembre + ail.','Glace 2-3 min.','Sert sur riz + concombre + cébette + chili oil.'],
    tip:'Le "sticky rice bowl" de TikTok. Ajoute un œuf pour plus de protéines.'},
@@ -1313,19 +1316,19 @@ const RECIPES = [
    ing:["2 œufs","1 cc chili crisp","1 cc sauce soja","1 cc graines de sésame","1 cébette"],
    steps:['Œufs durs 9 min, refroidis, écale.','Coupe en deux.','Chili crisp + filet de soja + sésame.'],
    tip:'Snack protéiné express. Prépare-en plusieurs d\'avance.'},
-  {id:'bibimbap',cat:'plat',cuisine:'asia',emoji:'🍚',name:'Bibimbap bœuf',tag:'E',meal:'Déjeuner',time:'25 min',macros:{kcal:620,p:46,g:66,l:18},
+  {id:'bibimbap',serves:2,cat:'plat',cuisine:'asia',emoji:'🍚',name:'Bibimbap bœuf',tag:'E',meal:'Déjeuner',time:'25 min',macros:{kcal:620,p:46,g:66,l:18},
    ing:["250 g bœuf haché 5%","200 g riz (cru)","2 carottes","100 g épinards","1 œuf","1 cs gochujang","1 cs sauce soja","1 cc huile de sésame","1 gousse d'ail","1 cc graines de sésame"],
    steps:['Cuis le riz.','Sauté le bœuf avec soja + ail.','Fais sauter les légumes séparément.','Œuf au plat.','Dresse : riz, bœuf, légumes, œuf, gochujang + sésame. Mélange.'],
    tip:'Le jaune coulant + le gochujang font la sauce. Mélange tout avant d\'attaquer.'},
-  {id:'teriyaki-chicken',cat:'plat',cuisine:'asia',emoji:'🍗',name:'Poulet teriyaki maison',tag:'E',meal:'Dîner',time:'20 min',macros:{kcal:580,p:48,g:62,l:12},
+  {id:'teriyaki-chicken',serves:2,cat:'plat',cuisine:'asia',emoji:'🍗',name:'Poulet teriyaki maison',tag:'E',meal:'Dîner',time:'20 min',macros:{kcal:580,p:48,g:62,l:12},
    ing:["400 g poulet","3 cs sauce soja","1 cs miel","1 cc gingembre","1 gousse d'ail","1 cc maïzena","200 g riz (cru)","150 g brocoli","1 cc graines de sésame"],
    steps:['Poêle le poulet.','Sauce : soja + miel + gingembre + ail.','Nappe et laisse glacer (maïzena pour épaissir).','Sert sur riz + brocoli + sésame.'],
    tip:'Maison = bien moins sucré que la version magasin, et plus protéiné.'},
-  {id:'bulgogi',cat:'plat',cuisine:'asia',emoji:'🥩',name:'Bœuf bulgogi',tag:'E',meal:'Dîner',time:'15 min + marinade',macros:{kcal:600,p:44,g:56,l:20},
+  {id:'bulgogi',serves:2,cat:'plat',cuisine:'asia',emoji:'🥩',name:'Bœuf bulgogi',tag:'E',meal:'Dîner',time:'15 min + marinade',macros:{kcal:600,p:44,g:56,l:20},
    ing:["300 g bœuf émincé","2 cs sauce soja","1 cc miel","1 cc huile de sésame","1 gousse d'ail","1 cc gingembre","1/4 de poire râpée","2 cébettes","200 g riz (cru)"],
    steps:['Marinade : soja + miel + sésame + ail + gingembre (+ poire) 15 min.','Poêle très chaude, saisis vite.','Sert sur riz, cébette + sésame.'],
    tip:'La poire râpée attendrit la viande — l\'astuce coréenne classique.'},
-  {id:'chicken-fried-rice',cat:'plat',cuisine:'asia',emoji:'🍳',name:'Riz sauté poulet & œuf',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:600,p:42,g:68,l:16},
+  {id:'chicken-fried-rice',serves:2,cat:'plat',cuisine:'asia',emoji:'🍳',name:'Riz sauté poulet & œuf',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:600,p:42,g:68,l:16},
    ing:["300 g riz cuit froid (de la veille)","300 g poulet","2 œufs","1 cs sauce soja","1 cc huile de sésame","1 gousse d'ail","100 g petits pois / carottes","2 cébettes"],
    steps:['Brouille les œufs, réserve.','Saisis le poulet.','Ajoute le riz froid + soja + sésame, fais sauter à feu vif.','Réincorpore œufs + légumes + cébette.'],
    tip:'Le riz de la veille (froid) ne colle pas — le secret du riz sauté.'},
@@ -1333,11 +1336,11 @@ const RECIPES = [
    ing:["2 pavés de saumon (300 g)","3 cs sauce soja","1 cs miel","1 cc gingembre","200 g riz (cru)","100 g edamame ou brocoli","1 cc graines de sésame"],
    steps:['Poêle le saumon côté peau.','Sauce : soja + miel + gingembre.','Nappe et glace 2 min.','Sert riz + edamame + sésame.'],
    tip:'Marche aussi au four : 200 °C, 12 min en badigeonnant de sauce.'},
-  {id:'gyudon',cat:'plat',cuisine:'asia',emoji:'🍲',name:'Gyudon (bol bœuf-oignon)',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:580,p:40,g:64,l:16},
+  {id:'gyudon',serves:2,cat:'plat',cuisine:'asia',emoji:'🍲',name:'Gyudon (bol bœuf-oignon)',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:580,p:40,g:64,l:16},
    ing:["250 g bœuf émincé","1 oignon","3 cs sauce soja","1 cc miel","1 cube de bouillon","1 cc gingembre","200 g riz (cru)","1 œuf","2 cébettes"],
    steps:['Fais fondre l\'oignon dans soja + miel + bouillon + gingembre.','Ajoute le bœuf, cuis 5 min.','Sert sur riz, œuf + cébette.'],
    tip:'Plat japonais réconfortant et rapide. L\'œuf mollet lie le tout.'},
-  {id:'larb',cat:'plat',cuisine:'asia',emoji:'🌿',name:'Larb de poulet (salade thaï)',tag:'R',meal:'Déjeuner',time:'15 min',macros:{kcal:380,p:40,g:18,l:16},
+  {id:'larb',serves:2,cat:'plat',cuisine:'asia',emoji:'🌿',name:'Larb de poulet (salade thaï)',tag:'R',meal:'Déjeuner',time:'15 min',macros:{kcal:380,p:40,g:18,l:16},
    ing:["350 g poulet haché","2 cs sauce poisson","jus de 2 citrons verts","1 échalote","1 piment","1 poignée de menthe + coriandre","1 cc riz grillé moulu","quelques feuilles de salade"],
    steps:['Cuis le poulet haché à sec.','Hors du feu : sauce poisson + citron vert + échalote + piment.','Ajoute les herbes fraîches.','Sers dans des feuilles de salade.'],
    tip:'Frais, acidulé, très protéiné et léger — parfait jour R ou en canicule.'},
@@ -1401,7 +1404,7 @@ const RECIPES = [
    ing:["150 g couscous","1 boîte de thon (140 g)","2 tomates","1 oignon","1 poignée de persil","1/2 citron","1 cs huile d'olive"],
    steps:['Mélange couscous + thon égoutté.','Tomates + oignon + beaucoup de persil.','Citron + huile, laisse reposer au frais.'],
    tip:'Meilleur après 1 h au frigo. Idéal à emporter.'},
-  {id:'curry-pois-chiches',cat:'plat',emoji:'🍛',name:'Curry de pois chiches au coco',tag:'R',meal:'Dîner',time:'20 min',macros:{kcal:560,p:24,g:64,l:22},
+  {id:'curry-pois-chiches',serves:2,cat:'plat',emoji:'🍛',name:'Curry de pois chiches au coco',tag:'R',meal:'Dîner',time:'20 min',macros:{kcal:560,p:24,g:64,l:22},
    ing:["2 boîtes de pois chiches (500 g)","200 ml crème de coco","200 g pulpe de tomate","1 oignon","2 gousses d'ail","1 cc paprika","1 pincée de piment","100 g épinards","200 g riz (cru)"],
    steps:['Revenir oignon + ail + paprika + piment.','Pulpe de tomate + pois chiches, mijote 10 min.','Crème de coco + épinards, 5 min.','Sert sur riz.'],
    tip:'Végé mais nourrissant. Ajoute du poulet ou un œuf pour booster les protéines.'},
@@ -1525,7 +1528,7 @@ const RECIPES = [
    ing:["2 wraps","1 boîte de pois chiches (250 g)","3 cs skyr","2 tomates","1 poignée de persil","1/2 citron","1 cc paprika"],
    steps:['Écrase grossièrement les pois chiches au paprika.','Garnis les wraps + tomates + persil.','Sauce skyr-citron.'],
    tip:'Version végé du wrap, riche en fibres et rassasiante.'},
-  {id:'poulet-roti-citron',cat:'plat',emoji:'🍗',name:'Poulet rôti citron-ail',tag:'E',meal:'Dîner',time:'30 min',macros:{kcal:560,p:52,g:46,l:16},
+  {id:'poulet-roti-citron',serves:2,cat:'plat',emoji:'🍗',name:'Poulet rôti citron-ail',tag:'E',meal:'Dîner',time:'30 min',macros:{kcal:560,p:52,g:46,l:16},
    ing:["400 g poulet","4 gousses d'ail","1 citron","2 cs huile d'olive","1 cc paprika","250 g riz (cru)","3 carottes"],
    steps:['Marinade : huile + ail + citron + paprika.','Four 200 °C, 22-25 min avec les carottes.','Sers avec riz.'],
    tip:'Batch du dimanche : double les quantités pour 2-3 repas.'},
@@ -1533,7 +1536,7 @@ const RECIPES = [
    ing:["1 rumsteak (150 g)","2 oignons","2 gousses d'ail","1 cs moutarde","1 cs sauce soja","200 g riz (cru)","1 poignée de persil"],
    steps:['Saisis le bœuf tranché, réserve.','Fais fondre les oignons.','Moutarde + soja + un peu d\'eau, remets le bœuf, persil, sers sur riz.'],
    tip:'Les oignons fondus apportent du sucré naturel à la sauce.'},
-  {id:'gratin-pates-thon',cat:'plat',emoji:'🧀',name:'Gratin de pâtes thon-tomate',tag:'E',meal:'Dîner',time:'25 min',macros:{kcal:620,p:38,g:74,l:18},
+  {id:'gratin-pates-thon',serves:2,cat:'plat',emoji:'🧀',name:'Gratin de pâtes thon-tomate',tag:'E',meal:'Dîner',time:'25 min',macros:{kcal:620,p:38,g:74,l:18},
    ing:["100 g pâtes","1 boîte de thon (140 g)","200 g pulpe de tomate","1 oignon","30 g parmesan","100 ml crème","1 poignée de persil"],
    steps:['Cuis les pâtes, mélange thon + pulpe de tomate + oignon + crème.','Verse dans un plat, parmesan dessus.','Four 200 °C, 12-15 min.'],
    tip:'Plat familial, se réchauffe parfaitement le lendemain.'},
@@ -1561,7 +1564,7 @@ const RECIPES = [
    ing:["200 g riz","1 oignon","400 ml bouillon de volaille","1 feuille de laurier","1 cs huile d'olive"],
    steps:['Nacre le riz avec l\'oignon.','Mouille au bouillon + laurier.','Couvre 12 min, laisse reposer 5 min.'],
    tip:'Bien plus parfumé que le riz à l\'eau. Base de tous tes bols.'},
-  {id:'sauce-tomate',cat:'sauce',emoji:'🍅',name:'Sauce tomate maison (batch)',tag:'R',meal:'Dîner',time:'25 min',macros:{kcal:90,p:3,g:12,l:4},
+  {id:'sauce-tomate',serves:4,cat:'sauce',emoji:'🍅',name:'Sauce tomate maison (batch)',tag:'R',meal:'Dîner',time:'25 min',macros:{kcal:90,p:3,g:12,l:4},
    ing:["400 g pulpe de tomate","1 oignon","3 gousses d'ail","1 feuille de laurier","2 cs huile d'olive","quelques feuilles de basilic"],
    steps:['Fais suer oignon + ail.','Pulpe + laurier, mijote 20 min.','Basilic à la fin.'],
    tip:'Fais-en un grand pot : base pour pâtes, pizza, shakshuka toute la semaine.'},
@@ -3384,6 +3387,28 @@ function cardioFinisher(day){
   ];
   return opts[day%opts.length]+' <span style="color:var(--text3)">— ~200-300 kcal brûlées sans entamer la force.</span>';
 }
+let recipePortions={};
+function scaleQtyStr(str,f){
+  if(!f||Math.abs(f-1)<1e-9) return str;
+  const m=String(str).match(/^(\s*)(\d+(?:[.,]\d+)?)(?:\s*\/\s*(\d+))?/);
+  if(!m) return str;
+  let n=parseFloat(m[2].replace(',','.')); if(m[3]) n=n/parseFloat(m[3]);
+  let rest=str.slice(m[0].length); let val=n*f;
+  const um=rest.match(/^\s*(kg|l)\b/i);
+  if(um&&val<1){ val*=1000; rest=rest.replace(/^(\s*)(kg|l)\b/i, um[1].toLowerCase()==='kg'?'$1g':'$1ml'); }
+  const gm=rest.match(/^\s*(g|ml)\b/i);
+  const numStr = gm ? Math.round(val) : (Math.round(val*100)/100).toString().replace('.',',');
+  return m[1]+numStr+rest;
+}
+function recipeMacroLine(r,P){ if(!r.macros) return 'Condiment — non compté'; return Math.round(r.macros.kcal*P)+' kcal · '+Math.round(r.macros.p*P)+'g P · '+Math.round(r.macros.g*P)+'g G · '+Math.round(r.macros.l*P)+'g L'; }
+function recipeIngList(r,P){ const f=P/(r.serves||1); return r.ing.map(i=>'• '+scaleQtyStr(i,f)).join('<br>'); }
+function setRecipePortion(id,d){
+  const r=RECIPES.find(x=>x.id===id); if(!r) return;
+  let P=Math.max(1,Math.min(12,(recipePortions[id]||1)+d)); recipePortions[id]=P;
+  const mac=document.getElementById('mac-'+id); if(mac) mac.innerHTML=recipeMacroLine(r,P);
+  const ing=document.getElementById('ing-'+id); if(ing) ing.innerHTML=recipeIngList(r,P);
+  const pp=document.getElementById('pp-'+id); if(pp) pp.textContent=P;
+}
 function renderRecipes(){
   const list=document.getElementById('recipes-list');
   const si=document.getElementById('recipe-search');
@@ -3407,7 +3432,7 @@ function renderRecipes(){
     list.innerHTML='<div class="chart-empty" style="padding:24px">'+msg+'</div>';return;
   }
   list.innerHTML=filtered.map(r=>{
-    const macroLine=r.macros?`${r.macros.kcal} kcal · ${r.macros.p}g P · ${r.macros.g}g G · ${r.macros.l}g L`:'Condiment — non compté';
+    const P0=recipePortions[r.id]||1;
     const tagLabel=r.tag==='E'?'Jour E':r.tag==='R'?'Jour R':'Sauce';
     const fm=recipeMatch(r);
     const matchBadge=fm.missing.length===0
@@ -3433,10 +3458,11 @@ function renderRecipes(){
         <i class="ti ti-chevron-right recipe-chevron"></i>
       </div>
       <div class="recipe-body">
-        <div style="font-size:12px;color:var(--text2);font-weight:600;margin-top:8px">${macroLine}</div>
+        <div id="mac-${r.id}" style="font-size:12px;color:var(--text2);font-weight:600;margin-top:8px">${recipeMacroLine(r,P0)}</div>
+        ${r.macros?`<div class="portion-row">Pour <button onclick="setRecipePortion('${r.id}',-1)">−</button><b id="pp-${r.id}">${P0}</b><button onclick="setRecipePortion('${r.id}',1)">＋</button> portion(s)${(r.serves||1)>1?' · base 1 portion':''}</div>`:''}
         ${missingBlock}
         <div class="recipe-section-label">Ingrédients</div>
-        <div class="recipe-ing">${r.ing.map(i=>'• '+i).join('<br>')}</div>
+        <div class="recipe-ing" id="ing-${r.id}">${recipeIngList(r,P0)}</div>
         <div class="recipe-section-label">Préparation</div>
         ${r.steps.map((s,i)=>`<div class="recipe-step"><div class="recipe-step-num">${i+1}</div><div>${s}</div></div>`).join('')}
         <div class="recipe-tip"><i class="ti ti-bulb"></i><div>${r.tip}</div></div>
@@ -3455,6 +3481,8 @@ function adjTotal(){return adjCtx.items.reduce((a,it)=>it.unknown?a:{kcal:a.kcal
 function openRecipeAdjust(id){
   const r=RECIPES.find(x=>x.id===id); if(!r||!r.ing){toast('Recette non ajustable');return;}
   let items=[]; try{ items=ESTI.parseMeal(r.ing.join('\n')); }catch(e){ items=[]; }
+  const f=(recipePortions[id]||1)/(r.serves||1);
+  if(Math.abs(f-1)>1e-9) items.forEach(it=>{ if(!it.unknown){ it.grams=Math.max(0,Math.round((it.grams||0)*f)); ESTI.recompute(it); } });
   adjCtx={id,items,meal:(r.meal&&MEAL_NAMES.includes(r.meal))?r.meal:'Déjeuner'};
   document.getElementById('adj-title').textContent='Ajuster · '+r.name;
   renderAdjModal(); openModal('recipe-adj-modal');
@@ -3485,12 +3513,13 @@ function addAdjustedRecipe(){
 function addRecipeToMeal(id,meal){
   const r=RECIPES.find(x=>x.id===id);
   if(!r||!r.macros) return;
+  const P=recipePortions[id]||1;
   const data=getTodayData();
-  const item={name:r.name,qty:'1 portion',kcal:r.macros.kcal,p:r.macros.p,g:r.macros.g,l:r.macros.l};
+  const item={name:r.name+(P>1?' ('+P+' portions)':''),qty:P+' portion'+(P>1?'s':''),kcal:Math.round(r.macros.kcal*P),p:Math.round(r.macros.p*P),g:Math.round(r.macros.g*P),l:Math.round(r.macros.l*P)};
   data.meals[meal].push(item);
   recordRecent(item);
-  saveState();renderHome();
-  toast(r.name+' → '+meal);
+  saveState();renderHome();renderFood();
+  toast(r.name+(P>1?' ×'+P:'')+' → '+meal);
 }
 
 // ========== FRIDGE ==========
