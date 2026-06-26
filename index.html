@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
+<html lang="fr"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Recomp Coach — Maxence</title>
@@ -444,6 +443,13 @@ input,textarea,select{font-family:inherit}
 .hm-ic i{font-size:17px}
 .hm-ic.add{background:var(--orange);color:#fff;border-color:var(--orange)}
 .hm-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.menu-loc{display:flex;gap:6px;margin:10px 16px 0}
+.menu-loc button{flex:1;padding:8px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--surface);font-size:12.5px;font-weight:600;color:var(--text2);display:flex;align-items:center;justify-content:center;gap:5px}
+.menu-loc button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+.menu-loc button i{font-size:15px}
+.hm-loc{display:flex;gap:6px;margin:8px 0 2px}
+.hm-loc button{flex:1;padding:6px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--surface2);font-size:12px;font-weight:600;color:var(--text2)}
+.hm-loc button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
 /* SWITCH SÉANCE MAISON */
 .home-switch{margin:0 0 10px}
 .home-switch-btn{width:100%;padding:10px;border-radius:var(--radius-sm);border:1.5px dashed var(--border2);background:var(--surface2);color:var(--text2);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px}
@@ -603,11 +609,11 @@ input,textarea,select{font-family:inherit}
     <div class="header-top">
       <div class="app-name">RecompCoach</div>
       <div style="display:flex;align-items:center;gap:10px">
-        <div class="header-date" id="header-date"></div>
+        <div class="header-date" id="header-date">vendredi 26 juin</div>
         <div style="width:32px;height:32px;border-radius:50%;background:var(--orange-light);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--orange)">M</div>
       </div>
     </div>
-    <div id="timer-bar" style="display:none" class="timer-bar">
+    <div id="timer-bar" style="display: flex;" class="timer-bar">
       <i class="ti ti-clock" style="color:var(--orange);font-size:18px"></i>
       <div>
         <div class="timer-count" id="timer-display">2:00</div>
@@ -625,7 +631,7 @@ input,textarea,select{font-family:inherit}
     <!-- ===== DASHBOARD ===== -->
     <div class="panel active" id="panel-home">
       <div class="section-head" style="padding-top:14px">
-        <div id="dash-greeting" style="font-size:20px;font-weight:700"></div>
+        <div id="dash-greeting" style="font-size:20px;font-weight:700">Bon après-midi 👋, Maxence</div>
         <button class="card-action" onclick="openWeightModal()"><i class="ti ti-scale" style="font-size:16px;vertical-align:-2px"></i> Mesures</button>
       </div>
 
@@ -645,10 +651,8 @@ input,textarea,select{font-family:inherit}
       <div class="hero" style="margin-top:10px">
         <div class="ring-wrap">
           <svg width="100" height="100" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--border)" stroke-width="8"/>
-            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--orange)" stroke-width="8"
-              stroke-linecap="round" stroke-dasharray="264" id="ring-progress" stroke-dashoffset="264"
-              transform="rotate(-90 50 50)" style="transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1)"/>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--border)" stroke-width="8"></circle>
+            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--orange)" stroke-width="8" stroke-linecap="round" stroke-dasharray="264" id="ring-progress" stroke-dashoffset="264" transform="rotate(-90 50 50)" style="transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1); stroke-dashoffset: 264; stroke: var(--orange);"></circle>
           </svg>
           <div class="ring-center">
             <div class="ring-kcal" id="ring-kcal">0</div>
@@ -679,10 +683,10 @@ input,textarea,select{font-family:inherit}
 
       <!-- WATER -->
       <div style="margin-top:10px">
-        <div class="section-head" style="padding-bottom:4px"><span class="section-title">Hydratation</span><span id="water-total" style="font-size:13px;font-weight:600;color:var(--blue)">0 / 3.0 L</span></div>
+        <div class="section-head" style="padding-bottom:4px"><span class="section-title">Hydratation</span><span id="water-total" style="font-size:13px;font-weight:600;color:var(--blue)">0.0 / 3.0 L</span></div>
         <div class="water-row">
           <div class="water-cups" id="water-cups"></div>
-          <div class="water-label" id="water-ml-label">0 mL</div>
+          <div class="water-label" id="water-ml-label">0mL</div>
         </div>
       </div>
 
@@ -693,8 +697,8 @@ input,textarea,select{font-family:inherit}
           <div style="display:flex;align-items:center;gap:12px">
             <div style="width:44px;height:44px;border-radius:var(--radius-sm);background:var(--orange-light);display:flex;align-items:center;justify-content:center;font-size:24px">💪</div>
             <div style="flex:1">
-              <div id="today-session-name" style="font-size:16px;font-weight:700"></div>
-              <div id="today-session-meta" style="font-size:12px;color:var(--text3);margin-top:2px"></div>
+              <div id="today-session-name" style="font-size:16px;font-weight:700">Lower B</div>
+              <div id="today-session-meta" style="font-size:12px;color:var(--text3);margin-top:2px">Salle complète · RIR 3 — Technique</div>
             </div>
             <i class="ti ti-chevron-right" style="color:var(--text3);font-size:20px"></i>
           </div>
@@ -714,7 +718,7 @@ input,textarea,select{font-family:inherit}
     <div class="panel" id="panel-food">
       <div style="padding:14px 16px 0;display:flex;align-items:center;justify-content:space-between">
         <div style="font-size:20px;font-weight:700">Nutrition</div>
-        <div id="food-day-badge" style="font-size:13px;font-weight:600;padding:4px 12px;border-radius:20px"></div>
+        <div id="food-day-badge" style="font-size: 13px; font-weight: 600; padding: 4px 12px; border-radius: 20px; background: var(--orange-light); color: var(--orange);">Entraînement · 2300 kcal</div>
       </div>
 
       <div class="subnav">
@@ -734,12 +738,12 @@ input,textarea,select{font-family:inherit}
       <!-- JOURNAL -->
       <div class="subview" id="sub-journal">
         <div class="dt-toggle">
-          <button id="dt-E" onclick="setDayType('E')"><i class="ti ti-barbell"></i> Jour Entraînement</button>
+          <button id="dt-E" onclick="setDayType('E')" class="active"><i class="ti ti-barbell"></i> Jour Entraînement</button>
           <button id="dt-R" onclick="setDayType('R')"><i class="ti ti-bed"></i> Jour Repos</button>
         </div>
         <div class="card" style="margin-top:10px">
           <div style="display:flex;justify-content:space-around;text-align:center;margin-bottom:12px">
-            <div><div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Restant</div><div style="font-size:22px;font-weight:700;color:var(--orange)" id="f-rem">0</div><div style="font-size:10px;color:var(--text3)">kcal</div></div>
+            <div><div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Restant</div><div style="font-size:22px;font-weight:700;color:var(--orange)" id="f-rem">2300</div><div style="font-size:10px;color:var(--text3)">kcal</div></div>
             <div><div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Consommé</div><div style="font-size:22px;font-weight:700" id="f-eaten">0</div><div style="font-size:10px;color:var(--text3)">kcal</div></div>
             <div><div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.04em">Objectif</div><div style="font-size:22px;font-weight:700" id="f-target">2300</div><div style="font-size:10px;color:var(--text3)">kcal</div></div>
           </div>
@@ -788,15 +792,16 @@ input,textarea,select{font-family:inherit}
       <!-- FRIDGE -->
       <div class="subview" id="sub-frigo">
         <div class="loc-toggle">
-          <button class="loc-btn" id="loc-maman" onclick="setLoc('maman')"><i class="ti ti-home"></i> Chez maman</button>
+          <button class="loc-btn active" id="loc-maman" onclick="setLoc('maman')"><i class="ti ti-home"></i> Chez maman</button>
           <button class="loc-btn" id="loc-papa" onclick="setLoc('papa')"><i class="ti ti-home"></i> Chez papa</button>
         </div>
         <div class="add-row">
-          <textarea class="form-input" id="fridge-input" rows="2" placeholder="Un ingrédient par ligne (ou séparés par des virgules)&#10;Tu peux coller toute ta liste d'un coup." style="resize:vertical;line-height:1.4" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addFridgeItems();}"></textarea>
+          <textarea class="form-input" id="fridge-input" rows="2" placeholder="Un ingrédient par ligne (ou séparés par des virgules)
+Tu peux coller toute ta liste d'un coup." style="resize:vertical;line-height:1.4" onkeydown="if(event.key==='Enter'&amp;&amp;!event.shiftKey){event.preventDefault();addFridgeItems();}"></textarea>
           <button onclick="addFridgeItems()">+</button>
         </div>
         <div class="card" style="margin-top:10px">
-          <div class="card-header" style="margin-bottom:10px"><div class="card-title">Dans le frigo</div><span id="fridge-count" style="font-size:12px;color:var(--text3)"></span></div>
+          <div class="card-header" style="margin-bottom:10px"><div class="card-title">Dans le frigo</div><span id="fridge-count" style="font-size:12px;color:var(--text3)">1 article</span></div>
           <div class="chip-grid" id="fridge-chips"></div>
         </div>
         <div class="banner" style="margin-top:10px"><i class="ti ti-bulb"></i><div class="banner-text">Ajoute ce que t'as sous la main, là où tu es. La liste de <strong>Courses</strong> s'adapte : ce que tu possèdes en disparaît automatiquement.</div></div>
@@ -812,7 +817,7 @@ input,textarea,select{font-family:inherit}
           <div id="shop-list"></div>
         </div>
         <div style="padding:10px 16px;display:flex;justify-content:space-between;align-items:center">
-          <span id="shop-progress" style="font-size:12px;color:var(--text3)"></span>
+          <span id="shop-progress" style="font-size:12px;color:var(--text3)">0/60 dans le panier</span>
           <button class="card-action" onclick="resetShopChecks()">Décocher tout</button>
         </div>
         <details style="margin:0 16px">
@@ -827,12 +832,12 @@ input,textarea,select{font-family:inherit}
         <div class="card" style="margin-top:10px">
           <div class="card-header" style="margin-bottom:10px"><div class="card-title">Repères de répartition (exemple)</div></div>
           <table class="rep-table">
-            <tr><th></th><th>Jour E</th><th>Jour R</th></tr>
+            <tbody><tr><th></th><th>Jour E</th><th>Jour R</th></tr>
             <tr><td>Calories</td><td>2300</td><td>2000</td></tr>
             <tr><td>Protéines</td><td>160 g</td><td>160 g</td></tr>
             <tr><td>Glucides</td><td>~270 g</td><td>~180 g</td></tr>
             <tr><td>Lipides</td><td>~65 g</td><td>~70 g</td></tr>
-          </table>
+          </tbody></table>
           <div class="rep-note">Recomp = protéines hautes en permanence, on fait surtout varier les glucides selon l'entraînement (E = jour de séance, R = repos).</div>
         </div>
 
@@ -916,30 +921,58 @@ input,textarea,select{font-family:inherit}
       </div>
 
       <div class="section-head" style="margin-top:10px"><span class="section-title">Bilan de la semaine</span></div>
-      <div class="card" style="margin-top:0" id="week-summary"></div>
+      <div class="card" style="margin-top:0" id="week-summary"><div style="font-size:13px;color:var(--text3);line-height:1.5">Logge tes repas et coche tes séries cette semaine — ton bilan (calories, protéines, % dans la cible, séances) apparaîtra ici.</div></div>
 
       <div class="section-head" style="margin-top:10px"><span class="section-title">Courbe de poids</span></div>
-      <div class="chart-card" id="weight-chart"></div>
+      <div class="chart-card" id="weight-chart"><div class="chart-empty">Enregistre ton poids 2 jours pour voir la courbe.<br>Bouton <strong>« Mesures »</strong> en haut de l'accueil.</div></div>
 
       <div style="display:none">
       <div class="section-head" style="margin-top:10px"><span class="section-title">Tour de taille</span></div>
-      <div class="chart-card" id="waist-chart"></div>
+      <div class="chart-card" id="waist-chart"><div class="chart-empty">Mesure ton tour de taille 2 fois pour voir la courbe — le meilleur signal en recomp.</div></div>
       </div>
 
       <div class="section-head" style="margin-top:10px"><span class="section-title">Volume par séance (tonnage estimé)</span></div>
-      <div class="chart-card" id="tonnage-chart"></div>
+      <div class="chart-card" id="tonnage-chart"><div class="chart-empty">Coche tes séries avec une charge pour suivre ton tonnage.<br><span style="font-size:11px">Tonnage = charge × reps moyennes des séries validées.</span></div></div>
 
       <div class="section-head" style="margin-top:10px"><span class="section-title">Progression de force</span></div>
-      <div class="card" style="margin-top:0" id="strength-prog"></div>
+      <div class="card" style="margin-top:0" id="strength-prog"><div style="font-size:13px;color:var(--text3);line-height:1.5">Saisis tes charges et coche tes séries : tu verras ici ta charge max par exercice et sa progression (▲/▼) d'une séance à l'autre.</div></div>
 
       <div class="section-head" style="margin-top:10px"><span class="section-title">Ressentis récents</span></div>
-      <div class="card" style="margin-top:0" id="feel-summary"></div>
+      <div class="card" style="margin-top:0" id="feel-summary"><div style="font-size:13px;color:var(--text3);line-height:1.5">Pas encore de ressenti. Note la difficulté de tes séances et ta faim/énergie du jour — c'est ce qui rendra le programme adaptable.</div></div>
 
       <div class="section-head" style="margin-top:10px"><span class="section-title">Programme — 4 semaines</span></div>
-      <div class="prog-week-card" id="prog-weeks"></div>
+      <div class="prog-week-card" id="prog-weeks"><div class="prog-week-row">
+      <div class="prog-week-num active">1</div>
+      <div class="prog-week-info">
+        <div class="prog-week-title">S1 — Reprise</div>
+        <div class="prog-week-rir">RIR 3 — Technique</div>
+      </div>
+      <span class="prog-badge badge-orange">Reprise</span>
+    </div><div class="prog-week-row">
+      <div class="prog-week-num future">2</div>
+      <div class="prog-week-info">
+        <div class="prog-week-title">S2 — Progression</div>
+        <div class="prog-week-rir">RIR 2 — +2,5 kg ou +reps</div>
+      </div>
+      <span class="prog-badge badge-blue">+Charge</span>
+    </div><div class="prog-week-row">
+      <div class="prog-week-num future">3</div>
+      <div class="prog-week-info">
+        <div class="prog-week-title">S3 — Surcharge</div>
+        <div class="prog-week-rir">RIR 1-2 — +1 série mains</div>
+      </div>
+      <span class="prog-badge badge-blue">Volume ↑</span>
+    </div><div class="prog-week-row">
+      <div class="prog-week-num future">4</div>
+      <div class="prog-week-info">
+        <div class="prog-week-title">S4 — Intensification</div>
+        <div class="prog-week-rir">RIR 0-1 — Proche échec</div>
+      </div>
+      <span class="prog-badge badge-blue">Intensité max</span>
+    </div></div>
 
       <div class="section-head" style="margin-top:10px"><span class="section-title">Historique séances</span></div>
-      <div id="session-history"></div>
+      <div id="session-history"><div style="text-align:center;padding:20px;color:var(--text3);font-size:14px">Aucune séance enregistrée.</div></div>
     </div>
 
     <!-- ===== SETTINGS ===== -->
@@ -973,7 +1006,7 @@ input,textarea,select{font-family:inherit}
         <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.5">Mets le <strong>même code</strong> sur ton téléphone et ton PC → tes données se synchronisent toutes seules. (Nécessite le stockage Vercel activé — voir le guide.)</div>
         <label class="form-label">Code de sync (identique sur tes 2 appareils)</label>
         <input class="form-input" id="sync-code" placeholder="ex : maxence-7392" onchange="setSyncCode(this.value)">
-        <button class="btn-primary" id="sync-toggle-btn" style="margin-top:12px" onclick="toggleSync()">Activer la sync auto</button>
+        <button class="btn-primary" id="sync-toggle-btn" style="margin-top: 12px; background: var(--orange);" onclick="toggleSync()">Activer la sync auto</button>
         <div style="display:flex;gap:8px;margin-top:8px">
           <button class="btn-secondary" style="margin-top:0;flex:1" onclick="syncPushNow()"><i class="ti ti-cloud-up" style="vertical-align:-2px"></i> Envoyer</button>
           <button class="btn-secondary" style="margin-top:0;flex:1" onclick="syncPullNow()"><i class="ti ti-cloud-down" style="vertical-align:-2px"></i> Récupérer</button>
@@ -981,7 +1014,7 @@ input,textarea,select{font-family:inherit}
         <div id="sync-status" style="font-size:12px;color:var(--text3);margin-top:8px"></div>
       </div>
       <div class="card">
-        <div class="card-header" style="margin-bottom:6px"><div class="card-title">Idées & retours</div></div>
+        <div class="card-header" style="margin-bottom:6px"><div class="card-title">Idées &amp; retours</div></div>
         <div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.5">Note tout ce que tu veux changer, ajouter ou qui bug. Exporte la liste et envoie-la moi : je la code.</div>
         <div class="fb-cats" id="fb-cats">
           <button class="fb-cat active" data-c="Idée" onclick="setFbCat('Idée')">💡 Idée</button>
@@ -991,7 +1024,7 @@ input,textarea,select{font-family:inherit}
         </div>
         <textarea class="form-input" id="fb-input" rows="2" placeholder="ex : ajouter un minuteur sonore sur les repos" style="margin-top:10px;resize:vertical"></textarea>
         <button class="btn-primary" style="margin-top:10px" onclick="addFeedback()">Ajouter le retour</button>
-        <div id="fb-list" style="margin-top:12px"></div>
+        <div id="fb-list" style="margin-top:12px"><div style="font-size:13px;color:var(--text3);padding:4px 0 8px">Aucun retour pour l'instant.</div></div>
         <button class="btn-secondary" id="fb-export-btn" style="margin-top:4px" onclick="exportFeedback()"><i class="ti ti-file-text" style="vertical-align:-2px"></i> Exporter mes retours (à m'envoyer)</button>
       </div>
     </div>
@@ -1001,7 +1034,7 @@ input,textarea,select{font-family:inherit}
   <!-- BOTTOM NAV / SIDEBAR -->
   <div class="nav">
     <div class="sidebar-brand">
-      <div class="sidebar-logo"><svg viewBox="0 0 38 38" width="22" height="22" fill="currentColor" aria-hidden="true"><rect x="8.5" y="16.5" width="21" height="5" rx="2.5"/><rect x="5.5" y="11.5" width="5" height="15" rx="2.5"/><rect x="27.5" y="11.5" width="5" height="15" rx="2.5"/><rect x="2.5" y="14.5" width="3.6" height="9" rx="1.8"/><rect x="31.9" y="14.5" width="3.6" height="9" rx="1.8"/></svg></div>
+      <div class="sidebar-logo"><svg viewBox="0 0 38 38" width="22" height="22" fill="currentColor" aria-hidden="true"><rect x="8.5" y="16.5" width="21" height="5" rx="2.5"></rect><rect x="5.5" y="11.5" width="5" height="15" rx="2.5"></rect><rect x="27.5" y="11.5" width="5" height="15" rx="2.5"></rect><rect x="2.5" y="14.5" width="3.6" height="9" rx="1.8"></rect><rect x="31.9" y="14.5" width="3.6" height="9" rx="1.8"></rect></svg></div>
       <div><div class="sidebar-name">RecompCoach</div><div class="sidebar-sub">Maxence</div></div>
     </div>
     <button class="nav-btn active" id="nav-home" onclick="switchPanel('home')"><i class="ti ti-home"></i>Accueil</button>
@@ -1253,8 +1286,8 @@ const PLAN_PRESETS = {
 // ===== RECIPES (détaillées) =====
 const RECIPES = [
   {id:'oats',emoji:'🥣',name:'Overnight oats',tag:'E',meal:'Petit-déjeuner',time:'5 min (la veille)',macros:{kcal:520,p:42,g:58,l:14},
-   ing:["60 g flocons d'avoine","200 g yaourt grec","20 g beurre de cacahuète","1 cs miel","100 ml lait","1 banane","50 g fruits rouges surgelés","1 dose de whey (option)"],
-   steps:['Mélange avoine + yaourt + beurre de cacahuète + miel + lait dans un bocal.','Réfrigère une nuit.','Le matin : banane tranchée + fruits rouges dessus.','Pour taper 40-50 g de protéines : ajoute une dose de whey ou un yaourt à côté.'],
+   ing:["60 g flocons d'avoine","200 g yaourt grec","20 g beurre de cacahuète","1 cs miel","100 ml lait","1 banane","50 g fruits rouges surgelés"],
+   steps:['Mélange avoine + yaourt + beurre de cacahuète + miel + lait dans un bocal.','Réfrigère une nuit.','Le matin : banane tranchée + fruits rouges dessus.','Pour taper 40-50 g de protéines : ajoute un yaourt grec à côté (ou un shaker de whey en collation à part).'],
    tip:'Les fruits rouges surgelés dégèlent dans la nuit si tu les mets directement dans le bocal.'},
   {id:'poulet',serves:5,emoji:'🍗',name:'Poulet harissa (batch bureau)',tag:'E',meal:'Déjeuner',time:'25 min + marinade',macros:{kcal:580,p:52,g:62,l:11},
    ing:["1 kg poulet (filets/cuisses)","2 cs harissa","1 cs huile d'olive","1 cc paprika fumé","1 cc cumin","1 cc sel","jus d'1 citron","2 gousses d'ail confit","300 g riz basmati (cru)","2 carottes"],
@@ -1337,8 +1370,8 @@ const RECIPES = [
    steps:['Mixe le cottage cheese lisse.','Ajuste sel + citron.','Topping chili crisp.'],
    tip:'Dip légumes, sauce de bol ou tartine sur naan. ~14 g de protéines pour 0 effort.'},
   {id:'yogurt-clusters',cat:'snack',emoji:'🍫',name:'Clusters de yaourt glacé',tag:'R',meal:'Collation',time:'5 min + congel',macros:{kcal:210,p:14,g:24,l:7},
-   ing:["200 g yaourt grec","1 cs miel","50 g fruits rouges","30 g chocolat noir","1 dose de whey (option)"],
-   steps:['Mélange yaourt + miel (+ whey).','Étale sur papier, parsème de fruits.','Congèle 2-3 h.','Casse en morceaux, chocolat fondu dessus.'],
+   ing:["200 g yaourt grec","1 cs miel","50 g fruits rouges","30 g chocolat noir"],
+   steps:['Mélange yaourt + miel.','Étale sur papier, parsème de fruits.','Congèle 2-3 h.','Casse en morceaux, chocolat fondu dessus.'],
    tip:'Snack canicule ~14 g de protéines. Garde des portions au congélateur.'},
   {id:'chili-crisp-eggs',cat:'snack',emoji:'🥚',name:'Œufs durs chili crisp',tag:'R',meal:'Collation',time:'12 min',macros:{kcal:180,p:13,g:2,l:13},
    ing:["2 œufs","1 cc chili crisp","1 cc sauce soja","1 cc graines de sésame","1 cébette"],
@@ -1477,9 +1510,9 @@ const RECIPES = [
    steps:['Bats les œufs avec la crème.','Cuisson douce en remuant sans arrêt, retire encore baveux.','Parmesan + persil, sert sur pain toasté.'],
    tip:'Feu doux + retrait précoce = la texture crémeuse. La chaleur résiduelle finit la cuisson.'},
   {id:'porridge-choco',cat:'snack',emoji:'🍫',name:'Porridge avoine-chocolat',tag:'E',meal:'Petit-déjeuner',time:'8 min',macros:{kcal:460,p:24,g:64,l:12},
-   ing:["60 g flocons d'avoine","250 ml lait de chèvre","1 banane","30 g muesli","1 cs beurre de cacahuète","1 dose de whey (option)"],
-   steps:['Chauffe avoine + lait 5 min en remuant.','Hors du feu : whey + banane écrasée.','Muesli + beurre de cacahuète dessus.'],
-   tip:'Ajoute la whey hors du feu pour ne pas la cuire.'},
+   ing:["60 g flocons d'avoine","250 ml lait de chèvre","1 banane","30 g muesli","1 cs beurre de cacahuète"],
+   steps:['Chauffe avoine + lait 5 min en remuant.','Hors du feu : banane écrasée.','Muesli + beurre de cacahuète dessus.'],
+   tip:'Crémeux et gourmand grâce au beurre de cacahuète et au muesli.'},
   {id:'pain-perdu',cat:'snack',emoji:'🍞',name:'Pain perdu protéiné',tag:'E',meal:'Petit-déjeuner',time:'12 min',macros:{kcal:430,p:24,g:52,l:14},
    ing:["2 tranches de pain","2 œufs","100 ml lait de chèvre","1 cc sirop d'agave","100 g skyr","2 nectarines"],
    steps:['Trempe le pain dans œufs + lait.','Dore à la poêle 2 min par face.','Sers avec skyr + nectarines + agave.'],
@@ -1612,15 +1645,9 @@ const RECIPES = [
    ing:["150 g ricotta","2 nectarines","1 cc sirop d'agave","20 g amandes"],
    steps:['Mets la ricotta dans un bol.','Nectarines coupées + agave + amandes.'],
    tip:'Dessert frais et protéiné, façon trattoria.'},
-  {id:'mugcake',cat:'snack',emoji:'🍫',name:'Mug cake protéiné chocolat',tag:'E',meal:'Collation',time:'5 min',macros:{kcal:320,p:28,g:30,l:9},
-   ing:["1 dose de whey","1 œuf","1 banane","1 cs flocons d'avoine","1 cc levure","50 ml lait de chèvre"],
-   steps:['Mélange tout dans un mug.','Micro-ondes 60-90 s.','Laisse tiédir 1 min.'],
-   tip:'Dessert minute, ~28 g de protéines. Surveille la cuisson pour rester moelleux.'},
 
-  {id:'skyr-proteine-bowl',cat:'plat',emoji:'🥣',name:'Bowl skyr protéiné (48 g)',tag:'R',meal:'Petit-déjeuner',time:'5 min',macros:{kcal:420,p:48,g:40,l:6},
-   ing:["250 g skyr","1 dose de whey Bulk","40 g flocons d'avoine","100 g fruits rouges","1 cc sirop d'agave"],
-   steps:["Mélange le skyr et la whey jusqu'à une texture crémeuse.","Ajoute les flocons et les fruits rouges.","Filet d'agave."],
-   tip:"~48 g de protéines dès le réveil. La whey épaissit le skyr, texture parfaite."},
+
+
   {id:'poulet-brocoli-riz',cat:'plat',emoji:'🍗',name:'Poulet brocoli riz (assiette propre)',tag:'E',meal:'Déjeuner',time:'20 min',macros:{kcal:560,p:55,g:60,l:9},
    ing:["180 g poulet","200 g brocoli","200 g riz cuit","1 cs sauce soja","1 gousse d'ail","1 cc huile d'olive","1 pincée de piment"],
    steps:["Cuis le riz et le brocoli vapeur.","Saisis le poulet avec ail + soja + piment.","Assemble."],
@@ -1649,10 +1676,7 @@ const RECIPES = [
    ing:["250 g crevettes","2 courgettes","3 gousses d'ail","1 cs huile d'olive","1/2 citron","1 poignée de persil","1 pincée de piment"],
    steps:["Saute l'ail + les courgettes.","Ajoute les crevettes 2-3 min.","Citron + persil + piment."],
    tip:"Très peu de calories pour 34 g de protéines. Ajoute du riz si tu as plus faim."},
-  {id:'pancakes-blancs-avoine',cat:'plat',emoji:'🥞',name:'Pancakes protéinés avoine-whey',tag:'E',meal:'Petit-déjeuner',time:'12 min',macros:{kcal:420,p:38,g:50,l:8},
-   ing:["1 banane","3 œufs","1 dose de whey Bulk","40 g flocons d'avoine","1 cc levure"],
-   steps:["Mixe tout.","Cuis de petites louches 2 min par face.","Sers avec du skyr."],
-   tip:"~38 g de protéines, moelleux, sans farine."},
+
   {id:'salade-poulet-pois-chiches',cat:'plat',emoji:'🥗',name:'Salade poulet, pois chiches & tomates',tag:'R',meal:'Déjeuner',time:'12 min',macros:{kcal:460,p:46,g:38,l:12},
    ing:["180 g poulet","1 boîte de pois chiches (250 g)","2 tomates","1 oignon","1 poignée de persil","1 cs huile d'olive","1/2 citron"],
    steps:["Saisis ou réchauffe le poulet émincé.","Mélange pois chiches + tomates + oignon.","Huile + citron + persil."],
@@ -1669,11 +1693,7 @@ const RECIPES = [
    ing:["3 œufs","100 g épinards","100 g pulpe de tomate","20 g parmesan","1 gousse d'ail","2 tranches de pain"],
    steps:["Base épinards + pulpe de tomate + ail à la poêle.","Casse les œufs dessus, couvre 5-6 min.","Parmesan, sers avec le pain."],
    tip:"Brunch protéiné réconfortant."},
-  {id:'skyr-glace-whey',cat:'snack',emoji:'🍫',name:'Glace protéinée minute (skyr-whey)',tag:'R',meal:'Collation',time:'5 min + congel',macros:{kcal:240,p:34,g:18,l:3},
-   ing:["200 g skyr","1 dose de whey Bulk","50 g fruits rouges","1 cc sirop d'agave"],
-   steps:["Mélange skyr + whey + agave.","Ajoute les fruits rouges.","Congèle 1-2 h, remue une fois."],
-   tip:"Dessert glacé ~34 g de protéines — parfait en déficit."}
-,
+
   {id:'poke-thon-froid',cat:'plat',ete:true,emoji:'🐟',name:'Poke bowl thon froid',tag:'E',meal:'Déjeuner',time:'12 min',macros:{kcal:520,p:42,g:62,l:10},
    ing:["1 boîte de thon (140 g)","200 g riz cuit froid","1/2 concombre","100 g petits pois (ou edamame)","1 carotte","1 cs sauce soja","1 cc huile de sésame","1 cc graines de sésame"],
    steps:["Riz froid au fond du bol.","Thon + concombre + carotte + petits pois.","Soja + sésame dessus."],
@@ -1711,8 +1731,8 @@ const RECIPES = [
    steps:["Gonfle le couscous, laisse refroidir.","Beaucoup de persil + tomates + concombre.","Citron + huile, au frais 1 h."],
    tip:"Le vrai taboulé libanais : surtout des herbes. Meilleur bien frais."},
   {id:'bowl-skyr-fruits-ete',cat:'snack',ete:true,emoji:'🍓',name:"Bowl skyr glacé fruits d'été",tag:'R',meal:'Collation',time:'5 min',macros:{kcal:300,p:28,g:38,l:4},
-   ing:["250 g skyr","1 dose de whey Bulk (option)","1 nectarine","100 g fruits rouges","1 cc miel","quelques glaçons pilés"],
-   steps:["Skyr (+ whey) bien froid dans un bol.","Nectarine + fruits rouges + glaçons pilés.","Filet de miel."],
+   ing:["250 g skyr","1 nectarine","100 g fruits rouges","1 cc miel","quelques glaçons pilés"],
+   steps:["Skyr bien froid dans un bol.","Nectarine + fruits rouges + glaçons pilés.","Filet de miel."],
    tip:"Dessert glacé protéiné, parfait quand il fait chaud."}
 ,
   {id:'af-poulet-croustillant',cat:'plat',af:true,emoji:'🍗',name:'Poulet croustillant air fryer',tag:'E',meal:'Déjeuner',time:'18 min',macros:{kcal:520,p:52,g:55,l:9},
@@ -1792,10 +1812,7 @@ const RECIPES = [
    steps:["Garnis un wrap de poulet + fromage + oignon + tomate.","Replie, poêle 2 min par face jusqu'à doré.","Coupe en parts."],
    tip:"Croustillant et fondant. Parfait avec une sauce skyr."}
 ,
-  {id:'pdj-porridge-proteine',cat:'plat',emoji:'🥣',name:'Porridge protéiné pomme-cannelle',tag:'E',meal:'Petit-déjeuner',time:'8 min',macros:{kcal:440,p:32,g:58,l:9},
-   ing:["60 g flocons d'avoine","250 ml lait de chèvre","1 dose de whey Bulk","1 banane","1 cc cannelle","1 cc miel"],
-   steps:["Chauffe avoine + lait 5 min.","Hors du feu : whey + banane écrasée.","Cannelle + miel."],
-   tip:"Ajoute la whey hors du feu pour ne pas la cuire. ~32 g de protéines."},
+
   {id:'pdj-oeufs-cocotte-tomate',cat:'plat',emoji:'🍳',name:'Œufs cocotte tomate-parmesan',tag:'R',meal:'Petit-déjeuner',time:'15 min',macros:{kcal:340,p:26,g:16,l:20},
    ing:["3 œufs","150 g pulpe de tomate","20 g parmesan","1 gousse d'ail","2 tranches de pain","1 poignée de persil"],
    steps:["Base pulpe + ail à la poêle.","Casse les œufs dessus, couvre 5-6 min.","Parmesan + persil, sers avec le pain."],
@@ -1808,18 +1825,12 @@ const RECIPES = [
    ing:["250 g skyr","50 g muesli","1 nectarine","100 g fruits rouges","1 cc miel"],
    steps:["Skyr dans un bol.","Muesli + fruits + miel."],
    tip:"Le petit-déj sucré minute, 28 g de protéines."},
-  {id:'pdj-pain-perdu-proteine',cat:'plat',emoji:'🍞',name:'Pain perdu protéiné',tag:'E',meal:'Petit-déjeuner',time:'12 min',macros:{kcal:440,p:30,g:50,l:13},
-   ing:["2 tranches de pain","2 œufs","100 ml lait de chèvre","1 dose de whey Bulk","1 cc cannelle","100 g fruits rouges"],
-   steps:["Mélange œufs + lait + whey + cannelle.","Trempe le pain, dore 2 min/face.","Fruits rouges dessus."],
-   tip:"Recycle le pain, version protéinée."},
+
   {id:'pdj-jambon-fromage-oeuf',cat:'plat',emoji:'🍳',name:'Œuf au plat, jambon & pain',tag:'E',meal:'Petit-déjeuner',time:'8 min',macros:{kcal:400,p:32,g:30,l:18},
    ing:["2 œufs","80 g jambon de poulet","20 g parmesan","2 tranches de pain","1 tomate"],
    steps:["Œufs au plat + jambon poêlé.","Parmesan, sur pain toasté.","Tomate à côté."],
    tip:"Matin salé costaud, 32 g de protéines."},
-  {id:'pdj-smoothie-bowl-proteine',cat:'snack',emoji:'🍓',name:'Smoothie bowl protéiné',tag:'R',meal:'Petit-déjeuner',time:'6 min',macros:{kcal:400,p:34,g:48,l:6},
-   ing:["250 g skyr","1 dose de whey Bulk","1 banane","100 g fruits rouges","30 g muesli"],
-   steps:["Mixe skyr + whey + banane épais.","Verse, muesli + fruits dessus."],
-   tip:"34 g de protéines, à la cuillère."},
+
   {id:'pdj-wrap-poulet-oeuf',cat:'plat',emoji:'🌯',name:'Wrap matin poulet-œuf',tag:'E',meal:'Petit-déjeuner',time:'10 min',macros:{kcal:460,p:42,g:40,l:14},
    ing:["1 wrap","2 œufs","100 g poulet","20 g parmesan","1 poignée de persil"],
    steps:["Brouille les œufs avec le poulet émincé.","Garnis le wrap + parmesan.","Roule."],
@@ -1889,14 +1900,8 @@ const RECIPES = [
    steps:["Saisis le bœuf tranché.","Oignon + carottes + sauces.","Sers sur riz."],
    tip:"Express et savoureux, peu de gras."}
 ,
-  {id:'pdj-cookie-dough',cat:'snack',emoji:'🍪',name:'Cookie dough protéiné (skyr)',tag:'R',meal:'Petit-déjeuner',time:'4 min',macros:{kcal:380,p:34,g:42,l:8},
-   ing:["250 g skyr","1 dose de whey Bulk","30 g flocons d'avoine","20 g chocolat noir (pépites)","1 cc miel"],
-   steps:["Mélange skyr + whey + avoine + miel.","Ajoute les pépites de chocolat.","Mange à la cuillère, façon pâte à cookie."],
-   tip:"Le dessert-petit-déj viral, 34 g de protéines, sans cuisson."},
-  {id:'pdj-riz-au-lait-proteine',cat:'plat',emoji:'🍚',name:'Riz au lait protéiné cannelle',tag:'E',meal:'Petit-déjeuner',time:'8 min',macros:{kcal:420,p:30,g:60,l:6},
-   ing:["150 g riz cuit","250 ml lait de chèvre","1 dose de whey Bulk","1 cc cannelle","1 cc miel","1 banane"],
-   steps:["Chauffe riz + lait 5 min.","Hors du feu : whey + cannelle.","Banane tranchée + miel dessus."],
-   tip:"Recycle un reste de riz en petit-déj réconfortant et protéiné."},
+
+
   {id:'pdj-proffee',cat:'snack',emoji:'🥤',name:'Proffee (café protéiné glacé)',tag:'R',meal:'Petit-déjeuner',time:'3 min',macros:{kcal:160,p:28,g:6,l:2},
    ing:["1 dose de whey Bulk","1 grand café froid","200 ml lait de chèvre (ou eau)","quelques glaçons"],
    steps:["Shake ou mixe whey + café + lait + glaçons.","Bois bien frais."],
@@ -1905,28 +1910,16 @@ const RECIPES = [
    ing:["50 g flocons d'avoine","250 ml bouillon de volaille","1 œuf","20 g parmesan","1 poignée de persil","poivre"],
    steps:["Cuis l'avoine dans le bouillon 5 min (façon risotto).","Œuf poché ou mollet dessus + parmesan.","Persil + poivre."],
    tip:"L'avoine en version salée — original, crémeux et rassasiant."},
-  {id:'pdj-overnight-tiramisu',cat:'snack',emoji:'🍮',name:'Overnight oats tiramisu',tag:'R',meal:'Petit-déjeuner',time:'5 min + nuit',macros:{kcal:400,p:30,g:48,l:9},
-   ing:["50 g flocons d'avoine","200 g skyr","1 dose de whey Bulk","1 café fort","10 g cacao","1 cc miel"],
-   steps:["Mélange avoine + skyr + whey + café.","Réfrigère une nuit.","Cacao + miel le matin."],
-   tip:"Un tiramisu sain à préparer la veille, 30 g de protéines."},
+
   {id:'pdj-toast-ricotta-banane',cat:'plat',emoji:'🍞',name:'Toast ricotta-banane-miel',tag:'E',meal:'Petit-déjeuner',time:'4 min',macros:{kcal:380,p:18,g:50,l:12},
    ing:["2 tranches de pain","60 g ricotta","1 banane","1 cc miel","1 pincée de cannelle"],
    steps:["Toaste le pain, étale la ricotta.","Banane tranchée + miel + cannelle."],
    tip:"Sucré, crémeux, prêt en 3 min."},
-  {id:'pdj-bowl-choco-pb',cat:'snack',emoji:'🍫',name:'Bowl protéiné choco-cacahuète',tag:'E',meal:'Petit-déjeuner',time:'5 min',macros:{kcal:440,p:36,g:40,l:14},
-   ing:["250 g skyr","1 dose de whey Bulk","1 cs beurre de cacahuète","1 banane","10 g cacao","20 g muesli"],
-   steps:["Mélange skyr + whey + cacao.","Banane + beurre de cacahuète + muesli dessus."],
-   tip:"Le combo choco-cacahuète, 36 g de protéines pour bien démarrer."},
+
 
   // ===== PACK PERTE DE GRAS (ingrédients chez papa) — protéines hautes, calories maîtrisées =====
-  {id:'pg-porridge-whey-abricot',light:true,cat:'plat',emoji:'🥣',name:'Porridge whey-abricot',tag:'E',meal:'Petit-déjeuner',time:'7 min',macros:{kcal:365,p:32,g:48,l:5},
-   ing:["50 g flocons d'avoine","1 dose de whey","2 abricots","1 cc miel","150 ml eau"],
-   steps:["Cuis l'avoine dans l'eau 4-5 min (ou micro-ondes 2 min).","Hors du feu, laisse tiédir puis incorpore la whey (sinon elle fige).","Abricots en morceaux + filet de miel."],
-   tip:"32 g de protéines pour ~365 kcal : un petit-déj parfait en sèche. Incorpore la whey tiède, jamais bouillant."},
-  {id:'pg-pancakes-proteines',light:true,cat:'plat',emoji:'🥞',name:'Pancakes protéinés flocons-whey',tag:'E',meal:'Petit-déjeuner',time:'10 min',macros:{kcal:383,p:36,g:30,l:13},
-   ing:["40 g flocons d'avoine","1 œuf","1 dose de whey","10 g chocolat noir","1 cc sirop d'agave"],
-   steps:["Mixe flocons + œuf + whey + un filet d'eau jusqu'à une pâte épaisse.","Petites louches dans une poêle anti-adhésive, 1-2 min par face.","Chocolat noir râpé + agave dessus."],
-   tip:"36 g de protéines. Le chocolat noir râpé suffit à donner le goût sans plomber les calories."},
+
+
   {id:'pg-oeufs-cocotte-tomate',light:true,cat:'plat',emoji:'🍳',name:'Œufs pochés sauce tomate (shakshuka express)',tag:'R',meal:'Petit-déjeuner',time:'12 min',macros:{kcal:320,p:24,g:11,l:18},
    ing:["3 œufs","200 g sauce tomate","10 g parmesan","2 oignons nouveaux","épices (cumin, paprika)","sel, poivre"],
    steps:["Fais chauffer la sauce tomate avec oignons nouveaux émincés + épices.","Casse les œufs dedans, couvre, 5-6 min à feu doux.","Parmesan râpé + poivre."],
@@ -1983,14 +1976,8 @@ const RECIPES = [
    ing:["1 dose de whey","10 g chocolat noir","10 g beurre de cacahuète","250 ml eau","glaçons"],
    steps:["Mixe whey + eau + glaçons.","Ajoute le beurre de cacahuète + chocolat noir râpé.","Mixe encore 10 s."],
    tip:"À l'eau uniquement (jamais au lait). 27 g de protéines, le goût d'un milkshake sans les calories."},
-  {id:'pg-mugcake-proteine',light:true,cat:'snack',emoji:'🍫',name:'Mug cake protéiné choco',tag:'R',meal:'Collation',time:'3 min',macros:{kcal:290,p:33,g:15,l:11},
-   ing:["1 dose de whey","1 œuf","15 g flocons d'avoine","10 g chocolat noir","1 cc agave"],
-   steps:["Mélange whey + œuf + flocons + un filet d'eau dans un mug.","Micro-ondes 80-90 s.","Chocolat noir en pépites + agave dessus."],
-   tip:"Dessert chaud express, 33 g de protéines. Ne dépasse pas 90 s sinon ça sèche."},
-  {id:'pg-abricots-dip-whey',light:true,cat:'snack',emoji:'🍑',name:'Abricots + dip whey-soja',tag:'R',meal:'Collation',time:'3 min',macros:{kcal:222,p:15,g:23,l:8},
-   ing:["3 abricots","1/2 dose de whey","40 g crème de soja","1 cc miel"],
-   steps:["Fouette crème de soja + whey + miel jusqu'à une crème lisse.","Coupe les abricots en quartiers.","Trempe — ou nappe les abricots de la crème."],
-   tip:"Collation fraîche et sucrée, mais 15 g de protéines pour ~220 kcal au lieu d'un dessert gras."},
+
+
   {id:'pg-sauce-tomate-base',cat:'sauce',emoji:'🥫',name:'Sauce tomate maison (batch, zéro gras)',tag:'S',meal:null,time:'20 min',macros:null,
    ing:["400 g tomates concassées","1 cs concentré de tomate","2 oignons nouveaux","1 cc harissa","1 bouillon de légumes","herbes (origan, basilic)","sel, poivre"],
    steps:["Fais suer les oignons nouveaux dans un filet d'eau (ou très peu d'huile).","Tomates concassées + concentré + harissa + bouillon émietté.","Mijote 15 min, herbes en fin de cuisson."],
@@ -2917,6 +2904,10 @@ function renderMenu(){
     <div><div class="menu-title">Menu du jour</div><div class="menu-sub">basé sur ton frigo (${fc} ingrédient${fc>1?'s':''})</div></div>
     <button class="menu-refresh" onclick="rerollAllMenu()" title="Nouveau menu"><i class="ti ti-refresh"></i></button>
   </div>
+  <div class="menu-loc">
+    <button class="${APP.fridge.loc==='maman'?'on':''}" onclick="setLoc('maman')"><i class="ti ti-home"></i> Chez maman</button>
+    <button class="${APP.fridge.loc==='papa'?'on':''}" onclick="setLoc('papa')"><i class="ti ti-home"></i> Chez papa</button>
+  </div>
   <div class="menu-totals">
     <div><b>${mk}</b><span>kcal menu</span></div>
     <div><b style="color:${protCol}">${Math.round(mp)}g</b><span>protéines / ${protAim}</span></div>
@@ -2982,6 +2973,10 @@ function renderHomeMenu(){
         <span style="font-size:12px;font-weight:700;color:${protCol}">${Math.round(mp)}g P · ${mk} kcal</span>
         <button class="hm-ic" onclick="rerollAllMenu()" title="Nouveau menu" aria-label="Nouveau menu"><i class="ti ti-refresh"></i></button>
       </div>
+    </div>
+    <div class="hm-loc">
+      <button class="${APP.fridge.loc==='maman'?'on':''}" onclick="setLoc('maman')">Chez maman</button>
+      <button class="${APP.fridge.loc==='papa'?'on':''}" onclick="setLoc('papa')">Chez papa</button>
     </div>
     ${rows}
     <div class="hm-foot">
@@ -3591,7 +3586,7 @@ function toggleFavExo(n,e){
   saveState(); renderSession();
   toast(i>=0?'Retiré des favoris':'Exercice ajouté aux favoris ❤️');
 }
-const ETE_IDS=['salade-thon-pc','wrap-thon','taboule-thon','salade-medit','cucumber-salad','carrot-ribbon','larb','nouilles-froides','skyr-nectarine','smoothie-banane','smoothie-bowl','ricotta-miel','cottage-fruits-miel','skyr-glace-whey','skyr-proteine-bowl','salade-poulet-pois-chiches','houmous','yogurt-clusters','sauce-skyr'];
+const ETE_IDS=['salade-thon-pc','wrap-thon','taboule-thon','salade-medit','cucumber-salad','carrot-ribbon','larb','nouilles-froides','skyr-nectarine','smoothie-banane','smoothie-bowl','ricotta-miel','cottage-fruits-miel','salade-poulet-pois-chiches','houmous','yogurt-clusters','sauce-skyr'];
 function isEte(r){return r.ete===true||ETE_IDS.includes(r.id);}
 // Perte de gras : recettes hautes en protéines & calories maîtrisées (flag light OU ratio protéines élevé)
 function isLight(r){ if(!r||!r.macros) return false; if(r.light===true) return true; const m=r.macros; return m.kcal<=500 && (m.p*4)>=m.kcal*0.32; }
@@ -3753,6 +3748,7 @@ function addRecipeToMeal(id,meal){
 function setLoc(loc){
   APP.fridge.loc=loc;saveState();
   renderFridge();renderShopping();renderRecipes();
+  refreshMenus();
 }
 
 function addFridgeItems(){
@@ -4703,5 +4699,6 @@ importFromLens();
 syncInit();
 if(!storageAvailable()){setTimeout(()=>toast('⚠ Sauvegarde bloquée par le navigateur — héberge le fichier (Vercel) pour conserver tes données'),600);}
 </script>
-</body>
-</html>
+
+
+</body></html>
