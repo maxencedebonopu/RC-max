@@ -770,6 +770,7 @@ input,textarea,select{font-family:inherit}
           <button class="rfilter active" data-f="tous" onclick="setRecipeFilter('tous')">Tous</button>
           <button class="rfilter" data-f="fav" onclick="setRecipeFilter('fav')">❤️ Favoris</button>
           <button class="rfilter" data-f="ete" onclick="setRecipeFilter('ete')">☀️ Été</button>
+          <button class="rfilter" data-f="light" onclick="setRecipeFilter('light')">📉 Perte de gras</button>
           <button class="rfilter" data-f="af" onclick="setRecipeFilter('af')">🔥 Air fryer</button>
           <button class="rfilter" data-f="pdj" onclick="setRecipeFilter('pdj')">🌅 Petit-déj</button>
           <button class="rfilter" data-f="cuisinable" onclick="setRecipeFilter('cuisinable')">🧊 Cuisinable</button>
@@ -1915,7 +1916,89 @@ const RECIPES = [
   {id:'pdj-bowl-choco-pb',cat:'snack',emoji:'🍫',name:'Bowl protéiné choco-cacahuète',tag:'E',meal:'Petit-déjeuner',time:'5 min',macros:{kcal:440,p:36,g:40,l:14},
    ing:["250 g skyr","1 dose de whey Bulk","1 cs beurre de cacahuète","1 banane","10 g cacao","20 g muesli"],
    steps:["Mélange skyr + whey + cacao.","Banane + beurre de cacahuète + muesli dessus."],
-   tip:"Le combo choco-cacahuète, 36 g de protéines pour bien démarrer."}
+   tip:"Le combo choco-cacahuète, 36 g de protéines pour bien démarrer."},
+
+  // ===== PACK PERTE DE GRAS (ingrédients chez papa) — protéines hautes, calories maîtrisées =====
+  {id:'pg-porridge-whey-abricot',light:true,cat:'plat',emoji:'🥣',name:'Porridge whey-abricot',tag:'E',meal:'Petit-déjeuner',time:'7 min',macros:{kcal:365,p:32,g:48,l:5},
+   ing:["50 g flocons d'avoine","1 dose de whey","2 abricots","1 cc miel","150 ml eau"],
+   steps:["Cuis l'avoine dans l'eau 4-5 min (ou micro-ondes 2 min).","Hors du feu, laisse tiédir puis incorpore la whey (sinon elle fige).","Abricots en morceaux + filet de miel."],
+   tip:"32 g de protéines pour ~365 kcal : un petit-déj parfait en sèche. Incorpore la whey tiède, jamais bouillant."},
+  {id:'pg-pancakes-proteines',light:true,cat:'plat',emoji:'🥞',name:'Pancakes protéinés flocons-whey',tag:'E',meal:'Petit-déjeuner',time:'10 min',macros:{kcal:383,p:36,g:30,l:13},
+   ing:["40 g flocons d'avoine","1 œuf","1 dose de whey","10 g chocolat noir","1 cc sirop d'agave"],
+   steps:["Mixe flocons + œuf + whey + un filet d'eau jusqu'à une pâte épaisse.","Petites louches dans une poêle anti-adhésive, 1-2 min par face.","Chocolat noir râpé + agave dessus."],
+   tip:"36 g de protéines. Le chocolat noir râpé suffit à donner le goût sans plomber les calories."},
+  {id:'pg-oeufs-cocotte-tomate',light:true,cat:'plat',emoji:'🍳',name:'Œufs pochés sauce tomate (shakshuka express)',tag:'R',meal:'Petit-déjeuner',time:'12 min',macros:{kcal:320,p:24,g:11,l:18},
+   ing:["3 œufs","200 g sauce tomate","10 g parmesan","2 oignons nouveaux","épices (cumin, paprika)","sel, poivre"],
+   steps:["Fais chauffer la sauce tomate avec oignons nouveaux émincés + épices.","Casse les œufs dedans, couvre, 5-6 min à feu doux.","Parmesan râpé + poivre."],
+   tip:"Pour alléger encore : 2 œufs + 1 blanc à la place de 3 œufs entiers (-lipides, mêmes protéines)."},
+  {id:'pg-oeufs-wasa-citron',light:true,cat:'plat',emoji:'🥚',name:'Œufs mollets + Wasa moutarde',tag:'R',meal:'Petit-déjeuner',time:'10 min',macros:{kcal:280,p:21,g:13,l:16},
+   ing:["3 œufs","2 biscottes Wasa","1 cc moutarde","1 oignon nouveau","sel, poivre"],
+   steps:["Œufs 6 min dans l'eau bouillante (mollet), refroidis, écale.","Tartine les Wasa d'un voile de moutarde.","Œufs écrasés dessus + oignon nouveau + poivre."],
+   tip:"Remplace 1 œuf par 2 blancs pour baisser les lipides sans toucher aux protéines."},
+  {id:'pg-poulet-citron-semoule',light:true,cat:'plat',emoji:'🍗',name:'Poulet citron + semoule',tag:'E',meal:'Déjeuner',time:'18 min',macros:{kcal:510,p:63,g:45,l:8},
+   ing:["180 g blanc de poulet","60 g semoule (sèche)","jus d'1 citron","2 oignons nouveaux","herbes, sel, poivre"],
+   steps:["Semoule : couvre d'eau bouillante salée + un filet d'huile, laisse gonfler 5 min, égraine.","Poêle bien chaude : poulet en lanières 5-6 min, sel/poivre.","Déglace au jus de citron + oignons nouveaux. Sers sur la semoule."],
+   tip:"63 g de protéines pour 510 kcal : le plat type recomp. Le citron remplace une sauce grasse."},
+  {id:'pg-cuisses-harissa-riz',light:true,cat:'plat',emoji:'🌶️',name:'Hauts de cuisse harissa + riz',tag:'E',meal:'Déjeuner',time:'25 min',macros:{kcal:480,p:46,g:47,l:11},
+   ing:["200 g hauts de cuisse de poulet (sans peau)","2 cc harissa","60 g riz (cru)","jus d'1/2 citron","1 oignon nouveau","sel"],
+   steps:["Retire la peau des cuisses (= moins de gras). Marine avec harissa + citron + sel 10 min.","Four 200 °C 20-25 min, ou poêle 12-15 min.","Sers sur le riz, oignon nouveau ciselé dessus."],
+   tip:"Retirer la peau économise ~80 kcal et beaucoup de lipides par portion."},
+  {id:'pg-thon-tomate-pates',light:true,cat:'plat',emoji:'🍝',name:'Pâtes thon-tomate piquantes',tag:'E',meal:'Déjeuner',time:'15 min',macros:{kcal:415,p:37,g:56,l:3},
+   ing:["70 g pâtes (crues)","1 boîte de thon nature (140 g)","150 g tomates concassées","1 cc harissa","1 oignon nouveau","sel, poivre"],
+   steps:["Cuis les pâtes al dente.","Réchauffe tomates concassées + harissa + oignon nouveau 5 min.","Ajoute le thon égoutté, mélange, verse sur les pâtes."],
+   tip:"Seulement 3 g de lipides : le thon nature et la sauce tomate font tout le boulot."},
+  {id:'pg-thon-semoule-citron',light:true,cat:'plat',emoji:'🥗',name:'Taboulé express thon-citron',tag:'R',meal:'Déjeuner',time:'12 min',macros:{kcal:340,p:34,g:45,l:2},
+   ing:["60 g semoule (sèche)","1 boîte de thon nature (140 g)","jus d'1 citron","2 oignons nouveaux","herbes, sel, poivre"],
+   steps:["Semoule gonflée à l'eau bouillante salée, égrainée à la fourchette.","Mélange thon égoutté + citron + oignons nouveaux + herbes.","Sers froid ou tiède — parfait en meal-prep."],
+   tip:"Ultra-léger (2 g de lipides) et 34 g de protéines. Se transporte très bien."},
+  {id:'pg-sardines-tomate-riz',light:true,cat:'plat',emoji:'🐟',name:'Sardines à la tomate + riz',tag:'E',meal:'Dîner',time:'15 min',macros:{kcal:450,p:28,g:54,l:13},
+   ing:["1 boîte de sardines (égouttées)","150 g sauce tomate","60 g riz (cru)","1 oignon nouveau","1 cc concentré de tomate","sel, poivre"],
+   steps:["Cuis le riz.","Réchauffe sauce tomate + concentré + oignon nouveau 5 min.","Pose les sardines égouttées dessus juste pour réchauffer. Sers sur le riz."],
+   tip:"Les lipides ici sont surtout des oméga-3 (bons pour la récup). Plat costaud et économique."},
+  {id:'pg-poulet-creme-soja-pates',light:true,cat:'plat',emoji:'🍝',name:'Pâtes crémeuses poulet (crème de soja)',tag:'E',meal:'Déjeuner',time:'18 min',macros:{kcal:565,p:58,g:43,l:16},
+   ing:["60 g pâtes (crues)","150 g blanc de poulet","40 g crème de soja","10 g parmesan","1 oignon nouveau","sel, poivre"],
+   steps:["Cuis les pâtes.","Poêle : poulet en dés 6 min, sel/poivre + oignon nouveau.","Hors du feu, crème de soja + parmesan, mélange avec les pâtes."],
+   tip:"Crème de SOJA au lieu de crème entière = même onctuosité pour ~-90 kcal et ~-10 g de lipides. C'est le swap perte de gras n°1."},
+  {id:'pg-gratin-poulet-mozza',light:true,cat:'plat',emoji:'🧀',name:'Poulet-tomate-mozzarella (faux gratin léger)',tag:'R',meal:'Dîner',time:'25 min',macros:{kcal:465,p:62,g:11,l:18},
+   ing:["160 g blanc de poulet","200 g tomates concassées","50 g mozzarella","herbes (origan, basilic)","sel, poivre"],
+   steps:["Poêle : saisis le poulet en escalopes 4 min.","Nappe de tomates concassées + herbes dans un plat, pose le poulet.","Mozzarella en lamelles dessus, four 200 °C 12-15 min (ou grill 5 min)."],
+   tip:"62 g de protéines, presque pas de glucides. Portion mozzarella à 50 g — c'est le point à ne pas dépasser pour rester en perte de gras."},
+  {id:'pg-bowl-poulet-soja-riz',light:true,cat:'plat',emoji:'🍚',name:'Bowl poulet soja-chili',tag:'E',meal:'Déjeuner',time:'18 min',macros:{kcal:500,p:50,g:47,l:11},
+   ing:["150 g blanc de poulet","60 g riz (cru)","1 cs sauce soja","1 cc chili oil","2 oignons nouveaux","sel"],
+   steps:["Cuis le riz.","Poêle très chaude : poulet en dés 6 min.","Déglace avec sauce soja + chili oil + oignons nouveaux, laisse glacer 1 min. Sers sur le riz."],
+   tip:"1 cc de chili oil suffit pour le goût (≈40 kcal). N'en mets pas trois."},
+  {id:'pg-saumon-fume-pates',light:true,cat:'plat',emoji:'🍝',name:'Pâtes saumon fumé-citron (crème de soja)',tag:'E',meal:'Dîner',time:'15 min',macros:{kcal:410,p:26,g:43,l:15},
+   ing:["60 g pâtes (crues)","80 g saumon fumé","30 g crème de soja","jus d'1/2 citron","1 oignon nouveau","poivre"],
+   steps:["Cuis les pâtes.","Hors du feu : crème de soja + citron + poivre + oignon nouveau.","Ajoute le saumon fumé coupé en lanières en dernier (ne pas trop chauffer)."],
+   tip:"Crème de soja plutôt que crème entière : plat onctueux mais nettement plus léger."},
+  {id:'pg-saumon-fume-wasa',light:true,cat:'plat',emoji:'🥪',name:'Tartines Wasa saumon fumé',tag:'R',meal:'Déjeuner',time:'8 min',macros:{kcal:310,p:24,g:19,l:15},
+   ing:["90 g saumon fumé","3 biscottes Wasa","30 g crème de soja","jus d'1/2 citron","1 oignon nouveau","poivre"],
+   steps:["Mélange crème de soja + citron + poivre.","Étale sur les Wasa.","Saumon fumé + oignon nouveau ciselé dessus."],
+   tip:"Snack-repas frais, 24 g de protéines, pas de cuisson. Idéal le soir léger."},
+  {id:'pg-cordon-bleu-four',cat:'plat',emoji:'🍽️',name:'Cordon bleu au four + semoule tomate',tag:'E',meal:'Dîner',time:'22 min',macros:{kcal:510,p:26,g:63,l:17},
+   ing:["1 cordon bleu","60 g semoule (sèche)","150 g sauce tomate","1 oignon nouveau","sel, poivre"],
+   steps:["Cordon bleu AU FOUR 200 °C 18-20 min (pas de friture).","Semoule gonflée à l'eau bouillante.","Réchauffe la sauce tomate + oignon nouveau, sers avec."],
+   tip:"Le plaisir maîtrisé du pack : au four (pas frit) et avec une grosse base de semoule/sauce. Garde-le pour un jour d'entraînement."},
+  {id:'pg-shake-choco-cacahuete',light:true,cat:'snack',emoji:'🥤',name:'Shake choco-cacahuète (à l\'eau)',tag:'E',meal:'Collation',time:'3 min',macros:{kcal:225,p:27,g:8,l:10},
+   ing:["1 dose de whey","10 g chocolat noir","10 g beurre de cacahuète","250 ml eau","glaçons"],
+   steps:["Mixe whey + eau + glaçons.","Ajoute le beurre de cacahuète + chocolat noir râpé.","Mixe encore 10 s."],
+   tip:"À l'eau uniquement (jamais au lait). 27 g de protéines, le goût d'un milkshake sans les calories."},
+  {id:'pg-mugcake-proteine',light:true,cat:'snack',emoji:'🍫',name:'Mug cake protéiné choco',tag:'R',meal:'Collation',time:'3 min',macros:{kcal:290,p:33,g:15,l:11},
+   ing:["1 dose de whey","1 œuf","15 g flocons d'avoine","10 g chocolat noir","1 cc agave"],
+   steps:["Mélange whey + œuf + flocons + un filet d'eau dans un mug.","Micro-ondes 80-90 s.","Chocolat noir en pépites + agave dessus."],
+   tip:"Dessert chaud express, 33 g de protéines. Ne dépasse pas 90 s sinon ça sèche."},
+  {id:'pg-abricots-dip-whey',light:true,cat:'snack',emoji:'🍑',name:'Abricots + dip whey-soja',tag:'R',meal:'Collation',time:'3 min',macros:{kcal:222,p:15,g:23,l:8},
+   ing:["3 abricots","1/2 dose de whey","40 g crème de soja","1 cc miel"],
+   steps:["Fouette crème de soja + whey + miel jusqu'à une crème lisse.","Coupe les abricots en quartiers.","Trempe — ou nappe les abricots de la crème."],
+   tip:"Collation fraîche et sucrée, mais 15 g de protéines pour ~220 kcal au lieu d'un dessert gras."},
+  {id:'pg-sauce-tomate-base',cat:'sauce',emoji:'🥫',name:'Sauce tomate maison (batch, zéro gras)',tag:'S',meal:null,time:'20 min',macros:null,
+   ing:["400 g tomates concassées","1 cs concentré de tomate","2 oignons nouveaux","1 cc harissa","1 bouillon de légumes","herbes (origan, basilic)","sel, poivre"],
+   steps:["Fais suer les oignons nouveaux dans un filet d'eau (ou très peu d'huile).","Tomates concassées + concentré + harissa + bouillon émietté.","Mijote 15 min, herbes en fin de cuisson."],
+   tip:"Base quasi sans calories pour toutes les pâtes/poulet/œufs de la semaine. Le réflexe perte de gras pour donner du goût sans gras."},
+  {id:'pg-sauce-moutarde-soja',cat:'sauce',emoji:'🥄',name:'Sauce légère moutarde-soja',tag:'S',meal:null,time:'3 min',macros:null,
+   ing:["1 cs moutarde","1 cs sauce soja","30 g crème de soja","jus d'1/2 citron","1 cc miel","poivre"],
+   steps:["Mélange tout dans un bol.","Allonge avec un peu d'eau si trop épais."],
+   tip:"Remplace mayo/crème sur le poulet, le poisson ou en dressing : beaucoup de goût, très peu de calories."}
 ];
 
 // ===== FRIDGE / SHOPPING =====
@@ -3510,6 +3593,8 @@ function toggleFavExo(n,e){
 }
 const ETE_IDS=['salade-thon-pc','wrap-thon','taboule-thon','salade-medit','cucumber-salad','carrot-ribbon','larb','nouilles-froides','skyr-nectarine','smoothie-banane','smoothie-bowl','ricotta-miel','cottage-fruits-miel','skyr-glace-whey','skyr-proteine-bowl','salade-poulet-pois-chiches','houmous','yogurt-clusters','sauce-skyr'];
 function isEte(r){return r.ete===true||ETE_IDS.includes(r.id);}
+// Perte de gras : recettes hautes en protéines & calories maîtrisées (flag light OU ratio protéines élevé)
+function isLight(r){ if(!r||!r.macros) return false; if(r.light===true) return true; const m=r.macros; return m.kcal<=500 && (m.p*4)>=m.kcal*0.32; }
 function toggleFavRecipe(id,e){
   if(e) e.stopPropagation();
   if(!APP.favRecipes) APP.favRecipes=[];
@@ -3559,6 +3644,7 @@ function renderRecipes(){
     else if(recipeFilter==='asia'){if(!ASIA_IDS.includes(r.id)&&r.cuisine!=='asia')return false;}
     else if(recipeFilter==='fav'){if(!isFavRecipe(r.id))return false;}
     else if(recipeFilter==='ete'){if(!isEte(r))return false;}
+    else if(recipeFilter==='light'){if(!isLight(r))return false;}
     else if(recipeFilter==='af'){if(!r.af)return false;}
     else if(recipeFilter==='pdj'){if(r.meal!=='Petit-déjeuner')return false;}
     else if(recipeFilter!=='tous'&&recipeCat(r)!==recipeFilter) return false;
@@ -3569,7 +3655,7 @@ function renderRecipes(){
   const cnt=document.getElementById('recipes-count');
   if(cnt) cnt.textContent=filtered.length+' recette'+(filtered.length>1?'s':'');
   if(!filtered.length){
-    const msg=recipeFilter==='cuisinable'?'Ajoute des ingrédients dans <strong>Frigo</strong> pour voir ce que tu peux cuisiner maintenant.':recipeFilter==='fav'?'Aucun favori pour l\'instant. Touche le 🤍 sur une recette pour l\'ajouter ici.':recipeFilter==='ete'?'Aucune recette d\'été ne correspond.':recipeFilter==='af'?'Aucune recette air fryer ne correspond.':recipeFilter==='pdj'?'Aucune recette de petit-déjeuner ne correspond.':'Aucune recette ne correspond.';
+    const msg=recipeFilter==='cuisinable'?'Ajoute des ingrédients dans <strong>Frigo</strong> pour voir ce que tu peux cuisiner maintenant.':recipeFilter==='fav'?'Aucun favori pour l\'instant. Touche le 🤍 sur une recette pour l\'ajouter ici.':recipeFilter==='ete'?'Aucune recette d\'été ne correspond.':recipeFilter==='af'?'Aucune recette air fryer ne correspond.':recipeFilter==='pdj'?'Aucune recette de petit-déjeuner ne correspond.':recipeFilter==='light'?'Aucune recette « perte de gras » ne correspond — élargis ta recherche.':'Aucune recette ne correspond.';
     list.innerHTML='<div class="chart-empty" style="padding:24px">'+msg+'</div>';return;
   }
   list.innerHTML=filtered.map(r=>{
