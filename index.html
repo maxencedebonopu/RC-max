@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="RecompCoach">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="apple-touch-icon" href="coach-icon.png">
+<link rel="icon" type="image/png" href="coach-icon.png">
 <style>
 :root{
   --orange:#E8620A;--orange-light:#FDE9DA;--orange-mid:#F5A573;
@@ -142,6 +144,12 @@ input,textarea,select{font-family:inherit}
 .set-input{width:64px;padding:7px 6px;border:1.5px solid var(--border);border-radius:var(--radius-xs);font-size:14px;font-weight:600;text-align:center;background:var(--surface2);color:var(--text);outline:none}
 .set-input:focus{border-color:var(--orange)}
 .set-done-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text3);display:flex;align-items:center;justify-content:center;font-size:16px;margin:0 auto;transition:all .15s}
+.reps-input{width:54px}
+.set-done-row td{background:var(--green-light)}
+.ex-swap{border:1.5px solid var(--border);background:var(--surface2);color:var(--text2);border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+.ex-swap i{font-size:16px}
+.swap-opt{display:block;width:100%;text-align:left;padding:11px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--surface);font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px}
+.swap-opt:active{background:var(--surface2)}
 .set-done-btn.done{background:var(--green);border-color:var(--green);color:#fff}
 .rest-card{background:var(--surface);margin:0 16px;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);text-align:center}
 .rest-icon{font-size:40px;margin-bottom:8px}
@@ -923,6 +931,14 @@ Tu peux coller toute ta liste d'un coup." style="resize:vertical;line-height:1.4
       <div class="section-head" style="margin-top:10px"><span class="section-title">Bilan de la semaine</span></div>
       <div class="card" style="margin-top:0" id="week-summary"><div style="font-size:13px;color:var(--text3);line-height:1.5">Logge tes repas et coche tes séries cette semaine — ton bilan (calories, protéines, % dans la cible, séances) apparaîtra ici.</div></div>
 
+      <div class="section-head" style="margin-top:10px"><span class="section-title">Synthèse pour une IA</span></div>
+      <div class="card" style="margin-top:0">
+        <div style="font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:10px">Génère un résumé complet (profil, nutrition, poids, séances, ressentis) à coller dans ChatGPT / Claude pour des conseils perso sur ta bouffe et ton entraînement.</div>
+        <button class="btn-primary" onclick="copyAISummary()"><i class="ti ti-clipboard-text" style="vertical-align:-2px"></i> Copier la synthèse</button>
+        <button class="btn-secondary" onclick="showAISummary()" style="margin-top:8px">Voir / éditer le texte</button>
+        <textarea id="ai-summary-text" class="form-input" rows="8" style="margin-top:10px;display:none;font-size:12px;line-height:1.5" readonly></textarea>
+      </div>
+
       <div class="section-head" style="margin-top:10px"><span class="section-title">Courbe de poids</span></div>
       <div class="chart-card" id="weight-chart"><div class="chart-empty">Enregistre ton poids 2 jours pour voir la courbe.<br>Bouton <strong>« Mesures »</strong> en haut de l'accueil.</div></div>
 
@@ -1181,6 +1197,19 @@ Tu peux coller toute ta liste d'un coup." style="resize:vertical;line-height:1.4
       <div class="fb-pills" id="adj-meal"></div>
       <button class="btn-primary" onclick="addAdjustedRecipe()">Ajouter au journal</button>
       <button class="btn-secondary" onclick="closeModal('recipe-adj-modal')">Annuler</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="swap-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="swap-title">Remplacer l'exercice</div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px;line-height:1.5">Choisis une alternative (même groupe musculaire) ou saisis le tien. Le remplacement reste dans ton programme.</div>
+      <div id="swap-list"></div>
+      <div class="fb-pill-label" style="margin-top:10px">Autre exercice</div>
+      <div class="add-row"><input class="form-input" id="swap-custom" placeholder="Nom de l'exercice…" onkeydown="if(event.key==='Enter')applySwapCustom()"><button onclick="applySwapCustom()">+</button></div>
+      <button class="btn-secondary" onclick="closeModal('swap-modal')" style="margin-top:10px">Annuler</button>
     </div>
   </div>
 </div>
@@ -2009,7 +2038,7 @@ const SESSION_NAMES = ['Upper A','Lower A','Repos','Upper B','Lower B','Repos','
 
 const SESSIONS_DATA = {
   'Upper A': [
-    {name:'Développé couché barre',sets:4,reps:'6-8',rest:180,priority:true},
+    {name:'Développé couché haltères',sets:4,reps:'8-10',rest:180,priority:true},
     {name:'Rowing barre pronation',sets:4,reps:'8-10',rest:180,priority:true},
     {name:'Développé militaire haltères',sets:3,reps:'8-10',rest:90,priority:false},
     {name:'Tirage vertical poulie',sets:3,reps:'10-12',rest:90,priority:false},
@@ -3598,14 +3627,27 @@ function toggleFavRecipe(id,e){
   saveState(); renderRecipes();
   toast(i>=0?'Retiré des favoris':'Ajouté aux favoris ❤️');
 }
-function cardioFinisher(day){
-  const opts=[
-    '8 min HIIT vélo/rameur : 20 s fort / 40 s calme × 8.',
-    '10 min marche inclinée rapide (tapis 8-12 %) à la fin.',
-    'Circuit 6 min : 30 s burpees / squats sautés / mountain climbers, peu de repos.',
-    '12 min vélo modéré constant (zone 2), respiration contrôlée.'
+const CORE_POOL=[
+  {name:'Gainage planche',sets:3,reps:'40-60s',rest:45,priority:false,core:true},
+  {name:'Relevés de jambes (sol ou suspendu)',sets:3,reps:'12-15',rest:45,priority:false,core:true},
+  {name:'Crunch lesté / à la poulie',sets:3,reps:'12-15',rest:45,priority:false,core:true},
+  {name:'Hollow hold',sets:3,reps:'30-40s',rest:45,priority:false,core:true},
+  {name:'Gainage latéral',sets:3,reps:'30s/côté',rest:45,priority:false,core:true},
+  {name:'Russian twists (lestés)',sets:3,reps:'20',rest:45,priority:false,core:true},
+];
+function coreExoFor(day,week){return CORE_POOL[((day*2+(week||0))%CORE_POOL.length+CORE_POOL.length)%CORE_POOL.length];}
+function cardioFinisher(day,sName){
+  const lower=/lower|jambe|bas/i.test(sName||'');
+  const legSafe=[
+    '12-15 min marche inclinée (tapis 8-12 %) — jambes déjà sollicitées, pas de sauts.',
+    '12 min vélo zone 2 (allure constante, tu peux parler) — récup active sans fatiguer les cuisses.'
   ];
-  return opts[day%opts.length]+' <span style="color:var(--text3)">— ~200-300 kcal brûlées sans entamer la force.</span>';
+  const legFresh=[
+    '8 min HIIT vélo/rameur : 20 s fort / 40 s calme × 8 — jambes fraîches, tu peux pousser.',
+    'Circuit 6 min : 30 s squats sautés / mountain climbers / burpees, peu de repos.'
+  ];
+  const pool=lower?legSafe:legFresh;
+  return pool[((day+(APP.currentWeek||0))%pool.length+pool.length)%pool.length]+' <span style="color:var(--text3)">— adapté à ta séance ('+(lower?'bas du corps → cardio doux pour ménager les jambes':'haut du corps → cardio plus intense possible')+'), ~200-300 kcal.</span>';
 }
 let recipePortions={};
 function scaleQtyStr(str,f){
@@ -3942,7 +3984,9 @@ function renderSession(){
   const histName=homeMode?sName+' (maison)':sName;
   const sessionKey=homeMode?`${todayKey()}-${histName}-w${week}`:baseKey;
   if(!APP.training[sessionKey]) APP.training[sessionKey]={sets:{}};
-  const exercises=homeMode?HOME_SESSIONS[sName]:getProgram(sName);
+  const baseEx=homeMode?HOME_SESSIONS[sName]:getProgram(sName);
+  const hasCore=baseEx.some(e=>exMuscle(e.name).g==='Core');
+  const exercises=hasCore?baseEx:baseEx.concat([coreExoFor(day,week)]);
   const sesData=APP.training[sessionKey];
   const fb=sesData.feedback||{};
   const lf=lastSessionFeedback(histName,sessionKey);
@@ -3967,11 +4011,11 @@ function renderSession(){
       const ph=last?last.weight:'kg';
       const rows=Array.from({length:totalSets},(_,si)=>{
         const key=`${ei}-${si}`;
-        const sd=sesData.sets[key]||{done:false,weight:''};
-        return `<tr>
+        const sd=sesData.sets[key]||{done:false,weight:'',reps:''};
+        return `<tr class="${sd.done?'set-done-row':''}">
           <td>Série ${si+1}${si===totalSets-1&&extraSet?'<span style="font-size:10px;color:var(--orange)"> +</span>':''}</td>
-          <td><input class="set-input" type="number" placeholder="${ph}" value="${sd.weight}" onchange="saveSetWeight('${sessionKey}','${key}',this.value)" step="2.5"></td>
-          <td style="text-align:center;color:var(--text2);font-size:13px">${ex.reps}</td>
+          <td><input class="set-input" type="number" placeholder="${ph}" value="${sd.weight}" onchange="saveSetWeight('${sessionKey}','${key}',this.value)" step="2.5" inputmode="decimal"></td>
+          <td><input class="set-input reps-input" type="text" placeholder="${ex.reps}" value="${sd.reps||''}" onchange="saveSetReps('${sessionKey}','${key}',this.value)" inputmode="numeric"></td>
           <td><button class="set-done-btn ${sd.done?'done':''}" onclick="toggleSetDone('${sessionKey}','${key}',this)"><i class="ti ti-check"></i></button></td>
         </tr>`;
       }).join('');
@@ -3979,7 +4023,8 @@ function renderSession(){
         <div class="ex-top">
           <div class="ex-name">${ex.name}</div>
           <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-            ${ex.priority?`<span class="ex-tag">Principal</span>`:''}
+            ${ex.core?`<span class="ex-tag" style="background:var(--blue-light);color:var(--blue)">Abdos</span>`:ex.priority?`<span class="ex-tag">Principal</span>`:''}
+            ${(!homeMode&&!ex.core)?`<button class="ex-swap" onclick="openSwap(${ei})" title="Remplacer l'exercice" aria-label="Remplacer"><i class="ti ti-arrows-exchange"></i></button>`:''}
             <button class="ex-fav" onclick="toggleFavExo('${ex.name.replace(/'/g,"\\'")}',event)" title="Exercice favori" aria-label="Favori">${isFavExo(ex.name)?'❤️':'🤍'}</button>
           </div>
         </div>
@@ -3993,7 +4038,7 @@ function renderSession(){
     }).join('')}
     <div class="ex-block" style="border-top:2px solid var(--border)">
       <div class="ex-top"><div class="ex-name"><i class="ti ti-flame" style="color:var(--orange);vertical-align:-2px"></i> Finisher cardio <span style="font-size:11px;color:var(--text3);font-weight:500">· optionnel, perte de gras</span></div></div>
-      <div class="ex-guidance" style="margin-bottom:0;line-height:1.5">${cardioFinisher(day)}</div>
+      <div class="ex-guidance" style="margin-bottom:0;line-height:1.5">${cardioFinisher(day,sName)}</div>
     </div>
     <div class="sess-fb">
       <div class="sess-fb-title">Ressenti de la séance</div>
@@ -4016,6 +4061,57 @@ function toggleHomeMode(){
   APP.training[baseKey].home=!APP.training[baseKey].home;
   saveState(); renderSession();
   toast(APP.training[baseKey].home?'Version maison activée 🏠':'Retour à la séance salle 🏋️');
+}
+// ----- Remplacement d'exercice -----
+let swapCtx={sName:null,ei:null};
+const MUS2SWAP={'pectoraux':'pecs','épaules':'épaules','quadriceps':'quadriceps','chaîne postérieure':'ischios','ischios':'ischios','mollets':'mollets','dos':'dos','biceps':'biceps','triceps':'triceps','core':'core','jambes':'quadriceps'};
+function swapOptions(name){
+  const low=name.toLowerCase(); const set=new Set();
+  // 1) appartenance exacte à un groupe de variantes
+  EX_SWAPS.forEach(g=>{const all=g.salle.concat(g.maison);if(all.some(x=>x.toLowerCase()===low)) all.forEach(x=>set.add(x));});
+  // 2) par groupe musculaire (mapping)
+  if(!set.size){
+    const g=(exMuscle(name).g||'').toLowerCase();
+    let kw=''; for(const k in MUS2SWAP){ if(g.indexOf(k)===0){ kw=MUS2SWAP[k]; break; } }
+    if(kw) EX_SWAPS.forEach(gr=>{ if(gr.grp.toLowerCase().includes(kw)) gr.salle.concat(gr.maison).forEach(x=>set.add(x)); });
+  }
+  // 3) dernier recours : chevauchement de mots-clés sur le nom
+  if(!set.size){
+    const toks=low.split(/[^a-zà-ÿ]+/).filter(w=>w.length>=4);
+    EX_SWAPS.forEach(gr=>{const all=gr.salle.concat(gr.maison);if(all.some(x=>toks.some(t=>x.toLowerCase().includes(t)))) all.forEach(x=>set.add(x));});
+  }
+  set.delete(name);
+  return [...set];
+}
+function openSwap(ei){
+  const sName=SESSION_NAMES[APP.selectedTrainDay];
+  if(sName==='Repos') return;
+  const ex=getProgram(sName)[ei]; if(!ex) return;
+  swapCtx={sName,ei};
+  document.getElementById('swap-title').textContent='Remplacer : '+ex.name;
+  const opts=swapOptions(ex.name);
+  document.getElementById('swap-list').innerHTML=opts.length
+    ? opts.map(o=>`<button class="swap-opt" onclick="applySwap('${o.replace(/'/g,"\\'")}')">${o}</button>`).join('')
+    : '<div style="font-size:13px;color:var(--text3);line-height:1.5">Pas de suggestion automatique — saisis le nom de ton exercice ci-dessous.</div>';
+  const ci=document.getElementById('swap-custom'); if(ci) ci.value='';
+  openModal('swap-modal');
+}
+function ensureProgramCopy(sName){
+  if(!APP.program) APP.program={};
+  if(!APP.program[sName]||!APP.program[sName].length) APP.program[sName]=JSON.parse(JSON.stringify(getProgram(sName)));
+  return APP.program[sName];
+}
+function applySwap(name){
+  const {sName,ei}=swapCtx; if(sName==null||ei==null) return;
+  const prog=ensureProgramCopy(sName);
+  if(prog[ei]) prog[ei]=Object.assign({},prog[ei],{name:name});
+  saveState(); closeModal('swap-modal'); renderSession();
+  toast('Exercice remplacé ✓');
+}
+function applySwapCustom(){
+  const v=(document.getElementById('swap-custom').value||'').trim();
+  if(!v){toast('Saisis un nom');return;}
+  applySwap(v);
 }
 function lastSessionFeedback(sName,currentKey){
   let best=null;
@@ -4056,13 +4152,20 @@ function saveSetWeight(sessionKey,setKey,val){
   APP.training[sessionKey].sets[setKey].weight=val;
   saveState();
 }
+function saveSetReps(sessionKey,setKey,val){
+  if(!APP.training[sessionKey]) APP.training[sessionKey]={sets:{}};
+  if(!APP.training[sessionKey].sets[setKey]) APP.training[sessionKey].sets[setKey]={done:false,weight:'',reps:''};
+  APP.training[sessionKey].sets[setKey].reps=val;
+  saveState();
+}
 
 function toggleSetDone(sessionKey,setKey,btn){
   if(!APP.training[sessionKey]) APP.training[sessionKey]={sets:{}};
-  if(!APP.training[sessionKey].sets[setKey]) APP.training[sessionKey].sets[setKey]={done:false,weight:''};
+  if(!APP.training[sessionKey].sets[setKey]) APP.training[sessionKey].sets[setKey]={done:false,weight:'',reps:''};
   const cur=APP.training[sessionKey].sets[setKey].done;
   APP.training[sessionKey].sets[setKey].done=!cur;
   btn.classList.toggle('done',!cur);
+  const tr=btn.closest('tr'); if(tr) tr.classList.toggle('set-done-row',!cur);
   saveState();
 }
 
@@ -4263,7 +4366,7 @@ function getSessionTonnages(){
     done.forEach(([sk,s])=>{
       const ei=parseInt(sk.split('-')[0]);
       const ex=exs[ei];if(!ex) return;
-      ton+=(parseFloat(s.weight)||0)*repsMid(ex.reps);
+      ton+=(parseFloat(s.weight)||0)*(parseFloat(s.reps)||repsMid(ex.reps));
     });
     if(ton>0) out.push({date,sName,ton:Math.round(ton)});
   });
@@ -4356,6 +4459,61 @@ function renderWeekSummary(){
     ${dWa!=null?row('Δ Taille',(dWa>0?'+':'')+dWa.toFixed(1),'cm'):''}
   </div>`;
 }
+
+function _aiAvg(a){return a.length?a.reduce((x,y)=>x+y,0)/a.length:0;}
+function buildAISummary(){
+  const s=APP.settings,c=APP.calc||{};const L=[];
+  const ws=[...APP.weights].sort((a,b)=>a.date.localeCompare(b.date));
+  const curW=ws.length?ws[ws.length-1].val:s.weight;
+  const goal=(typeof GOALS!=='undefined'&&c.goal!=null&&GOALS[c.goal])?GOALS[c.goal][0]:'Recomp / skinny-fat';
+  L.push('=== SYNTHESE RECOMP COACH ===');
+  L.push("(export de mon appli de suivi — analyse et donne-moi des conseils concrets)");
+  L.push('');
+  L.push('PROFIL');
+  L.push('- Objectif : '+goal+' (perdre du gras en gardant/gagnant du muscle)');
+  L.push('- '+(c.sex==='F'?'Femme':'Homme')+' · '+(c.age||'?')+' ans · '+(c.height||'?')+' cm · '+curW+' kg (depart '+APP.startWeight+' kg)');
+  L.push('- Cibles : jour entrainement '+s.kcalE+' kcal / jour repos '+s.kcalR+' kcal · Proteines '+s.prot+' g · Glucides '+(s.carbs||'?')+' g · Lipides '+(s.fat||'?')+' g');
+  L.push('');
+  const cut=new Date();cut.setDate(cut.getDate()-13);const cutK=dateKey(cut);
+  let nk=[],np=[],ng=[],nl=[],loggedN=0,inT=0;
+  Object.entries(APP.days).forEach(([k,d])=>{if(k<cutK)return;const t=getDayTotals(d);if(t.k<=0)return;loggedN++;nk.push(t.k);np.push(t.p);ng.push(t.g||0);nl.push(t.l||0);const ty=d.dayType||DAY_TYPE[jsDay(k)];const tg=ty==='E'?s.kcalE:s.kcalR;if(Math.abs(t.k-tg)<=tg*0.1)inT++;});
+  L.push('NUTRITION (14 derniers jours)');
+  if(loggedN){
+    L.push('- Jours logges : '+loggedN+'/14 · dans la cible calorique (+-10%) : '+Math.round(inT/loggedN*100)+'%');
+    L.push('- Moyennes/jour : '+Math.round(_aiAvg(nk))+' kcal · '+Math.round(_aiAvg(np))+' g prot (cible '+s.prot+') · '+Math.round(_aiAvg(ng))+' g gluc · '+Math.round(_aiAvg(nl))+' g lip');
+  } else L.push('- Pas assez de jours logges.');
+  L.push('');
+  L.push('POIDS');
+  if(ws.length>=2){const f=ws[0],l=ws[ws.length-1];const dd=(new Date(l.date+'T00:00:00')-new Date(f.date+'T00:00:00'))/86400000;const pw=dd>=1?((l.val-f.val)/(dd/7)):0;L.push('- '+f.val+' kg ('+f.date+') -> '+l.val+' kg ('+l.date+') = '+(pw>0?'+':'')+pw.toFixed(2)+' kg/sem');} else L.push('- Pas assez de mesures.');
+  L.push('');
+  L.push('ENTRAINEMENT');
+  const done=Object.entries(APP.training).filter(([k,v])=>Object.values(v.sets||{}).some(x=>x.done));
+  L.push('- Seances enregistrees : '+done.length);
+  const st=getStrengthByExercise();
+  const top=Object.keys(st).map(n=>{const a=st[n];const last=a[a.length-1];const prev=a.length>1?a[a.length-2]:null;return{n,max:last.max,delta:prev?last.max-prev.max:null};}).sort((a,b)=>b.max-a.max).slice(0,6);
+  if(top.length){L.push('- Charges max par exo :');top.forEach(t=>L.push('   - '+t.n+' : '+t.max+' kg'+(t.delta!=null?' ('+(t.delta>0?'+':'')+t.delta+' kg vs precedente)':'')));}
+  const fbs=Object.entries(APP.training).filter(([k,v])=>v.feedback&&v.feedback.effort).map(([k,v])=>{const m=k.match(/^(\d{4}-\d{2}-\d{2})-(.+)-w/);return{date:m?m[1]:k,name:m?m[2]:'',fb:v.feedback};}).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);
+  if(fbs.length){L.push('- Ressentis recents :');fbs.forEach(x=>L.push('   - '+x.date+' '+x.name+' : difficulte '+(x.fb.effort||'?')+', energie '+(x.fb.energy||'?')+', courbatures '+(x.fb.doms||'?')+(x.fb.note?' — '+x.fb.note:'')));}
+  L.push('');
+  L.push("COMPLEMENTS : whey isolate (a l'eau), pre-workout, creatine 3-5 g/j.");
+  const sg=computeSuggestions();
+  if(sg.length){L.push('');L.push("ALERTES ACTUELLES DE L'APP :");sg.forEach(x=>L.push('- '+x.text.replace(/<[^>]+>/g,'')));}
+  L.push('');
+  L.push('=== CE QUE JE VEUX ===');
+  L.push('Analyse ces donnees et donne-moi des conseils CONCRETS pour optimiser ma recomposition :');
+  L.push('1) Nutrition : ajustements calories/macros + idees de repas pour tenir mes proteines.');
+  L.push('2) Entrainement : progression des charges, volume, exercices a changer.');
+  L.push('3) Mes 3 priorites pour les 2 prochaines semaines.');
+  return L.join('\n');
+}
+function copyAISummary(){
+  const txt=buildAISummary();
+  const ta=document.getElementById('ai-summary-text'); if(ta) ta.value=txt;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(()=>toast('Synthèse copiée ✓ — colle-la dans ton IA'),()=>{if(ta){ta.style.display='block';ta.focus();ta.select();}toast('Texte affiché — copie-le');});
+  } else { if(ta){ta.style.display='block';ta.focus();ta.select();} toast('Texte affiché — copie-le'); }
+}
+function showAISummary(){const ta=document.getElementById('ai-summary-text');if(!ta)return;ta.value=buildAISummary();ta.style.display=(ta.style.display==='none'||!ta.style.display)?'block':'none';}
 
 function getStrengthByExercise(){
   // exo -> liste {date, max} (charge max validée par séance)
