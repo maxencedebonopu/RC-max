@@ -15,6 +15,7 @@
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 @media (max-width:900px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px !important}}
 [onclick],button,a,label,.nav-btn,.subnav-btn,.rfilter,.qa-btn,.fb-pill,.recipe-head{touch-action:manipulation}
+@media (max-width:900px){.subnav{flex-wrap:wrap}.subnav-btn{flex:1 1 30% !important}}
 :root{
   --orange:#E8620A;--orange-light:#FDE9DA;--orange-mid:#F5A573;
   --bg:#F4F2EF;--surface:#FFFFFF;--surface2:#F7F5F2;
@@ -251,7 +252,7 @@ input,textarea,select{font-family:inherit}
 /* ===== v2 ADDITIONS ===== */
 /* SUB-NAV segmented */
 .subnav{display:flex;gap:4px;margin:10px 16px 0;background:var(--surface2);padding:4px;border-radius:var(--radius-sm)}
-.subnav-btn{flex:1;padding:9px 4px;border:none;background:transparent;border-radius:var(--radius-xs);font-size:13px;font-weight:600;color:var(--text2);transition:all .15s}
+.subnav-btn{flex:1;min-width:0;padding:9px 4px;border:none;background:transparent;border-radius:var(--radius-xs);font-size:13px;font-weight:600;color:var(--text2);transition:all .15s;white-space:nowrap}
 .subnav-btn.active{background:var(--surface);color:var(--orange);box-shadow:var(--shadow)}
 .subview{display:none}.subview.active{display:block}
 
