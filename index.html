@@ -14,6 +14,7 @@
 <style>
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 @media (max-width:900px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px !important}}
+[onclick],button,a,label,.nav-btn,.subnav-btn,.rfilter,.qa-btn,.fb-pill,.recipe-head{touch-action:manipulation}
 :root{
   --orange:#E8620A;--orange-light:#FDE9DA;--orange-mid:#F5A573;
   --bg:#F4F2EF;--surface:#FFFFFF;--surface2:#F7F5F2;
@@ -26,12 +27,12 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulati
   --shadow:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.05);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:15px;min-height:100vh;-webkit-font-smoothing:antialiased}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:15px;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 button{font-family:inherit;cursor:pointer}
 input,textarea,select{font-family:inherit}
 
 /* LAYOUT */
-.app{display:flex;flex-direction:column;height:100vh;max-width:430px;margin:0 auto;position:relative;background:var(--bg)}
+.app{display:flex;flex-direction:column;height:100vh;max-width:430px;margin:0 auto;position:relative;background:var(--bg);overflow-x:hidden}
 .header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px 10px;position:sticky;top:0;z-index:100}
 .header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
 .app-name{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:var(--orange);letter-spacing:-.3px}
